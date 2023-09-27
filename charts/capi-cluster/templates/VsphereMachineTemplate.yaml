@@ -1,0 +1,33 @@
+{{- range $v := .Values.machineTemplates }}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: VSphereMachineTemplate
+metadata:
+  name: {{ .Values.cluster.name }}-{{ v.name }}
+  namespace: {{ .Values.cluster.name }}
+spec:
+  template:
+    spec:
+      cloneMode: linkedClone
+      datacenter: {{ .Values.vsphere.datacenter }}
+      datastore: {{ .Values.node.datastore }}
+      diskGiB: {{ .v.diskSize }}
+      folder: ""
+      memoryMiB: {{ .v.memory }}
+      network:
+        devices:
+        - addressesFromPools:
+          - apiGroup: ipam.cluster.x-k8s.io
+            kind: InClusterIPPool
+            name: {{ .Values.cluster.name }}-ip-pool
+          nameservers:
+          - {{ .Values.network.nameserver }}
+          networkName: {{ .Values.vsphere.network }}
+      numCPUs: {{ .v.cpu }}
+      os: Linux
+      resourcePool: {{ .Values.vsphere.resourcePool }}
+      server: {{ .Values.vsphere.serverIP }}
+      storagePolicyName: "{{ .Values.vsphere.storagePolicyName }}"
+      template: {{ .v.isoTemplate }}
+      thumbprint: {{ .Values.vsphere.thumbprint }}
+{{- end }}

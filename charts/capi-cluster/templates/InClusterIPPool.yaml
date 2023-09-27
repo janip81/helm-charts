@@ -1,0 +1,13 @@
+---
+apiVersion: ipam.cluster.x-k8s.io/v1alpha2
+kind: InClusterIPPool
+metadata:
+  name: "{{ .Values.cluster.name }}-ip-pool"
+  namespace: "{{ .Values.cluster.name }}"
+  labels:
+    clusterctl.cluster.x-k8s.io/move-hierarchy: ""
+spec:
+  addresses:
+    - "{{ .Values.network.poolStart }}-{{ .Values.network.poolEnd }}"
+  prefix: {{ .Values.network.prefix }}
+  gateway: {{ .Values.network.gateway }}

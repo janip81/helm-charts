@@ -1,0 +1,67 @@
+addons:
+  # Set True if you want to use the built in CSI and CPI manifests
+  # Manifests not updated to latest version so i suggest install CPI and CSI manually after cluster is up
+  install_vsphere_addon: false
+
+cluster:
+  name: capi-dev
+  masterNodeReplicas: 3
+  workerNodeReplicas: 2
+  version: 1.28.0
+  cidrBlocks: "10.245.0.0/16"
+  controlPlaneEndpoint: "capi-dev.k8s.threshold.se"
+  # bgpPolicyVlan node label is used in Cilium CNI BGP, if not used leave empty and it will not be set.
+  bgpPolicyVlan: "vlan201"
+  controlplaneTemplate: controlplane # Change this to a machineTemplate you have built
+  WorkerTemplate: workerK8s1-28 # Change this to a machineTemplate you have built
+
+network:
+  prefix: "24"
+  gateway: "192.168.101.1"
+  nameserver: "192.168.101.1"
+  poolStart: "192.168.101.21"
+  poolEnd: "192.168.101.50"
+
+node:
+  masternode:
+    cpu: 4
+    memory: 4096
+    diskSize: 25
+  workernode:
+    cpu: 4
+    memory: 8192
+    diskSize: 35
+  datastore: SSD01
+  template: ubuntu-2204-kube-v1.28.0
+  sshAuthorizedKeys: <path:automation/data/automation_ssh_keys#ssh_public_key>
+
+vsphere:
+  server: vcenter.threshold.se
+  serverIP: 192.168.81.9
+  datacenter: Home
+  resourcePool: kubernetes
+  insecureFlag: true
+  username: <path:automation/data/vmware#vsphere_user>
+  password: <path:automation/data/vmware#vsphere_password>
+  thumbprint: <path:automation/data/vmware#vsphere_thumbprint>
+  network: VLAN101
+  storagePolicyName: ""
+  labels:
+    region: region
+    zone: zone
+
+# Machine templates, need atleast two. First is for Controlplane and second a worker node template.
+machineTemplates:
+  - name: ubnt2204-2cpu-4g-128
+    cpu: 2
+    memory: 4096
+    diskSize: 25
+    isoTemplate: ubuntu-2204-kube-v1.28.0
+  - name: ubnt2204-4cpu-8g-128
+    cpu: 4 
+    memory: 8192
+    diskSize: 35
+    isoTemplate: ubuntu-2204-kube-v1.28.0
+
+healthChecks:
+

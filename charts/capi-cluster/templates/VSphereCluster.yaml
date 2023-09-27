@@ -1,0 +1,15 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: VSphereCluster
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: {{ .Values.cluster.name }}
+spec:
+  controlPlaneEndpoint:
+    host: "{{ .Values.cluster.controlPlaneEndpoint }}"
+    port: 6443
+  identityRef:
+    kind: Secret
+    name: {{ .Values.cluster.name }}
+  server: {{ .Values.vsphere.serverIP }}
+  thumbprint: {{ .Values.vsphere.thumbprint }}
