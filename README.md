@@ -1,11 +1,22 @@
+# vSphere TMM Helm Charts
+
+Unofficial repository of helm charts created by me or forked and changed by me.
+
+## Adding this helm repository
+
+To add the helm repository for the vSphere CSI driver, run the following commands:
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo janip81
+```
+
+`values.yaml` files for the charts can be found in the `charts/[chartname]` directories.
+
 ## Usage
 
 [Helm](https://helm.sh) must be installed to use the charts.  Please refer to
 Helm's [documentation](https://helm.sh/docs) to get started.
-
-Once Helm has been set up correctly, add the repo as follows:
-
-  helm repo add <alias> https://<orgname>.github.io/helm-charts
 
 If you had already added this repo earlier, run `helm repo update` to retrieve
 the latest versions of the packages.  You can then run `helm search repo
