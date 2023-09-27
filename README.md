@@ -1,4 +1,4 @@
-# vSphere TMM Helm Charts
+# My Helm Charts
 
 Unofficial repository of helm charts created by me or forked and changed by me.
 
