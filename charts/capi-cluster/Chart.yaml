@@ -1,6 +1,6 @@
 apiVersion: v2
-name: capi-workload-cluster-builder
-description: A Helm chart for Cluster API to deploy workload clusters
+name: capi-cluster
+description: An unofficial Helm chart to deploy workload cluster with Cluster API
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -19,3 +19,12 @@ version: 0.0.1
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
 appVersion: 0.0.1
+home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
+keywords:
+  - cluster-api
+maintainers:
+  - name: Jani Pesonen
+    email: jani@techmonkeys.se
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
