@@ -21,15 +21,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.1/capi-cluster-0.0.1.tgz
     version: 0.0.1
-  capi-workload-cluster-builder:
-  - apiVersion: v2
-    appVersion: 0.0.1
-    created: "2023-09-27T18:38:44.267313339Z"
-    description: A Helm chart for Cluster API to deploy workload clusters
-    digest: f8628cdd0c76fa1e81130f7fed29090e5b3faf668bced8e5b937dffdef8d8239
-    name: capi-workload-cluster-builder
-    type: application
-    urls:
-    - https://github.com/janip81/helm-charts/releases/download/capi-workload-cluster-builder-0.0.1/capi-workload-cluster-builder-0.0.1.tgz
-    version: 0.0.1
 generated: "2023-09-27T19:15:53.758278099Z"
