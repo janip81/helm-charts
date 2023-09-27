@@ -1,4 +1,4 @@
-{{- range $v := .Values.machineTemplates }}
+{{- range .Values.machineTemplates }}
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: VSphereMachineTemplate
@@ -11,9 +11,9 @@ spec:
       cloneMode: linkedClone
       datacenter: {{ .Values.vsphere.datacenter }}
       datastore: {{ .Values.node.datastore }}
-      diskGiB: {{ .v.diskSize }}
+      diskGiB: {{ .diskSize }}
       folder: ""
-      memoryMiB: {{ .v.memory }}
+      memoryMiB: {{ .memory }}
       network:
         devices:
         - addressesFromPools:
@@ -23,11 +23,11 @@ spec:
           nameservers:
           - {{ .Values.network.nameserver }}
           networkName: {{ .Values.vsphere.network }}
-      numCPUs: {{ .v.cpu }}
+      numCPUs: {{ .cpu }}
       os: Linux
       resourcePool: {{ .Values.vsphere.resourcePool }}
       server: {{ .Values.vsphere.serverIP }}
       storagePolicyName: "{{ .Values.vsphere.storagePolicyName }}"
-      template: {{ .v.isoTemplate }}
+      template: {{ .isoTemplate }}
       thumbprint: {{ .Values.vsphere.thumbprint }}
 {{- end }}
