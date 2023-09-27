@@ -3,10 +3,10 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: 0.0.1
-    created: "2023-09-27T20:25:29.040194547Z"
+    created: "2023-09-27T20:26:21.346028867Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
-    digest: 9f9d6afaa33201ee93e04d1a0af565414a93db62ce58369448161ba3a20a79c5
+    digest: 98f095d9cd9048387ed1f5b045d1b87a85460f553c000d95686c5b78839f8beb
     home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
     icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
     keywords:
@@ -21,4 +21,4 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/capi-cluster-0.0.1.tgz
     version: 0.0.1
-generated: "2023-09-27T20:25:29.039194144Z"
+generated: "2023-09-27T20:26:21.345059458Z"
