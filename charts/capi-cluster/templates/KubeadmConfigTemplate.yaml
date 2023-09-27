@@ -12,9 +12,9 @@ spec:
           criSocket: /var/run/containerd/containerd.sock
           kubeletExtraArgs:
             cloud-provider: external
-            {{- if .Values.cluster.bgpPolicyVlan -}}
+            {{- if .Values.cluster.bgpPolicyVlan }}
             node-labels: bgp-policy={{ .Values.cluster.bgpPolicyVlan }}
-            {{- end -}}
+            {{- end }}
           name: {{ printf "'{{ local_hostname }}'" }}
       preKubeadmCommands:
       - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
