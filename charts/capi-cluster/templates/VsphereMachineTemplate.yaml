@@ -3,14 +3,14 @@
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: VSphereMachineTemplate
 metadata:
-  name: {{ .Values.cluster.name }}-{{ .name }}
-  namespace: {{ .Values.cluster.name }}
+  name: {{ $.Values.cluster.name }}-{{ .name }}
+  namespace: {{ $.Values.cluster.name }}
 spec:
   template:
     spec:
       cloneMode: linkedClone
-      datacenter: {{ .Values.vsphere.datacenter }}
-      datastore: {{ .Values.node.datastore }}
+      datacenter: {{ $.Values.vsphere.datacenter }}
+      datastore: {{ $.Values.node.datastore }}
       diskGiB: {{ .diskSize }}
       folder: ""
       memoryMiB: {{ .memory }}
@@ -19,15 +19,15 @@ spec:
         - addressesFromPools:
           - apiGroup: ipam.cluster.x-k8s.io
             kind: InClusterIPPool
-            name: {{ .Values.cluster.name }}-ip-pool
+            name: {{ $.Values.cluster.name }}-ip-pool
           nameservers:
-          - {{ .Values.network.nameserver }}
-          networkName: {{ .Values.vsphere.network }}
+          - {{ $.Values.network.nameserver }}
+          networkName: {{ $.Values.vsphere.network }}
       numCPUs: {{ .cpu }}
       os: Linux
-      resourcePool: {{ .Values.vsphere.resourcePool }}
-      server: {{ .Values.vsphere.serverIP }}
-      storagePolicyName: "{{ .Values.vsphere.storagePolicyName }}"
+      resourcePool: {{ $.Values.vsphere.resourcePool }}
+      server: {{ $.Values.vsphere.serverIP }}
+      storagePolicyName: "{{ $.Values.vsphere.storagePolicyName }}"
       template: {{ .isoTemplate }}
-      thumbprint: {{ .Values.vsphere.thumbprint }}
+      thumbprint: {{ $.Values.vsphere.thumbprint }}
 {{- end }}
