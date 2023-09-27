@@ -26,5 +26,5 @@ jobs:
       
       - name: Publish Helm charts
         uses: janip81/helm-charts@main
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
