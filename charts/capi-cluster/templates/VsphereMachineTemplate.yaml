@@ -10,7 +10,7 @@ spec:
     spec:
       cloneMode: linkedClone
       datacenter: {{ $.Values.vsphere.datacenter }}
-      datastore: {{ $.Values.node.datastore }}
+      datastore: {{ .vcenterDatastore }}
       diskGiB: {{ .diskSize }}
       folder: ""
       memoryMiB: {{ .memory }}

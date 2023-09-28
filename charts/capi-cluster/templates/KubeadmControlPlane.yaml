@@ -54,8 +54,8 @@ spec:
               value: "10"
             - name: vip_retryperiod
               value: "2"
-            image: ghcr.io/kube-vip/kube-vip:v0.5.11
-            imagePullPolicy: IfNotPresent
+            image: {{ .Values.kubeVIP.image.repository }}:{{ .Values.kubeVIP.image.tag }}
+            imagePullPolicy: {{ .Values.kubeVIP.image.pullPolicy }}
             name: kube-vip
             resources: {}
             securityContext:
@@ -79,9 +79,9 @@ spec:
         status: {}
       owner: root:root
       path: /etc/kubernetes/manifests/kube-vip.yaml
-    initConfiguration:
+    initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
       skipPhases:
-        - addon/kube-proxy
+        - addon/kube-proxy {{ end }}
       nodeRegistration:
         criSocket: /var/run/containerd/containerd.sock
         kubeletExtraArgs:

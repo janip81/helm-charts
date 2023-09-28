@@ -4,64 +4,93 @@ addons:
   install_vsphere_addon: false
 
 cluster:
-  name: capi-dev
+  name: clustername
   masterNodeReplicas: 3
   workerNodeReplicas: 2
   version: 1.28.0
   cidrBlocks: "10.245.0.0/16"
-  controlPlaneEndpoint: "capi-dev.k8s.threshold.se"
+  controlPlaneEndpoint: "host.domain.com"
   # bgpPolicyVlan node label is used in Cilium CNI BGP, if not used leave empty and it will not be set.
   bgpPolicyVlan: "vlan201"
   controlplaneTemplate: controlplane # Change this to a machineTemplate you have built
   WorkerTemplate: workerK8s1-28 # Change this to a machineTemplate you have built
+  skipKubeProxy: true
 
 network:
   prefix: "24"
-  gateway: "192.168.101.1"
-  nameserver: "192.168.101.1"
-  poolStart: "192.168.101.21"
-  poolEnd: "192.168.101.50"
+  gateway: "192.168.1.1"
+  nameserver: "192.168.1.1"
+  poolStart: "192.168.1.2"
+  poolEnd: "192.168.1.254"
 
 node:
-  masternode:
-    cpu: 4
-    memory: 4096
-    diskSize: 25
-  workernode:
-    cpu: 4
-    memory: 8192
-    diskSize: 35
   datastore: SSD01
   template: ubuntu-2204-kube-v1.28.0
-  sshAuthorizedKeys: <path:automation/data/automation_ssh_keys#ssh_public_key>
+  sshAuthorizedKeys: PublicKey
 
 vsphere:
-  server: vcenter.threshold.se
-  serverIP: 192.168.81.9
-  datacenter: Home
+  server: vcenter.domain.com
+  serverIP: 1.2.3.4
+  datacenter: Datacenter
   resourcePool: kubernetes
   insecureFlag: true
-  username: <path:automation/data/vmware#vsphere_user>
-  password: <path:automation/data/vmware#vsphere_password>
-  thumbprint: <path:automation/data/vmware#vsphere_thumbprint>
-  network: VLAN101
+  username: username
+  password: password
+  thumbprint: thumbprint
+  network: vcenterNetwork
   storagePolicyName: ""
   labels:
     region: region
     zone: zone
 
-# Machine templates, need atleast two. First is for Controlplane and second a worker node template.
+# Machine templates
 machineTemplates:
   - name: ubnt2204-2cpu-4g-128
     cpu: 2
     memory: 4096
     diskSize: 25
     isoTemplate: ubuntu-2204-kube-v1.28.0
+    vcenterDatastore: SSD01
   - name: ubnt2204-4cpu-8g-128
     cpu: 4 
     memory: 8192
     diskSize: 35
     isoTemplate: ubuntu-2204-kube-v1.28.0
+    vcenterDatastore: SSD01
+
+kubeVIP:
+  image:
+    repository: ghcr.io/kube-vip/kube-vip
+    tag: v0.6.2
+    pullPolicy: IfNotPresent
 
 healthChecks:
+  controlplane:
+    name: cp-unhealthy-5m
 
+    # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
+    maxUnhealthy: 100%
+
+    # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
+    unhealthyTimeoutUnknown: 60s
+    unhealthyTimeoutFalse: 60s
+
+  workernodes:
+    name: worker-unhealthy-5m
+
+    # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
+    maxUnhealthy: 100%
+
+    # nodeStartupTimeout determines how long a MachineHealthCheck should wait for
+    # a Node to join the cluster, before considering a Machine unhealthy.
+    # Defaults to 10 minutes.
+    # Set to 0 to disable the node startup timeout.
+    # Disabling this timeout will prevent a Machine from being considered unhealthy when
+    # the Node it created has not yet registered with the cluster. This can be useful when
+    # Nodes take a long time to start up or when you only want condition based checks for
+    # Machine health.
+    nodeStartupTimeout: 600s
+
+    # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
+    unhealthyTimeoutUnknown: 60s
+    unhealthyTimeoutFalse: 60s

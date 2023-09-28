@@ -8,7 +8,7 @@ metadata:
   namespace: {{ .Values.cluster.name }}
 spec:
   clusterName: {{ .Values.cluster.name }}
-  replicas: {{ .Values.cluster.workerNodeReplicas }}
+  replicas: {{ template "worker.replicas" . }}
   selector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
