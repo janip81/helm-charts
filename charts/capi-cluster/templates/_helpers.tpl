@@ -7,7 +7,7 @@
     {{- $allFalse = false }}
   {{- end }}
 {{- end }}
-{{- if and (not $allFalse) (len .) }}{{- else -}}{}{{- end }}
+{{- if and (not $allFalse) (len .) }}{{- else -}}[]{{- end }}
 {{- end -}}
 
 {{- define "worker.replicas" -}}
