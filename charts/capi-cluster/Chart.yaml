@@ -26,5 +26,8 @@ keywords:
 maintainers:
   - name: Jani Pesonen
     email: jani@techmonkeys.se
+    url: https://github.com/janip81
 sources:
   - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+  - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+  - https://github.com/kubernetes-sigs/cluster-api

@@ -4,7 +4,7 @@ Unofficial repository of helm charts created by me or forked and changed by me.
 
 ## Adding this helm repository
 
-To add the helm repository for the vSphere CSI driver, run the following commands:
+To add the helm repository, run the following commands:
 
 ```bash
 helm repo add janip81 https://janip81.github.io/helm-charts/
