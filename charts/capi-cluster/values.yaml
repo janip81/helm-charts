@@ -82,11 +82,11 @@ healthChecks:
     # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
     maxUnhealthy: 100%
 
-    nodeStartupTimeout: 600s
+    nodeStartupTimeout: 10m0s
 
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
-    unhealthyTimeoutUnknown: 60s
-    unhealthyTimeoutFalse: 60s
+    unhealthyTimeoutUnknown: 5m0s
+    unhealthyTimeoutFalse: 5m0s
 
   workernodes:
     name: worker-unhealthy-5m
@@ -102,8 +102,8 @@ healthChecks:
     # the Node it created has not yet registered with the cluster. This can be useful when
     # Nodes take a long time to start up or when you only want condition based checks for
     # Machine health.
-    nodeStartupTimeout: 600s
+    nodeStartupTimeout: 10m0s
 
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
-    unhealthyTimeoutUnknown: 60s
-    unhealthyTimeoutFalse: 60s
+    unhealthyTimeoutUnknown: 5m0s
+    unhealthyTimeoutFalse: 5m0s
