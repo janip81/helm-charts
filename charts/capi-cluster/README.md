@@ -5,7 +5,7 @@ Warning Forked charts here contain changes from the original.
 
 ## Adding this helm repository
 
-To add the helm repository for the vSphere CSI driver, run the following commands:
+To add the helm repository, run the following commands:
 
 ```bash
 helm repo add janip81 https://janip81.github.io/helm-charts/
@@ -14,7 +14,7 @@ helm search repo capi-cluster
 
 `values.yaml` files for the charts can be found in the `charts/[chartname]` directories.
 
-## UsageTL;DR
+## TL;DR
 
 ```bash
 helm repo add janip81 https://janip81.github.io/helm-charts/
