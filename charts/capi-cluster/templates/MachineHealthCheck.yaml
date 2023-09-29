@@ -1,23 +1,25 @@
+{{- range .Values.machineDeployments }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineHealthCheck
 metadata:
-  name: {{ .Values.cluster.name }}-node-unhealthy-5m
+  name: {{ $.Values.cluster.name }}-node-unhealthy-5m
 spec:
-  clusterName: {{ .Values.cluster.name }}
-  maxUnhealthy: {{ .Values.healthChecks.workernodes.maxUnhealthy }}
-  nodeStartupTimeout: {{ .Values.healthChecks.workernodes.nodeStartupTimeout }}
+  clusterName: {{ $.Values.cluster.name }}
+  maxUnhealthy: {{ $.Values.healthChecks.workernodes.maxUnhealthy }}
+  nodeStartupTimeout: {{ $.Values.healthChecks.workernodes.nodeStartupTimeout }}
   selector:
     matchLabels:
       # nodepool: vsphere-quickstart-md-0
-      cluster.x-k8s.io/deployment-name: {{ .Values.cluster.name }}-md-0
+      cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
   unhealthyConditions:
   - type: Ready
     status: Unknown
-    timeout: {{ .Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
+    timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
   - type: Ready
     status: "False"
-    timeout: {{ .Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
+    timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
+{{ end }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineHealthCheck

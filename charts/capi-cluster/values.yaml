@@ -1,20 +1,15 @@
-addons:
-  # Set True if you want to use the built in CSI and CPI manifests
-  # Manifests not updated to latest version so i suggest install CPI and CSI manually after cluster is up
-  install_vsphere_addon: false
-
 cluster:
   name: clustername
-  masterNodeReplicas: 3
-  workerNodeReplicas: 2
-  version: 1.28.0
   cidrBlocks: "10.245.0.0/16"
   controlPlaneEndpoint: "host.domain.com"
   # bgpPolicyVlan node label is used in Cilium CNI BGP, if not used leave empty and it will not be set.
   bgpPolicyVlan: "vlan201"
-  controlplaneTemplate: controlplane # Change this to a machineTemplate you have built
-  WorkerTemplate: workerK8s1-28 # Change this to a machineTemplate you have built
   skipKubeProxy: true
+
+addons:
+  # Set True if you want to use the built in CSI and CPI manifests
+  # Manifests not updated to latest version so i suggest install CPI and CSI manually after cluster is up
+  install_vsphere_addon: false
 
 network:
   prefix: "24"
@@ -42,6 +37,22 @@ vsphere:
   labels:
     region: region
     zone: zone
+
+controlPlaneNodes:
+  k8sVersion: 1.28.0
+  vspehereMachineTemplate: ubnt2204-2cpu-4g-128
+  replicas: 3
+
+machineDeployments:
+  - name: md-0
+    vspehereMachineTemplate: ubnt2204-4cpu-8g-128
+    k8sVersion: 1.28.0
+    replicas: 2
+  - name: md-1
+    vspehereMachineTemplate: ubnt2204-4cpu-8g-128
+    k8sVersion: 1.28.0
+    replicas: 3
+
 
 # Machine templates
 machineTemplates:

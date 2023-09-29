@@ -11,14 +11,14 @@
 {{- end -}}
 
 {{- define "worker.replicas" -}}
-{{- $replicas := lookup "v1" "machinedeployments.cluster.x-k8s.io" "capi-dev" "capi-dev-md-0" -}}
+{{- $replicas := lookup "v1" "machinedeployments.cluster.x-k8s.io" "capi-dev" "{{ .name }}" -}}
 {{- with $replicas -}}
 {{- with index . "spec" -}}
 {{ .replicas }}
 {{- else -}}
-{{ .Values.cluster.workerNodeReplicas }}
+{{ .replicas }}
 {{- end }}
 {{- else -}}
-{{ .Values.cluster.workerNodeReplicas }}
+{{ .replicas }}
 {{- end }}
 {{- end }}

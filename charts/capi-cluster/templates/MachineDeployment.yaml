@@ -1,31 +1,33 @@
+{{- range .Values.machineDeployments }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
   labels:
-    cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
-  name: {{ .Values.cluster.name }}-md-0
-  namespace: {{ .Values.cluster.name }}
+    cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
+  name: {{ $.Values.cluster.name }}-{{ .name}}
+  namespace: {{ $.Values.cluster.name }}
 spec:
-  clusterName: {{ .Values.cluster.name }}
+  clusterName: {{ $.Values.cluster.name }}
   replicas: {{ template "worker.replicas" . }}
   selector:
     matchLabels:
-      cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
-      cluster.x-k8s.io/deployment-name: {{ .Values.cluster.name }}-md-0
+      cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
+      cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name}}
   template:
     metadata:
       labels:
-        cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
+        cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
     spec:
       bootstrap:
         configRef:
           apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
           kind: KubeadmConfigTemplate
-          name: {{ .Values.cluster.name }}-md-0
-      clusterName: {{ .Values.cluster.name }}
+          name: {{ $.Values.cluster.name }}-{{ .name}}
+      clusterName: {{ $.Values.cluster.name }}
       infrastructureRef:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: VSphereMachineTemplate
-        name: {{ .Values.cluster.name }}-{{ .Values.cluster.WorkerTemplate}}
-      version: v{{ .Values.cluster.version }}
+        name: {{ $.Values.cluster.name }}-{{ .name}}
+      version: v{{ .k8sVersion }}
+{{ end }}
