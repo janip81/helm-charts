@@ -28,6 +28,7 @@ metadata:
 spec:
   clusterName: {{ .Values.cluster.name }}
   maxUnhealthy: {{ .Values.healthChecks.controlplane.maxUnhealthy }}
+  nodeStartupTimeout: {{ .Values.healthChecks.controlplane.nodeStartupTimeout }}
   selector:
     matchLabels:
       cluster.x-k8s.io/control-plane: ""
