@@ -108,7 +108,7 @@ spec:
     infrastructureRef:
       apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
       kind: VSphereMachineTemplate
-      name: {{ .Values.controlPlaneNodes.vspehereMachineTemplate }}
+      name: {{ .Values.cluster.name }}-{{ .Values.controlPlaneNodes.vspehereMachineTemplate }}
       namespace: {{ .Values.cluster.name }}
   replicas: {{ .Values.controlPlaneNodes.replicas }}
   version: v{{ .Values.controlPlaneNodes.k8sVersion }}
