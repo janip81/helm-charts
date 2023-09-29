@@ -2,7 +2,7 @@
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate
 metadata:
-  name: {{ .Values.cluster.name }}-md-0
+  name: {{ .Values.cluster.name }}-KubeadmConfig
   namespace: {{ .Values.cluster.name }}
 spec:
   template:
