@@ -48,10 +48,27 @@ machineDeployments:
     vspehereMachineTemplate: ubnt2204-4cpu-8g-128
     k8sVersion: 1.28.0
     replicas: 2
+    # Add additonal labels to nodes
+    labels:
+      node-role.kubernetes.io/worker: "true"
+
+    # Add annotations to your nodes for example if you have autoscaler
+    annotations:
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
+
   - name: md-1
     vspehereMachineTemplate: ubnt2204-4cpu-8g-128
     k8sVersion: 1.28.0
     replicas: 3
+    # Add additonal labels to nodes
+    labels:
+      node-role.kubernetes.io/worker: "true"
+
+    # Add annotations to your nodes for example if you have autoscaler
+    annotations:
+      cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
+      cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
 
 # Machine templates
