@@ -1,7 +1,6 @@
 # capi-cluster helm-chart
 Helm-chart for deploying cluster api workload clusters
 Work In Progress! Use at own risk. NOT FINISHED!
-Warning Forked charts here contain changes from the original.
 
 ## Adding this helm repository
 

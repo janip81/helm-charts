@@ -2,6 +2,16 @@
 
 Unofficial repository of helm charts created by me or forked and changed by me.
 
+Warning Forked charts here contain changes from the original.
+
+## Charts written by me
+
+    - [capi-cluster](https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster)
+
+## Forked and modified charts made by other
+
+    - [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler)
+
 ## Adding this helm repository
 
 To add the helm repository, run the following commands:
