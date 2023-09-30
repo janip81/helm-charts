@@ -49,11 +49,15 @@ machineDeployments:
     k8sVersion: 1.28.0
     replicas: 2
     # Add additonal labels to nodes
-    labels:
+    nodeLabels:
       node-role.kubernetes.io/worker: "true"
 
-    # Add annotations to your nodes for example if you have autoscaler
-    annotations:
+    nodeAnnotations:
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
+
+    # Add annotations to your machine deployments for example if you have autoscaler
+    machideDeploymentAnnotations:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
