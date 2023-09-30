@@ -1,3 +1,11 @@
+# DISCLAIMER
+
+This is my modifed fork of the autoscaler chart. I have changed to be able to have extra rules for cluster role! Please see the original gitrepo for the autoscaler.
+
+https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler
+
+README below is for the original helm-chart.
+
 # cluster-autoscaler
 
 Scales Kubernetes worker nodes within autoscaling groups.
