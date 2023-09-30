@@ -24,7 +24,7 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-        args: release --skip-unchanged
+          args: release --skip-unchanged
       
       - name: Publish Helm charts
         uses: janip81/helm-charts@main
