@@ -6,11 +6,11 @@ Warning! Forked charts here contain changes from the original to suit my needs.
 
 ## Charts written by me
 
-    [capi-cluster](https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster)
+  [capi-cluster](https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster)
 
 ## Forked and modified charts made by other
 
-    [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler)
+  [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler)
 
 ## Adding this helm repository
 
