@@ -5,6 +5,11 @@ kind: MachineDeployment
 metadata:
   labels:
     cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
+{{- if .labels }}{{ toYaml .labels | trim | nindent 4 }}
+{{- end -}}
+{{- if .annotations }}
+  annotations: {{ toYaml .annotations | nindent 4 }}
+{{- end }}
   name: {{ $.Values.cluster.name }}-{{ .name}}
   namespace: {{ $.Values.cluster.name }}
 spec:
