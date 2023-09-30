@@ -251,4 +251,22 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/capi-cluster-0.0.1.tgz
     version: 0.0.1
-generated: "2023-09-29T21:02:59.381570936Z"
+  cluster-autoscaler:
+  - apiVersion: v2
+    appVersion: 1.27.2
+    created: "2023-09-30T09:54:22.122551746Z"
+    description: Scales Kubernetes worker nodes within autoscaling groups.
+    digest: 684efc0e954090b528ad481ea9868849d7a403cc168fd211e346445bc4f09b5e
+    home: https://github.com/kubernetes/autoscaler
+    icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
+    maintainers:
+    - email: guyjtempleton@googlemail.com
+      name: gjtempleton
+    name: cluster-autoscaler
+    sources:
+    - https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/cluster-autoscaler-9.29.3/cluster-autoscaler-9.29.3.tgz
+    version: 9.29.3
+generated: "2023-09-30T09:54:22.122734149Z"
