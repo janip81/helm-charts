@@ -15,9 +15,7 @@ spec:
           admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
         extraVolumes:
           - name: admission-pss
-            hostPath:
-              path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-              type: File
+            hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
       controllerManager:
