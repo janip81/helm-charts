@@ -6,9 +6,15 @@ cluster:
   bgpPolicyVlan: "vlan201"
   skipKubeProxy: true
 
+  # podSecurityStandards. if enabled make sure deployments follow the rules
+  podSecurityStandard:
+    enabled: true
+    enforceLevel: "restricted"
+
 addons:
   # Set True if you want to use the built in CSI and CPI manifests
   # Manifests not updated to latest version so i suggest install CPI and CSI manually after cluster is up
+  # CPI is needed for cluster to go online so it is needed to be installed when first node is up
   install_vsphere_addon: false
 
 network:
@@ -66,11 +72,15 @@ machineDeployments:
     k8sVersion: 1.28.0
     replicas: 3
     # Add additonal labels to nodes
-    labels:
+    nodeLabels:
       node-role.kubernetes.io/worker: "true"
 
+    nodeAnnotations:
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
+      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
+
     # Add annotations to your nodes for example if you have autoscaler
-    annotations:
+    machideDeploymentAnnotations:
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
@@ -109,11 +119,12 @@ healthChecks:
     unhealthyTimeoutUnknown: 5m0s
     unhealthyTimeoutFalse: 5m0s
 
+  # This chart will build one healtcheck per MachineDeployment
   workernodes:
     name: worker-unhealthy-5m
 
     # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
-    maxUnhealthy: 100%
+    maxUnhealthy: 40%
 
     # nodeStartupTimeout determines how long a MachineHealthCheck should wait for
     # a Node to join the cluster, before considering a Machine unhealthy.

@@ -21,3 +21,10 @@ spec:
     kind: VSphereCluster
     name: {{ .Values.cluster.name }}
     namespace: {{ .Values.cluster.name }}
+  topology:
+    class: secure-cluster
+    variables:
+    - name: podSecurityStandard
+      value: 
+        enabled: {{ default .Values.cluster.podSecurityStandard.enabled false }}
+        enforce: {{ default "restricted" .Values.cluster.podSecurityStandard.enforceLevel }}
