@@ -9,7 +9,10 @@ cluster:
   # podSecurityStandards. if enabled make sure deployments follow the rules
   podSecurityStandard:
     enabled: true
-    enforceLevel: "restricted"
+    audit: restricted
+    enforce: baseline
+    warn: restricted
+
 
 addons:
   # Set True if you want to use the built in CSI and CPI manifests

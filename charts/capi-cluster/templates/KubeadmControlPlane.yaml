@@ -92,14 +92,14 @@ spec:
         plugins:
         - name: PodSecurity
           configuration:
-            apiVersion: pod-security.admission.config.k8s.io/v1{{ "{{ if semverCompare \"< v1.25\" .builtin.controlPlane.version }}" }}beta1{{ "{{ end }}" }}
+            apiVersion: pod-security.admission.config.k8s.io/v1{{ if semverCompare \"< v1.25\" .Values.controlPlaneNodes.k8sVersion }}beta1{{ "{{ end }}" }}
             kind: PodSecurityConfiguration
             defaults:
-              enforce: "{{ "{{ .podSecurity.enforce }}" }}"
+              enforce: "{{ .Values.cluster.podSecurityStandard.enforce }}"
               enforce-version: "latest"
-              audit: "{{ "{{ .podSecurity.audit }}" }}"
+              audit: "{{ .Values.cluster.podSecurityStandard.audit }}"
               audit-version: "latest"
-              warn: "{{ "{{ .podSecurity.warn }}" }}"
+              warn: "{{ .Values.cluster.podSecurityStandard.warn }}"
               warn-version: "latest"
             exemptions:
               usernames: []
