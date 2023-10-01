@@ -92,7 +92,7 @@ spec:
         plugins:
         - name: PodSecurity
           configuration:
-            apiVersion: pod-security.admission.config.k8s.io/v1{{ if semverCompare \"< v1.25\" .Values.controlPlaneNodes.k8sVersion }}beta1{{ end }}
+            apiVersion: pod-security.admission.config.k8s.io/v1{{ if semverCompare "< v1.25" .Values.controlPlaneNodes.k8sVersion }}beta1{{ end }}
             kind: PodSecurityConfiguration
             defaults:
               enforce: "{{ .Values.cluster.podSecurityStandard.enforce }}"
