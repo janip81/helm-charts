@@ -12,6 +12,10 @@ cluster:
     audit: restricted
     enforce: baseline
     warn: restricted
+    exemptions:
+      namespaces:
+        - kube-system
+        - cilium
 
 
 addons:

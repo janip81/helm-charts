@@ -104,7 +104,8 @@ spec:
             exemptions:
               usernames: []
               runtimeClasses: []
-              namespaces: [kube-system]
+              namespaces:
+                {{ .Values.cluster.podSecurityStandard.exemptions.namespaces }}
       owner: root:root
       path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
     initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
