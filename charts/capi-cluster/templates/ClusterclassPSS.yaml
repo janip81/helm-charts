@@ -3,52 +3,50 @@ kind: ClusterClass
 metadata:
   name: secure-cluster
 spec:
-  controlPlane:
-    ref:
-      patches:
-      - name: podSecurityStandard
-        description: "Adds an admission configuration for PodSecurity to the kube-apiserver."
-        definitions:
-        - selector:
-            apiVersion: controlplane.cluster.x-k8s.io/v1beta1
-            kind: KubeadmControlPlaneTemplate
-            matchResources:
-              controlPlane: true
-          jsonPatches:
-          - op: add
-            path: "/spec/template/spec/kubeadmConfigSpec/clusterConfiguration/apiServer/extraArgs"
-            value:
-              admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
-          - op: add
-            path: "/spec/template/spec/kubeadmConfigSpec/clusterConfiguration/apiServer/extraVolumes/-"
-            value:
-              name: admission-pss
-              hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-              mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-              readOnly: true
-              pathType: "File"
-          - op: add
-            path: "/spec/template/spec/kubeadmConfigSpec/files/-"
-            valueFrom:
-              template: |
-                content: |
-                  apiVersion: apiserver.config.k8s.io/v1
-                  kind: AdmissionConfiguration
-                  plugins:
-                  - name: PodSecurity
-                    configuration:
-                      apiVersion: pod-security.admission.config.k8s.io/v1{{ "{{ if semverCompare \"< v1.25\" .builtin.controlPlane.version }}" }}beta1{{ "{{ end }}" }}
-                      kind: PodSecurityConfiguration
-                      defaults:
-                        enforce: "{{ "{{ .podSecurity.enforce }}" }}"
-                        enforce-version: "latest"
-                        audit: "{{ "{{ .podSecurity.audit }}" }}"
-                        audit-version: "latest"
-                        warn: "{{ "{{ .podSecurity.warn }}" }}"
-                        warn-version: "latest"
-                      exemptions:
-                        usernames: []
-                        runtimeClasses: []
-                        namespaces: [kube-system]
-                path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-        enabledIf: "{{ "{{ .podSecurityStandard.enabled }}" }}"
+  patches:
+  - name: podSecurityStandard
+    description: "Adds an admission configuration for PodSecurity to the kube-apiserver."
+    definitions:
+    - selector:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: add
+        path: "/spec/template/spec/kubeadmConfigSpec/clusterConfiguration/apiServer/extraArgs"
+        value:
+          admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
+      - op: add
+        path: "/spec/template/spec/kubeadmConfigSpec/clusterConfiguration/apiServer/extraVolumes/-"
+        value:
+          name: admission-pss
+          hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+          mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+          readOnly: true
+          pathType: "File"
+      - op: add
+        path: "/spec/template/spec/kubeadmConfigSpec/files/-"
+        valueFrom:
+          template: |
+            content: |
+              apiVersion: apiserver.config.k8s.io/v1
+              kind: AdmissionConfiguration
+              plugins:
+              - name: PodSecurity
+                configuration:
+                  apiVersion: pod-security.admission.config.k8s.io/v1{{ "{{ if semverCompare \"< v1.25\" .builtin.controlPlane.version }}" }}beta1{{ "{{ end }}" }}
+                  kind: PodSecurityConfiguration
+                  defaults:
+                    enforce: "{{ "{{ .podSecurity.enforce }}" }}"
+                    enforce-version: "latest"
+                    audit: "{{ "{{ .podSecurity.audit }}" }}"
+                    audit-version: "latest"
+                    warn: "{{ "{{ .podSecurity.warn }}" }}"
+                    warn-version: "latest"
+                  exemptions:
+                    usernames: []
+                    runtimeClasses: []
+                    namespaces: [kube-system]
+            path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+    enabledIf: "{{ "{{ .podSecurityStandard.enabled }}" }}"
