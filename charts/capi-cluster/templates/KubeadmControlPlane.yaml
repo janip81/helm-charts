@@ -13,12 +13,12 @@ spec:
         extraArgs:
           cloud-provider: external
           admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
-      extraVolumes:
-        - name: admission-pss
-          hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-          mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
-          readOnly: true
-          pathType: "File"
+        extraVolumes:
+          - name: admission-pss
+            hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+            mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+            readOnly: true
+            pathType: "File"
       controllerManager:
         extraArgs:
           cloud-provider: external
@@ -105,6 +105,7 @@ spec:
               usernames: []
               runtimeClasses: []
               namespaces: [kube-system]
+      owner: root:root
       path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
     initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
       skipPhases:
