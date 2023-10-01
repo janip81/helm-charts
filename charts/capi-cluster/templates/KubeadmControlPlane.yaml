@@ -105,7 +105,7 @@ spec:
               usernames: []
               runtimeClasses: []
               namespaces:
-                {{ toYaml .Values.cluster.podSecurityStandard.exemptions.namespaces | indent 16 }}
+{{ toYaml .Values.cluster.podSecurityStandard.exemptions.namespaces | indent 16 }}
       owner: root:root
       path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
     initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
