@@ -3,10 +3,10 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: 0.0.5
-    created: "2023-10-01T14:10:24.983582058Z"
+    created: "2023-10-01T14:10:28.035281046Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
-    digest: e9692998c186eeade21d553cfdc20d3ffef6edbfbb9526bc67de92d16bd532b8
+    digest: eb81102da2e4dc2ae58e2028fffeb05c5bfefcc96d2a2fb2b2127ebb816e3166
     home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
     icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
     keywords:
@@ -22,7 +22,7 @@ entries:
     - https://github.com/kubernetes-sigs/cluster-api
     type: application
     urls:
-    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.31/capi-cluster-0.0.31.tgz
+    - https://janip81.github.io/helm-charts/capi-cluster-0.0.31.tgz
     version: 0.0.31
   - apiVersion: v2
     appVersion: 0.0.5
@@ -487,9 +487,9 @@ entries:
   cluster-autoscaler:
   - apiVersion: v2
     appVersion: 1.27.2
-    created: "2023-10-01T14:08:41.801538077Z"
+    created: "2023-10-01T14:10:28.037654478Z"
     description: Scales Kubernetes worker nodes within autoscaling groups.
-    digest: 2ba7b6bcb316a1e5cc478b0c815e5b2694d4914761cfab6ac519aa1b4927a1cc
+    digest: 1b0225c8c78b31b0157b28dc8ec050669ef8b935cc8a84818c97e8f0769477f8
     home: https://github.com/kubernetes/autoscaler
     icon: https://github.com/kubernetes/kubernetes/raw/master/logo/logo.png
     maintainers:
@@ -502,4 +502,4 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/cluster-autoscaler-9.29.3.tgz
     version: 9.29.3
-generated: "2023-10-01T14:10:24.983719365Z"
+generated: "2023-10-01T14:10:28.033764661Z"
