@@ -18,6 +18,7 @@ spec:
             hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
+            pathType: "File"
       controllerManager:
         extraArgs:
           cloud-provider: external
