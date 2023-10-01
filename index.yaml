@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: 0.0.5
+    created: "2023-10-01T13:12:20.431771054Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: b59a6eefa3b3e93609d042477a52ee586f7712ecfc4a0a5ca4b6e35befef7f73
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: Jani Pesonen
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.23/capi-cluster-0.0.23.tgz
+    version: 0.0.23
+  - apiVersion: v2
+    appVersion: 0.0.5
     created: "2023-10-01T12:54:42.965832394Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -295,4 +318,4 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/cluster-autoscaler-9.29.3.tgz
     version: 9.29.3
-generated: "2023-10-01T12:54:42.964268971Z"
+generated: "2023-10-01T13:12:20.432021953Z"
