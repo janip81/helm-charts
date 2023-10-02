@@ -13,7 +13,7 @@ spec:
   repoURL: {{ .chart.repo }}
   chartName: {{ .chart.name }}
   version: {{ .chart.version }}
-  namespace: {{ .relase.namespace }}
+  namespace: {{ .release.namespace }}
   options:
     waitForJobs: true
     wait: true
