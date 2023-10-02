@@ -10,8 +10,9 @@ metadata:
 spec:
   clusterSelector:
     matchLabels: {{ toYaml .name | nindent 6 }}: enabled
-  repoURL: {{ .name }}
+  repoURL: {{ .chart.repo }}
   chartName: {{ .chart.name }}
+  version: {{ .chart.version }}
   options:
     waitForJobs: true
     wait: true
