@@ -5,8 +5,8 @@ metadata:
   labels:
     cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
     {{- range $addonName, $addonConfig := .Values.addons }}
-    {{- if $addonConfig.enabled }}
-    {{ $addonName }}: enabled
+    {{- if and $addonConfig.enabled $addonConfig.name }}
+    {{ $addonConfig.name }}: enabled
     {{- end }}
     {{- end }}
   name: {{ .Values.cluster.name }}
