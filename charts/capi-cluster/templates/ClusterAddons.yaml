@@ -17,7 +17,6 @@ spec:
   options:
     waitForJobs: true
     wait: true
-    timeout: 5m
     install:
       createNamespace: true
   valuesTemplate: | {{ toYaml .release.values | nindent 4 }}
