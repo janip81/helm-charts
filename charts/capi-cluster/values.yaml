@@ -7,6 +7,8 @@ cluster:
   skipKubeProxy: true
 
   # podSecurityStandards. if enabled make sure deployments follow the rules
+  # Read about different levels
+  # https://kubernetes.io/docs/concepts/security/pod-security-standards/
   podSecurityStandard:
     enabled: true
     audit: restricted
@@ -16,13 +18,6 @@ cluster:
       namespaces:
         - kube-system
         - cilium
-
-
-addons:
-  # Set True if you want to use the built in CSI and CPI manifests
-  # Manifests not updated to latest version so i suggest install CPI and CSI manually after cluster is up
-  # CPI is needed for cluster to go online so it is needed to be installed when first node is up
-  install_vsphere_addon: false
 
 network:
   prefix: "24"
@@ -146,3 +141,31 @@ healthChecks:
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
     unhealthyTimeoutUnknown: 5m0s
     unhealthyTimeoutFalse: 5m0s
+
+addons:
+  # Addons are installed via the helm provider for clusterapi
+  vsphereCPI:
+    enabled: false
+    name: vsphere-cpi
+    chart:
+      repo: 
+      name: 
+      version: 
+    release:
+      namespace:
+      values: {}
+  metricsServer:
+    enabled: True
+    name: metrics-server
+    chart:
+      repo: https://kubernetes-sigs.github.io/metrics-server
+      name: metrics-server
+      version: 3.8.3
+    release:
+      namespace: kube-system
+      values:
+        image:
+          repository: registry.k8s.io/metrics-server/metrics-server
+          # Overrides the image tag whose default is v{{ .Chart.AppVersion }}
+          tag: ""
+          pullPolicy: IfNotPresent

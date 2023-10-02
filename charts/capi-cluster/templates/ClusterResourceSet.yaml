@@ -10,8 +10,8 @@ spec:
   clusterSelector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
-  {{ include "ClusterResourceSet.AddonsFalse" .Values.addons }}
-{{ if (default .Values.addons.install_vsphere_addon false)}}
+{{ if (default .Values.addons.vsphereCPI.enabled false)}}
+  resources:
   - kind: Secret
     name: vsphere-csi-controller
   - kind: ConfigMap

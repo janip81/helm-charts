@@ -4,6 +4,11 @@ kind: Cluster
 metadata:
   labels:
     cluster.x-k8s.io/cluster-name: {{ .Values.cluster.name }}
+    {{- range $addonName, $addonConfig := .Values.addons }}
+    {{- if $addonConfig.enabled }}
+    {{ $addonName }}: enabled
+    {{- end }}
+    {{- end }}
   name: {{ .Values.cluster.name }}
   namespace: {{ .Values.cluster.name }}
 spec:

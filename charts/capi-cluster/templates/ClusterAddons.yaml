@@ -1,0 +1,23 @@
+{{- range .Values.addons }}
+{{ if .enabled }}
+apiVersion: addons.cluster.x-k8s.io/v1alpha1
+kind: HelmChartProxy
+metadata:
+  name: {{ .name }}
+  annotations:
+    # Tell Argo to ignore the non-controller owner references for this object
+    argocd.argoproj.io/sync-options: "ControllerReferencesOnly=true"
+spec:
+  clusterSelector:
+    matchLabels: {{ toYaml .name | nindent 6 }}: enabled
+  repoURL: {{ .name }}
+  chartName: {{ .chart.name }}
+  options:
+    waitForJobs: true
+    wait: true
+    timeout: 5m
+    install:
+      createNamespace: true
+  valuesTemplate: | {{ toYaml .release.values | nindent 4 }}
+{{ end }}
+{{- end }}

@@ -40,3 +40,5 @@ To uninstall the chart:
 - [Kubernetes](https://kubernetes.io/)
 - [Helm 3.1.0](https://helm.sh)
 - [ClusterAPI](https://cluster-api.sigs.k8s.io/)
+- [cluster-api-addon-provider-helm](https://github.com/kubernetes-sigs/cluster-api-addon-provider-helm)
+- [cluster-api-provider-vsphere](https://github.com/kubernetes-sigs/cluster-api-provider-vsphere)
