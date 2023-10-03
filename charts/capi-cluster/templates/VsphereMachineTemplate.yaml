@@ -8,11 +8,11 @@ metadata:
 spec:
   template:
     spec:
-      cloneMode: linkedClone
+      cloneMode: {{ .cloneMode }}
       datacenter: {{ $.Values.vsphere.datacenter }}
       datastore: {{ .vcenterDatastore }}
       diskGiB: {{ .diskSize }}
-      folder: ""
+      folder: "{{ .vcennterFolder }}"
       memoryMiB: {{ .memory }}
       network:
         devices:

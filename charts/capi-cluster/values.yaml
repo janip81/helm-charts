@@ -92,15 +92,21 @@ machineTemplates:
   - name: ubnt2204-2cpu-4g-128
     cpu: 2
     memory: 4096
+    # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
+    cloneMode: FullClone
     diskSize: 25
     isoTemplate: ubuntu-2204-kube-v1.28.0
     vcenterDatastore: SSD01
+    vcenterFolder: 
   - name: ubnt2204-4cpu-8g-128
     cpu: 4 
     memory: 8192
+    # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
+    cloneMode: FullClone
     diskSize: 35
     isoTemplate: ubuntu-2204-kube-v1.28.0
     vcenterDatastore: SSD01
+    vcenterFolder: 
 
 kubeVIP:
   image:
