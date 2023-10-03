@@ -11,7 +11,7 @@ spec:
     clusterConfiguration:
       apiServer:
         extraArgs:
-          cloud-provider: external
+          cloud-provider: external {{ if .Values.cluster.podSecurityStandard.enabled }}
           admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
         extraVolumes:
           - name: admission-pss
@@ -19,6 +19,7 @@ spec:
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
             pathType: "File"
+        {{ end }}
       controllerManager:
         extraArgs:
           cloud-provider: external
@@ -85,7 +86,7 @@ spec:
             name: kubeconfig
         status: {}
       owner: root:root
-      path: /etc/kubernetes/manifests/kube-vip.yaml
+      path: /etc/kubernetes/manifests/kube-vip.yaml {{ if .Values.cluster.podSecurityStandard.enabled }}
     - content: |
         apiVersion: apiserver.config.k8s.io/v1
         kind: AdmissionConfiguration
@@ -107,7 +108,7 @@ spec:
               namespaces:
 {{ toYaml .Values.cluster.podSecurityStandard.exemptions.namespaces | indent 16 }}
       owner: root:root
-      path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+      path: /etc/kubernetes/kube-apiserver-admission-pss.yaml {{ end }}
     initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
       skipPhases:
         - addon/kube-proxy {{ end }}
