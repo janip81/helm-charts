@@ -22,12 +22,12 @@ spec:
             name: {{ $.Values.cluster.name }}-ip-pool
           nameservers:
           - {{ $.Values.network.nameserver }}
-          networkName: {{ $.Values.vsphere.network }}
+          networkName: {{ .network }}
       numCPUs: {{ .cpu }}
       os: Linux
-      resourcePool: {{ $.Values.vsphere.resourcePool }}
+      resourcePool: {{ .resourcePool }}
       server: {{ $.Values.vsphere.serverIP }}
-      storagePolicyName: "{{ $.Values.vsphere.storagePolicyName }}"
+      storagePolicyName: "{{ .storagePolicyName }}"
       template: {{ .isoTemplate }}
       thumbprint: {{ $.Values.vsphere.thumbprint }}
 {{- end }}

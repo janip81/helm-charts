@@ -6,14 +6,19 @@ cluster:
   bgpPolicyVlan: "vlan201"
   skipKubeProxy: true
 
-  # podSecurityStandards. if enabled make sure deployments follow the rules
   # Read about different levels
   # https://kubernetes.io/docs/concepts/security/pod-security-standards/
+  # podSecurityStandards. if enabled on cluster level make sure deployments follow the rules
   podSecurityStandard:
+    # Enable pss default rules on cluster level (false will only enforce on ns with correct labels)
     enabled: true
-    audit: restricted
+    # Enforce level (privileged / baseline / restricted)
     enforce: baseline
+    # which baseline to audit
+    audit: restricted
+    # Baseline to warn
     warn: restricted
+    # Exemptions (do not remove kube-system)
     exemptions:
       namespaces:
         - kube-system
@@ -40,8 +45,6 @@ vsphere:
   username: username
   password: password
   thumbprint: thumbprint
-  network: vcenterNetwork
-  storagePolicyName: ""
   labels:
     region: region
     zone: zone
@@ -98,6 +101,8 @@ machineTemplates:
     isoTemplate: ubuntu-2204-kube-v1.28.0
     vcenterDatastore: SSD01
     vcenterFolder: 
+    network: vcenterNetwork
+    storagePolicyName: ""
   - name: ubnt2204-4cpu-8g-128
     cpu: 4 
     memory: 8192
@@ -106,7 +111,9 @@ machineTemplates:
     diskSize: 35
     isoTemplate: ubuntu-2204-kube-v1.28.0
     vcenterDatastore: SSD01
-    vcenterFolder: 
+    vcenterFolder:
+    network: vcenterNetwork
+    storagePolicyName: ""
 
 kubeVIP:
   image:
