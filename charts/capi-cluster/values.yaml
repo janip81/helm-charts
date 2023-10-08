@@ -6,23 +6,22 @@ cluster:
   bgpPolicyVlan: "vlan201"
   skipKubeProxy: true
 
-  # Read about different levels
-  # https://kubernetes.io/docs/concepts/security/pod-security-standards/
-  # podSecurityStandards. if enabled on cluster level make sure deployments follow the rules
-  podSecurityStandard:
-    # Enable pss default rules on cluster level (false will only enforce on ns with correct labels)
-    enabled: true
-    # Enforce level (privileged / baseline / restricted)
-    enforce: baseline
-    # which baseline to audit
-    audit: restricted
-    # Baseline to warn
-    warn: restricted
-    # Exemptions (do not remove kube-system)
-    exemptions:
-      namespaces:
-        - kube-system
-        - cilium
+# Read about different levels
+# https://kubernetes.io/docs/concepts/security/pod-security-standards/
+# podSecurityStandards. if enabled on cluster level make sure deployments follow the rules
+podSecurityStandard:
+  # Enable pss default rules on cluster level (false will only enforce on ns with correct labels)
+  enabled: true
+  # Enforce level (privileged / baseline / restricted)
+  enforce: baseline
+  # which baseline to audit
+  audit: restricted
+  # Baseline to warn
+  warn: restricted
+  # Exemptions (do not remove kube-system)
+  exemptions:
+    namespaces:
+      - kube-system # Do Not Remove this, kube-system needs exception!!
 
 network:
   prefix: "24"
