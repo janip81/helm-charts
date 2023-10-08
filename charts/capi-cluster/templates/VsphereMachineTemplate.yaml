@@ -12,7 +12,7 @@ spec:
       datacenter: {{ $.Values.vsphere.datacenter }}
       datastore: {{ .vcenterDatastore }}
       diskGiB: {{ .diskSize }}
-      folder: "{{ .vcennterFolder }}"
+      folder: "{{ .vcenterFolder }}"
       memoryMiB: {{ .memory }}
       network:
         devices:
