@@ -1,5 +1,6 @@
 {{- range .Values.addons }}
 {{ if .enabled }}
+---
 apiVersion: addons.cluster.x-k8s.io/v1alpha1
 kind: HelmChartProxy
 metadata:
