@@ -1,0 +1,69 @@
+{{- if and (ne .Values.httpRoute.internalGateway "") .Values.httpRoute.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: home-assistant
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
+spec:
+  parentRefs:
+    - name: {{ .Values.httpRoute.internalGateway }}
+      namespace: cilium
+      group: gateway.networking.k8s.io	
+      kind: Gateway	
+  hostnames:
+  - {{ .Values.httpRoute.hostname }}
+  rules:
+  - backendRefs:
+    - group: ''
+      kind: Service
+      name: home-assistant
+      port: {{ (first .Values.service.ports).port }}
+{{- end }}
+# {{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
+# ---
+# apiVersion: gateway.networking.k8s.io/v1beta1
+# kind: HTTPRoute
+# metadata:
+#   name: home-assistant-public
+#   namespace: cilium
+#   labels:
+#     app.kubernetes.io/name: home-assistant
+#     app.kubernetes.io/instance: home-assistant
+# spec:
+#   parentRefs:
+#   - name: {{ .Values.httpRoute.externalGateway }}
+#   hostnames:
+#   - {{ .Values.httpRoute.hostname }}
+#   rules:
+#   - backendRefs:
+#     - kind: Service
+#       name: home-assistant
+#       port: {{ (first .Values.service.ports).port }}
+# {{- end }}
+{{- if .Values.addons.codeserver.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: hass-code-server
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
+spec:
+  parentRefs:
+    - name: {{ .Values.addons.codeserver.httpRoute.gateway }}
+      namespace: cilium
+      group: gateway.networking.k8s.io	
+      kind: Gateway	
+  hostnames:
+  - {{ .Values.addons.codeserver.httpRoute.hostname }}
+  rules:
+  - backendRefs:
+    - group: ''
+      kind: Service
+      name: hass-code-server
+      port: {{ (first .Values.addons.codeserver.service.ports).port }}
+{{- end }}

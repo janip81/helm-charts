@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/name: home-assistant
+  name: home-assistant
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: home-assistant
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: home-assistant
+        app.kubernetes.io/instance: home-assistant
+    spec:
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      volumes:
+        - name: ha-config-root
+          persistentVolumeClaim:
+            claimName: home-assistant-config-root  
+      containers:
+      - name: home-assistant
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        securityContext: {{- toYaml .Values.securityContext | nindent 10 }}
+        ports:
+          - name: http
+            containerPort: 8123
+            protocol: TCP
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe: {{- toYaml .Values.probes.liveness | nindent 10 }}
+        readinessProbe: {{- toYaml .Values.probes.readiness | nindent 10 }}
+        startupProbe: {{- toYaml .Values.probes.startup | nindent 10 }}
+        volumeMounts:
+          - name: ha-config-root
+            mountPath: /config
+{{- if .Values.addons.codeserver.enabled }}
+      - name: code-server
+        image: {{ .Values.addons.codeserver.image.repository }}:{{ .Values.addons.codeserver.image.tag }}
+        imagePullPolicy: {{ .Values.addons.codeserver.image.imagePullPolicy }}
+        securityContext: {{- toYaml .Values.addons.codeserver.securityContext | nindent 10 }}          
+        ports:
+          - name: codeserver
+            containerPort: 12321
+            protocol: TCP            
+        workingDir: "/config"
+        args: {{- toYaml .Values.addons.codeserver.args | nindent 8 }}
+        volumeMounts:
+          - name: ha-config-root
+            mountPath: /config
+{{- end }}

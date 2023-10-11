@@ -1,0 +1,17 @@
+{{- if .Values.persistence.enabled }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: home-assistant-config-root
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app: home-assistant
+spec:
+  storageClassName: {{ .Values.persistence.config.storageClass }}
+  accessModes:
+    - {{ .Values.persistence.config.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.config.size }}
+{{- end }}

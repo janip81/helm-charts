@@ -1,0 +1,173 @@
+image:
+  repository: ghcr.io/home-assistant/home-assistant
+  tag: 2023.10.1
+  imagePullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8123
+    targetPort: http
+    protocol: TCP
+
+
+podSecurityContext:
+  # runAsUser: 1000
+  # fsGroup: 2000
+  # runAsNonRoot: true
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+securityContext:
+  readOnlyRootFilesystem: false
+  allowPrivilegesEscalation: false
+  capabilities:
+    # drop:
+    # - ALL
+    # add:
+    # - CAP_NET_RAW
+    # - CAP_NET_BIND_SERVIC
+
+httpRoute:
+  enabled: false
+  hostname: hass.domain.com
+  # Leave externalGateway empty to not create it.
+  externalGateway:
+  # Leave internalGateway empty to not create it.
+  internalGateway:
+
+# Ingress not yet implemented
+ingress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: "haproxy"
+    haproxy.org/forwarded-for: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  ingressClassName: "nginx-example"
+  hosts:
+    name: "hass.domain.com"
+    path: /
+    pathType: Prefix
+    backend:
+      service:
+        name: test
+        portnumber: 8123
+  tls:
+    tlsHosts: hass.domain.com
+    tlsSecret: testsecret-tls
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    scrapeTimeout: 
+    bearerTokenFile: 
+    bearerTokenSecret:
+      name: "prometheus"
+      key: "azt2FBZ5GBshXpYYZ7_Vku6qSwhZeRP8iyQWBNfWaIU"
+    interval: 1m
+    labels: {}
+
+
+probes:
+  liveness:
+    tcpSocket:
+      port: 8123
+    #initialDelaySeconds: 0
+    failureThreshold: 3
+    timeoutSeconds: 1
+    periodSeconds: 10
+  readiness:
+    tcpSocket:
+      port: 8123
+    #initialDelaySeconds: 0
+    failureThreshold: 3
+    timeoutSeconds: 1
+    periodSeconds: 10
+  startup:
+    tcpSocket:
+      port: 8123
+    #initialDelaySeconds: 0
+    failureThreshold: 30
+    timeoutSeconds: 1
+    periodSeconds: 5
+
+persistence:
+  enabled: true
+  config:
+    storageClass: "storageclass"
+    accessMode: ReadWriteOnce
+    size: "10Gi"
+
+resources:
+  limits:
+    memory: 1024Mi
+    cpu: 500m
+  requests:
+    cpu: 20m
+    memory: 512Mi
+
+addons:
+  codeserver:
+    enabled: true
+    image:
+      repository: codercom/code-server
+      tag: 4.7.1
+      imagePullPolicy: IfNotPresent
+    workingDir: "/config"
+    args:
+    - --auth
+    - "none"
+    - --user-data-dir
+    - "/config/.vscode"
+    - --extensions-dir
+    - "/config/.vscode"
+    - '--port'
+    - '12321'
+    - /config
+
+    securityContext:
+      allowPrivilegesEscalation: false
+      capabilities:
+        drop:
+        - all
+      readOnlyRootFilesystem: true
+
+    service:
+      ports:
+      - name: codeserver
+        protocol: TCP
+        port: 12321
+        targetPort: codeserver
+    
+    resources: {}
+
+    httpRoute:
+      enabled: true
+      hostname: vshass.domain.com
+      # Dont expose vscode on a public gateway
+      gateway: internal-shared
+
+    ingress:
+      enabled: false
+      ingressClassName: nginx-example
+      annotations:
+        kubernetes.io/ingress.class: "haproxy"
+      rules:
+      - host: hass.domain.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: test
+                port:
+                  number: 12321
+      tls:
+      - hosts:
+        - vshass.domain.com
+        secretName: testsecret-tls
+    volumeMounts:
+    - name: config
+      mountPath: /config
