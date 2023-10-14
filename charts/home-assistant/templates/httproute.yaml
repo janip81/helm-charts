@@ -14,7 +14,7 @@ spec:
       namespace: cilium
       kind: Gateway	
   hostnames:
-  - {{ .Values.httpRoute.hostname }}
+    - {{ .Values.httpRoute.hostname }}
   rules:
     - backendRefs:
       - group: ''
@@ -59,7 +59,7 @@ spec:
       namespace: cilium
       kind: Gateway	
   hostnames:
-  - {{ .Values.addons.codeserver.httpRoute.hostname }}
+    - {{ .Values.addons.codeserver.httpRoute.hostname }}
   rules:
     - backendRefs:
       - group: ''
