@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/instance: home-assistant
 spec:
   parentRefs:
-    - group: gateway.networking.k8s.io	
+      group: gateway.networking.k8s.io	
       name: {{ .Values.httpRoute.internalGateway }}
       namespace: cilium
       kind: Gateway	
@@ -54,7 +54,7 @@ metadata:
     app.kubernetes.io/instance: home-assistant
 spec:
   parentRefs:
-    - group: gateway.networking.k8s.io	
+      group: gateway.networking.k8s.io	
       name: {{ .Values.addons.codeserver.httpRoute.gateway }}
       namespace: cilium
       kind: Gateway	
