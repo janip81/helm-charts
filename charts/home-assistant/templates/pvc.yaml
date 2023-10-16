@@ -7,6 +7,8 @@ metadata:
   labels:
     app.kubernetes.io/name: home-assistant
     app: home-assistant
+  annotations:
+    velero.io/csi-volumesnapshot-class: "csi-vsphere-vsc"
 spec:
   storageClassName: {{ .Values.persistence.config.storageClass }}
   accessModes:
