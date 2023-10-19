@@ -5,12 +5,7 @@ image:
 
 service:
   type: ClusterIP
-  ports:
-  - name: http
-    port: 8123
-    targetPort: http
-    protocol: TCP
-
+  port: 8123
 
 podSecurityContext:
   # runAsUser: 1000
@@ -53,9 +48,10 @@ ingress:
       service:
         name: test
         portnumber: 8123
-  tls:
-    tlsHosts: hass.domain.com
-    tlsSecret: testsecret-tls
+  tls: []
+#    - hosts:
+#        - hass.domain.com
+#    tlsSecret: testsecret-tls
 
 metrics:
   serviceMonitor:
@@ -134,11 +130,8 @@ addons:
       readOnlyRootFilesystem: true
 
     service:
-      ports:
-      - name: codeserver
-        protocol: TCP
+        type: ClusterIP
         port: 12321
-        targetPort: codeserver
     
     resources: {}
 
@@ -164,10 +157,10 @@ addons:
                 name: test
                 port:
                   number: 12321
-      tls:
-      - hosts:
-        - vshass.domain.com
-        secretName: testsecret-tls
+      tls: []
+#       - hosts:
+#         - hass.domain.com
+#         tlsSecret: testsecret-tls
     volumeMounts:
     - name: config
       mountPath: /config

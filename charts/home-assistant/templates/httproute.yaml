@@ -12,7 +12,7 @@ spec:
       group: gateway.networking.k8s.io	
       name: {{ .Values.httpRoute.internalGateway }}
       namespace: cilium
-      kind: Gateway	
+      kind: Gateway
   hostnames:
     - {{ .Values.httpRoute.hostname }}
   rules:

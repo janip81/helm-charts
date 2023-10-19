@@ -11,7 +11,10 @@ spec:
     app.kubernetes.io/name: home-assistant
   type: {{ .Values.service.type }}
   ports:
-  {{- toYaml .Values.service.ports | nindent 2 }}
+    - port: {{ .Values.service.port }}
+      name: http
+      targetPort: http
+      protocol: TCP
 {{- if .Values.addons.codeserver.enabled }}
 ---
 apiVersion: v1
@@ -24,6 +27,10 @@ metadata:
 spec:
   selector:
     app.kubernetes.io/name: home-assistant
+  type: 
   ports:
-    {{- toYaml .Values.addons.codeserver.service.ports | nindent 4 }}
+    - port: {{ .Values.addons.codeserver.service.port }}
+      name: http
+      targetPort: http
+      protocol: TCP
 {{- end }}
