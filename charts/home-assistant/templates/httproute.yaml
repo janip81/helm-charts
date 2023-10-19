@@ -20,7 +20,7 @@ spec:
       - group: ''
         kind: Service
         name: home-assistant
-        port: {{ (first .Values.service.ports).port }}
+        port: {{ .Values.service.port }}
 {{- end }}
 # {{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
 # ---
@@ -65,5 +65,5 @@ spec:
       - group: ''
         kind: Service
         name: hass-code-server
-        port: {{ (first .Values.addons.codeserver.service.ports).port }}
+        port: {{ .Values.addons.codeserver.service.por }}
 {{- end }}
