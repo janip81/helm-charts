@@ -122,7 +122,6 @@ addons:
     - /config
 
     securityContext:
-      allowPrivilegesEscalation: false
       capabilities:
         drop:
         - all
