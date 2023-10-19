@@ -27,27 +27,35 @@ spec:
           type: PathPrefix	
           value: /
 {{- end }}
-# {{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
-# ---
-# apiVersion: gateway.networking.k8s.io/v1beta1
-# kind: HTTPRoute
-# metadata:
-#   name: home-assistant-public
-#   namespace: cilium
-#   labels:
-#     app.kubernetes.io/name: home-assistant
-#     app.kubernetes.io/instance: home-assistant
-# spec:
-#   parentRefs:
-#   - name: {{ .Values.httpRoute.externalGateway }}
-#   hostnames:
-#   - {{ .Values.httpRoute.hostname }}
-#   rules:
-#   - backendRefs:
-#     - kind: Service
-#       name: home-assistant
-#       port: {{ (first .Values.service.ports).port }}
-# {{- end }}
+{{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: home-assistant
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io	
+    name: {{ .Values.httpRoute.externalGateway }}
+    namespace: cilium
+    kind: Gateway
+  hostnames:
+    - {{ .Values.httpRoute.hostname }}
+  rules:
+  - backendRefs:
+    - group: ''
+      kind: Service
+      name: home-assistant
+      port: {{ .Values.service.port }}
+      weight: 1	
+    matches:	
+      - path:	
+          type: PathPrefix	
+          value: /
+{{- end }}
 {{- if .Values.addons.codeserver.enabled }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
