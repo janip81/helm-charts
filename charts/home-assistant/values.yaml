@@ -27,7 +27,7 @@ httpRoute:
   enabled: false
   hostname: hass.domain.com
   # Leave externalGateway empty to not create it.
-  externalGateway:
+  #externalGateway:
   # Leave internalGateway empty to not create it.
   internalGateway:
 
