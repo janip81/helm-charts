@@ -16,7 +16,6 @@ podSecurityContext:
 
 securityContext:
   readOnlyRootFilesystem: false
-  allowPrivilegesEscalation: false
   capabilities:
     # drop:
     # - ALL
