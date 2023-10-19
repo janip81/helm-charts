@@ -21,6 +21,11 @@ spec:
       kind: Service
       name: home-assistant
       port: {{ .Values.service.port }}
+      weight: 1	
+    matches:	
+      - path:	
+          type: PathPrefix	
+          value: /
 {{- end }}
 # {{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
 # ---
@@ -66,4 +71,9 @@ spec:
       kind: Service
       name: hass-code-server
       port: {{ .Values.addons.codeserver.service.por }}
+      weight: 1	
+    matches:	
+      - path:	
+          type: PathPrefix	
+          value: /
 {{- end }}
