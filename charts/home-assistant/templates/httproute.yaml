@@ -9,18 +9,18 @@ metadata:
     app.kubernetes.io/instance: home-assistant
 spec:
   parentRefs:
-      group: gateway.networking.k8s.io	
-      name: {{ .Values.httpRoute.internalGateway }}
-      namespace: cilium
-      kind: Gateway
+  - group: gateway.networking.k8s.io	
+    name: {{ .Values.httpRoute.internalGateway }}
+    namespace: cilium
+    kind: Gateway
   hostnames:
     - {{ .Values.httpRoute.hostname }}
   rules:
-    - backendRefs:
-      - group: ''
-        kind: Service
-        name: home-assistant
-        port: {{ .Values.service.port }}
+  - backendRefs:
+    - group: ''
+      kind: Service
+      name: home-assistant
+      port: {{ .Values.service.port }}
 {{- end }}
 # {{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
 # ---
@@ -54,16 +54,16 @@ metadata:
     app.kubernetes.io/instance: home-assistant
 spec:
   parentRefs:
-      group: gateway.networking.k8s.io	
-      name: {{ .Values.addons.codeserver.httpRoute.gateway }}
-      namespace: cilium
-      kind: Gateway	
+  - group: gateway.networking.k8s.io	
+    name: {{ .Values.addons.codeserver.httpRoute.gateway }}
+    namespace: cilium
+    kind: Gateway	
   hostnames:
     - {{ .Values.addons.codeserver.httpRoute.hostname }}
   rules:
-    - backendRefs:
-      - group: ''
-        kind: Service
-        name: hass-code-server
-        port: {{ .Values.addons.codeserver.service.por }}
+  - backendRefs:
+    - group: ''
+      kind: Service
+      name: hass-code-server
+      port: {{ .Values.addons.codeserver.service.por }}
 {{- end }}
