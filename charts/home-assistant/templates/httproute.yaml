@@ -78,7 +78,7 @@ spec:
     - group: ''
       kind: Service
       name: hass-code-server
-      port: {{ .Values.addons.codeserver.service.por }}
+      port: {{ .Values.addons.codeserver.service.port }}
       weight: 1	
     matches:	
       - path:	
