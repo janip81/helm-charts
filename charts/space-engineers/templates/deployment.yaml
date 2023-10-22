@@ -112,8 +112,8 @@ spec:
         defaultMode: 420
         name: space-engineers
         items:
-          - key: nginx.conf
-            path: nginx.conf
+          - key: SpaceEngineers-Dedicated.cfg
+            path: SpaceEngineers-Dedicated.cfg
       - name: appdata
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
