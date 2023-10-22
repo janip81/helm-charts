@@ -4,11 +4,12 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: home-assistant
-    app: home-assistant
+    app.kubernetes.io/instance: home-assistant
   name: home-assistant
 spec:
   selector:
     app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
@@ -22,11 +23,12 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: home-assistant
-    app: home-assistant
+    app.kubernetes.io/instance: home-assistant
   name: hass-code-server
 spec:
   selector:
     app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
   type: 
   ports:
     - port: {{ .Values.addons.codeserver.service.port }}
