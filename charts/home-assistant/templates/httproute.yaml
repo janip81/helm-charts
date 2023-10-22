@@ -20,7 +20,7 @@ spec:
     - group: ''
       kind: Service
       name: home-assistant
-      port: {{ .Values.service.port }}
+      port: 80
       weight: 1	
     matches:	
       - path:	
@@ -49,7 +49,7 @@ spec:
     - group: ''
       kind: Service
       name: home-assistant
-      port: {{ .Values.service.port }}
+      port: 80
       weight: 1	
     matches:	
       - path:	
@@ -78,7 +78,7 @@ spec:
     - group: ''
       kind: Service
       name: hass-code-server
-      port: {{ .Values.addons.codeserver.service.port }}
+      port: 80
       weight: 1	
     matches:	
       - path:	
