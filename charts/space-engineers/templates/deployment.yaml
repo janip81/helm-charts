@@ -53,6 +53,9 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
+          - mountPath: /appdata/space-engneers/SpaceEngineers-Dedicated.cfg
+            name: space-engineers
+            subPath: SpaceEngineers-Dedicated.cfg
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
