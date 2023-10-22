@@ -45,7 +45,7 @@ spec:
                 echo "World not found, initalizing empty star system..."; 
                 wget https://github.com/mmmaxwwwell/space-engineers-dedicated-docker-linux/blob/main/star-system.zip?raw=true; 
                 unzip star-system.zip?raw=true -d /appdata/space-engineers; 
-                mv /appdata/space-engneers/Dedicated.cfg /appdata/space-engineers/SpaceEngineersDedicated/SpaceEngineers-Dedicated.cfg;
+                mv /appdata/space-engneers/SpaceEngineers-Dedicated.cfg /appdata/space-engineers/SpaceEngineersDedicated/;
                 chmod -R 777 /appdata;
                 echo "Done"; 
               fi;
@@ -53,9 +53,6 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
-          - mountPath: /appdata/space-engineers/Dedicated.cfg
-            name: space-engineers
-            subPath: Dedicated.cfg
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
