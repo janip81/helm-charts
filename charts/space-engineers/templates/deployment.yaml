@@ -110,6 +110,29 @@ spec:
           # - mountPath: /appdata/space-engineers/
           #   name: space-engineers
           #   #subPath: SpaceEngineers-Dedicated.cfg
+        - name: code-server
+          image: codercom/code-server:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+          ports:
+            - name: codeserver
+              containerPort: 12321
+              protocol: TCP            
+          workingDir: "/appdata"
+          args:
+          - --auth
+          - "none"
+          - --user-data-dir
+          - "/appdata/.vscode"
+          - --extensions-dir
+          - "/appdata/.vscode"
+          - '--port'
+          - '12321'
+          - /appdata
+          volumeMounts:
+            - name: appdata
+              mountPath: /appdata
       volumes:
       # - configMap:
       #   name: space-engineers
