@@ -104,7 +104,7 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
-          - mountPath: /appdata/space-engineers/SpaceEngineersDedicated
+          - mountPath: /appdata/space-engineers/
             name: space-engineers
             #subPath: SpaceEngineers-Dedicated.cfg
       volumes:
