@@ -12,9 +12,9 @@ spec:
     app.kubernetes.io/instance: home-assistant
   type: {{ .Values.service.type }}
   ports:
-    - port: http
+    - port: 80
       name: http
-      targetPort: "{{ .Values.service.port }}"
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
 {{- if .Values.addons.codeserver.enabled }}
 ---
@@ -31,8 +31,8 @@ spec:
     app.kubernetes.io/instance: home-assistant
   type: 
   ports:
-    - port: http
+    - port: 80
       name: http
-      targetPort: "{{ .Values.addons.codeserver.service.port }}"
+      targetPort: {{ .Values.addons.codeserver.service.port }}
       protocol: TCP
 {{- end }}
