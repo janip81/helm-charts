@@ -33,15 +33,16 @@ spec:
           command: ['bash', '-c']
           args: 
             - echo "Installing required packages";
-              apt-get update && apt-get install wget unzip -y;
-              echo "Ensuring Directory Structure is Correct";
-              mkdir -p /appdata/space-engineers/SpaceEngineersDedicated;
-              mkdir -p /appdata/space-engineers/steamcmd; 
-              mkdir -p /appdata/space-engineers/World; 
-              mkdir -p /appdata/space-engineers/Plugins;
-              echo "Directory Check Complete";
-              echo "Checking if World exists";
               if [ ! -f /appdata/space-engineers/World/*.sbc ]; then 
+                apt-get update && apt-get install wget unzip -y;
+                echo "Ensuring Directory Structure is Correct";
+                mkdir -p /appdata/space-engineers/SpaceEngineersDedicated;
+                mkdir -p /appdata/space-engineers/steamcmd; 
+                mkdir -p /appdata/space-engineers/World; 
+                mkdir -p /appdata/space-engineers/Plugins;
+                echo "Directory Check Complete";
+                echo "Checking if World exists";
+                echo "Tyke"
                 echo "World not found, initalizing empty star system..."; 
                 wget https://github.com/mmmaxwwwell/space-engineers-dedicated-docker-linux/blob/main/star-system.zip?raw=true; 
                 unzip star-system.zip?raw=true -d /appdata/space-engineers; 
