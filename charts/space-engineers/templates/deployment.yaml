@@ -53,9 +53,9 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
-          - mountPath: /appdata/space-engneers/SpaceEngineers-Dedicated.cfg
-            name: space-engineers
-            subPath: SpaceEngineers-Dedicated.cfg
+          # - mountPath: /appdata/space-engneers/SpaceEngineers-Dedicated.cfg
+          #   name: space-engineers
+          #   subPath: SpaceEngineers-Dedicated.cfg
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -107,15 +107,15 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
-          - mountPath: /appdata/space-engineers/
-            name: space-engineers
-            #subPath: SpaceEngineers-Dedicated.cfg
+          # - mountPath: /appdata/space-engineers/
+          #   name: space-engineers
+          #   #subPath: SpaceEngineers-Dedicated.cfg
       volumes:
-      - configMap:
-        name: space-engineers
-        items:
-          - key: SpaceEngineers-Dedicated.cfg
-            path: SpaceEngineers-Dedicated.cfg
+      # - configMap:
+      #   name: space-engineers
+      #   items:
+      #     - key: SpaceEngineers-Dedicated.cfg
+      #       path: SpaceEngineers-Dedicated.cfg
       - name: appdata
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
