@@ -104,12 +104,11 @@ spec:
           volumeMounts:
           - name: appdata
             mountPath: /appdata
-          - mountPath: /appdata/space-engineers/Dedicated.cfg
+          - mountPath: /appdata/space-engineers/SpaceEngineersDedicated
             name: space-engineers
-            subPath: SpaceEngineers-Dedicated.cfg
+            #subPath: SpaceEngineers-Dedicated.cfg
       volumes:
       - configMap:
-        defaultMode: 420
         name: space-engineers
         items:
           - key: SpaceEngineers-Dedicated.cfg
