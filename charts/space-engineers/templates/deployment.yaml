@@ -111,6 +111,9 @@ spec:
       - configMap:
         defaultMode: 420
         name: space-engineers
+        items:
+          - key: nginx.conf
+            path: nginx.conf
       - name: appdata
       {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
