@@ -775,4 +775,38 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.1/home-assistant-0.0.1.tgz
     version: 0.0.1
-generated: "2025-03-27T08:24:48.07553144Z"
+  valheim-server:
+  - annotations:
+      artifacthub.io/images: |-
+        - name: valheim
+          image: mbround18/valheim:3.1.0
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server
+        - name: Docker image source
+          url: https://github.com/mbround18/valheim-docker
+    apiVersion: v2
+    appVersion: 3.1.0
+    created: "2025-03-27T08:29:49.128558689Z"
+    description: A Helm chart for deploying a Valheim dedicated server on Kubernetes
+    digest: 13d83c7aa8acff2ca00a3a8cff3ddaa68690b3a0192d986edbfe3bbcaa8a1159
+    home: https://www.valheimgame.com/
+    icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
+    keywords:
+    - game
+    - valheim
+    - gameserver
+    - dedicated-server
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: valheim-server
+    sources:
+    - https://github.com/mbround18/valheim-docker
+    - https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server
+    - https://github.com/janip81/helm-charts/tree/main/charts/valheim-server
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-03-27T08:29:49.128643728Z"
