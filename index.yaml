@@ -755,4 +755,24 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/cluster-autoscaler-9.29.3.tgz
     version: 9.29.3
-generated: "2023-10-10T19:22:14.057118796Z"
+  home-assistant:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-03-27T08:24:48.075441631Z"
+    description: An unofficial Helm chart to deploy Home Assistant
+    digest: 235c3312c38a4b0f0ff48b6de97dffc8af5c611ba039fa230db0b8eb99658de2
+    home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: Jani Pesonen
+      url: https://github.com/janip81
+    name: home-assistant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.1/home-assistant-0.0.1.tgz
+    version: 0.0.1
+generated: "2025-03-27T08:24:48.07553144Z"
