@@ -131,6 +131,8 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 | automation.autoBackupOnUpdate | int | `1` | Create backup before updates (1=enabled, 0=disabled) |
 | automation.autoBackupRemoveOld | int | `1` | Remove old backups automatically (1=enabled, 0=disabled) |
 | automation.autoBackupSchedule | string | `"*/15 * * * *"` | Cron schedule for automatic backups |
+| automation.autoRestart | int | `0` | Enable automatic server restarts (1=enabled, 0=disabled) |
+| automation.autoRestartSchedule | string | `"0 4 * * *"` | Cron schedule for automatic restarts (if enabled) |
 | automation.autoUpdate | int | `1` | Enable automatic updates (1=enabled, 0=disabled) |
 | automation.autoUpdateSchedule | string | `"0 1 * * *"` | Cron schedule for automatic updates |
 | automation.updateOnStartup | int | `0` | Update server when container starts (1=enabled, 0=disabled) |
@@ -155,6 +157,7 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 | nameOverride | string | `""` | Provide a name override for resources |
 | nodeSelector | object | `{}` | Node selector for pod assignment |
 | notifications.includePublicIp | int | `0` | Include the server's public IP in notifications (1=enabled, 0=disabled) |
+| notifications.player_event_notifications | int | `1` | Player join/leave notifications |
 | notifications.webhookUrl | string | `""` | Discord webhook URL for server notifications |
 | persistence.backups.accessMode | string | `"ReadWriteOnce"` | Access mode for the PVC |
 | persistence.backups.existingClaim | string | `""` | Existing claim to use (leave empty to create a new one) |
@@ -178,6 +181,7 @@ kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
 | securityContext.runAsGroup | int | `1000` | Group ID to run the container processes |
 | securityContext.runAsNonRoot | bool | `true` | Force the container to run as a non-root user |
 | securityContext.runAsUser | int | `111` | User ID to run the container processes. Should default to the steam user ID. |
+| server.enable_crossplay | int | `0` | Crossplay |
 | server.name | string | `"Valheim Server with Helm"` | Server name as displayed in-game |
 | server.password | string | you MUST change this value | Server access password (minimum 5 characters) |
 | server.port | int | `2456` | UDP port for game server (will use PORT, PORT+1, and PORT+2) |
