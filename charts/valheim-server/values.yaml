@@ -1,0 +1,231 @@
+# Specify image settings for the Valheim server container
+image:
+  # -- Docker repository to use
+  repository: mbround18/valheim
+  # -- Docker tag to use - use "latest" for most current version
+  tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Number of replicas to deploy (should typically stay at 1)
+replicaCount: 1
+
+# -- Provide a name override for resources
+nameOverride: ""
+
+# -- Provide a full name override for resources
+fullnameOverride: ""
+
+# Server configuration settings
+server:
+  # -- UDP port for game server (will use PORT, PORT+1, and PORT+2)
+  port: 2456
+  # -- Server name as displayed in-game
+  name: "Valheim Server with Helm"
+  # -- World name used for save files
+  world: "Dedicated"
+  # -- Server access password (minimum 5 characters)
+  # @default -- you MUST change this value
+  password: "ChangeMe123!"
+  # -- Set to 1 to make server visible publicly, 0 for private
+  public: 0
+  # -- Crossplay
+  enable_crossplay: 0
+  # -- Timezone for the server
+  timezone: "UTC"
+
+# Automation configuration for the server
+automation:
+  # -- Enable automatic updates (1=enabled, 0=disabled)
+  autoUpdate: 1
+  # -- Cron schedule for automatic updates
+  autoUpdateSchedule: "0 1 * * *"
+  # -- Update server when container starts (1=enabled, 0=disabled)
+  updateOnStartup: 0
+  # -- Enable automatic backups (1=enabled, 0=disabled)
+  autoBackup: 0
+  # -- Cron schedule for automatic backups
+  autoBackupSchedule: "*/15 * * * *"
+  # -- Remove old backups automatically (1=enabled, 0=disabled)
+  autoBackupRemoveOld: 1
+  # -- Number of days to keep backups
+  autoBackupDaysToLive: 7
+  # -- Create backup before updates (1=enabled, 0=disabled)
+  autoBackupOnUpdate: 1
+  # -- Create backup on server shutdown (1=enabled, 0=disabled)
+  autoBackupOnShutdown: 0
+  # -- Enable automatic server restarts (1=enabled, 0=disabled)
+  autoRestart: 0
+  # -- Cron schedule for automatic restarts (if enabled)
+  autoRestartSchedule: "0 4 * * *"
+
+# Notification settings for server events
+notifications:
+  # -- Discord webhook URL for server notifications
+  webhookUrl: ""
+  # -- Include the server's public IP in notifications (1=enabled, 0=disabled)
+  includePublicIp: 0
+  # -- Player join/leave notifications
+  player_event_notifications: 1
+
+# Kubernetes service configuration
+service:
+  # -- Service type
+  type: LoadBalancer
+  # -- Set specific load balancer IP (depends on cloud provider support)
+  loadBalancerIP: ""
+  # -- Annotations for the service
+  annotations: {}
+  # -- External source IP ranges allowed to access the server
+  loadBalancerSourceRanges: []
+
+# Storage configuration for server data
+persistence:
+  # -- Enable persistent storage for server data
+  enabled: true
+  # -- Storage class to use (use null for default or "" for no storage class)
+  # @default -- use default storage class
+  storageClass: null
+
+  # Data volume configuration for game saves
+  saves:
+    # -- Size of PVC for game saves
+    size: 1Gi
+    # -- Access mode for the PVC
+    accessMode: ReadWriteOnce
+    # -- Existing claim to use (leave empty to create a new one)
+    existingClaim: ""
+
+  # Data volume configuration for server files
+  server:
+    # -- Size of PVC for server files
+    size: 4Gi
+    # -- Access mode for the PVC
+    accessMode: ReadWriteOnce
+    # -- Existing claim to use (leave empty to create a new one)
+    existingClaim: ""
+
+  # Data volume configuration for backups. Requires "autoBackup: 1".
+  backups:
+    # -- Size of PVC for backups
+    size: 10Gi
+    # -- Access mode for the PVC
+    accessMode: ReadWriteOnce
+    # -- Existing claim to use (leave empty to create a new one)
+    existingClaim: ""
+
+# -- Resource requests and limits
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube.
+  # requests:
+  #   # -- Memory request for the server
+  #   memory: 2Gi
+  #   # -- CPU request for the server
+  #   cpu: 1000m
+  # # -- Resource limits
+  # limits:
+  #   # -- Memory limit for the server
+  #   memory: 4Gi
+  #   # -- CPU limit for the server
+  #   cpu: 2000m
+
+# -- Node selector for pod assignment
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+tolerations: []
+
+# -- Affinity for pod assignment
+affinity: {}
+
+# -- Additional environment variables for the Valheim server
+extraEnv: []
+  # - name: EXAMPLE_VAR
+  #   value: "example value"
+
+# -- Init container configuration for server preparation
+initContainers:
+  # -- Enable init container
+  enabled: false
+  # -- Init container image
+  image: busybox:latest
+  # -- Init container command
+  command: []
+  # -- Init container arguments
+  args: []
+
+# Modding configuration
+modding:
+  # -- Enable BepInEx for mods (1=enabled, 0=disabled)
+  bepInEx: 0
+  # -- Path to mounted mod directory
+  modPath: "/home/steam/valheim/BepInEx"
+  # -- Enable mounting a ConfigurationManager config
+  useConfigurationManager: false
+
+# Pod security context settings
+# @descriptionStart
+# Security context settings applied at the pod level.
+# The fsGroup setting ensures that mounted volumes have the proper permissions for the Valheim user.
+# @descriptionEnd
+podSecurityContext:
+  # -- File system group ID for volume mounts
+  fsGroup: 1000
+
+# Container security context settings
+# @descriptionStart
+# Security context settings applied at the container level.
+# These settings ensure the container runs as a non-root user for better security.
+# The user/group IDs must match those used in the container image.
+# @descriptionEnd
+securityContext:
+  # -- User ID to run the container processes. Should default to the steam user ID.
+  runAsUser: 111
+  # -- Group ID to run the container processes
+  runAsGroup: 1000
+  # -- Force the container to run as a non-root user
+  runAsNonRoot: true
+
+# Kubernetes startup probe configuration
+startupProbe:
+  # -- Enable startup probe
+  enabled: true
+  # -- Initial delay seconds
+  initialDelaySeconds: 30
+  # -- Period seconds
+  periodSeconds: 10
+  # -- Timeout seconds
+  timeoutSeconds: 5
+  # -- Failure threshold
+  # @default -- 30 (allows up to 5 minutes for initial startup)
+  failureThreshold: 30
+
+# Kubernetes readiness probe configuration
+readinessProbe:
+  # -- Enable readiness probe
+  enabled: true
+  # -- Initial delay seconds
+  initialDelaySeconds: 60
+  # -- Period seconds
+  periodSeconds: 15
+  # -- Timeout seconds
+  timeoutSeconds: 5
+  # -- Failure threshold
+  # @default -- 20 (allows up to 5 minutes for readiness)
+  failureThreshold: 20
+
+# Kubernetes liveness probe configuration
+livenessProbe:
+  # -- Enable liveness probe
+  enabled: false
+  # -- Initial delay seconds
+  initialDelaySeconds: 60
+  # -- Period seconds
+  periodSeconds: 20
+  # -- Timeout seconds
+  timeoutSeconds: 5
+  # -- Failure threshold
+  # @default -- 6 (allows up to 2 minutes for recovery)
+  failureThreshold: 6

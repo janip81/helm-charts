@@ -7,10 +7,12 @@ Warning! Forked charts here contain changes from the original to suit my needs.
 ## Charts written by me
 
   [capi-cluster](https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster)
+  [home-assistant](https://github.com/janip81/helm-charts/tree/main/charts/home-assistant) - IN DEVELOPMENT
 
 ## Forked and modified charts made by other
 
   [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler)
+  [valheim-server](https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server)
 
 ## Adding this helm repository
 

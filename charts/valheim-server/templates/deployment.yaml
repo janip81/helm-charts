@@ -1,0 +1,218 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "valheim-server.fullname" . }}
+  labels:
+    {{- include "valheim-server.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "valheim-server.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "valheim-server.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers.enabled }}
+      initContainers:
+        - name: init-valheim
+          image: {{ .Values.initContainers.image }}
+          {{- if .Values.initContainers.command }}
+          command: {{ toYaml .Values.initContainers.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.initContainers.args }}
+          args: {{ toYaml .Values.initContainers.args | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: saves
+              mountPath: /home/steam/.config/unity3d/IronGate/Valheim
+            - name: server
+              mountPath: /home/steam/valheim
+            - name: backups
+              mountPath: /home/steam/backups
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PORT
+              value: "{{ .Values.server.port }}"
+            - name: NAME
+              value: "{{ .Values.server.name }}"
+            - name: WORLD
+              value: "{{ .Values.server.world }}"
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "valheim-server.fullname" . }}
+                  key: server-password
+            - name: TZ
+              value: "{{ .Values.server.timezone }}"
+            - name: PUID
+              value: "{{ .Values.securityContext.runAsUser | default "111" }}"
+            - name: PGID
+              value: "{{ .Values.securityContext.runAsGroup | default "1000" }}"
+            - name: PUBLIC
+              value: "{{ .Values.server.public }}"
+            - name: AUTO_UPDATE
+              value: "{{ .Values.automation.autoUpdate }}"
+            - name: AUTO_UPDATE_SCHEDULE
+              value: "{{ .Values.automation.autoUpdateSchedule }}"
+            - name: UPDATE_ON_STARTUP
+              value: "{{ .Values.automation.updateOnStartup }}"
+            - name: AUTO_BACKUP
+              value: "{{ .Values.automation.autoBackup }}"
+            - name: AUTO_BACKUP_SCHEDULE
+              value: "{{ .Values.automation.autoBackupSchedule }}"
+            - name: AUTO_BACKUP_REMOVE_OLD
+              value: "{{ .Values.automation.autoBackupRemoveOld }}"
+            - name: AUTO_BACKUP_DAYS_TO_LIVE
+              value: "{{ .Values.automation.autoBackupDaysToLive }}"
+            - name: AUTO_BACKUP_ON_UPDATE
+              value: "{{ .Values.automation.autoBackupOnUpdate }}"
+            - name: AUTO_BACKUP_ON_SHUTDOWN
+              value: "{{ .Values.automation.autoBackupOnShutdown }}"
+            - name: ENABLE_CROSSPLAY
+              value: "{{ .Values.server.enable_crossplay }}"
+            {{- if eq (.Values.automation.autoRestart | toString) "1" }}
+            - name: AUTO_RESTART
+              value: "{{ .Values.automation.autoRestart }}"
+            - name: AUTO_RESTART_SCHEDULE
+              value: "{{ .Values.automation.autoRestartSchedule }}"
+            {{- end }}
+            {{- if .Values.notifications.webhookUrl }}
+            - name: WEBHOOK_URL
+              value: "{{ .Values.notifications.webhookUrl }}"
+            - name: WEBHOOK_INCLUDE_PUBLIC_IP
+              value: "{{ .Values.notifications.includePublicIp }}"
+            - name: PLAYER_EVENT_NOTIFICATIONS
+              value: "{{ .Values.notifications.player_event_notifications}}"
+            {{- end }}
+            {{- if eq (.Values.modding.bepInEx | toString) "1" }}
+            - name: BEPINEX
+              value: "1"
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: game
+              containerPort: {{ .Values.server.port }}
+              protocol: UDP
+            - name: game-1
+              containerPort: {{ add .Values.server.port 1 }}
+              protocol: UDP
+            - name: game-2
+              containerPort: {{ add .Values.server.port 2 }}
+              protocol: UDP
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "kill -SIGINT 1 && sleep 5"]
+          volumeMounts:
+            - name: saves
+              mountPath: /home/steam/.config/unity3d/IronGate/Valheim
+            - name: server
+              mountPath: /home/steam/valheim
+            - name: backups
+              mountPath: /home/steam/backups
+            {{- if eq (.Values.modding.bepInEx | toString) "1" }}
+            - name: mods
+              mountPath: {{ .Values.modding.modPath }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          # Startup probe - wait for server to initialize
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - valheim_server
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          {{- end }}
+          # Readiness probe - verify is server is ready
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - valheim_server
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          # Liveness probe - check if server is running
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - valheim_server
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
+      volumes:
+        - name: saves
+          {{- if and .Values.persistence.enabled .Values.persistence.saves.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.saves.existingClaim }}
+          {{- else if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "valheim-server.fullname" . }}-saves
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: server
+          {{- if and .Values.persistence.enabled .Values.persistence.server.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.server.existingClaim }}
+          {{- else if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "valheim-server.fullname" . }}-server
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: backups
+          {{- if and .Values.persistence.enabled .Values.persistence.backups.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backups.existingClaim }}
+          {{- else if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "valheim-server.fullname" . }}-backups
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if eq (.Values.modding.bepInEx | toString) "1" }}
+        - name: mods
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
