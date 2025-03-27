@@ -1,0 +1,34 @@
+name: Generate Helm Documentation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'charts/**/values.yaml'
+      - 'charts/**/Chart.yaml'
+
+jobs:
+  helm-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Helm-docs
+        uses: docker://jnorwood/helm-docs:v1.14.2
+        with:
+          entrypoint: helm-docs
+          args: --chart-search-root=charts --template-files=README.md.gotmpl
+
+      - name: Check for documentation changes
+        run: |
+          if [[ -n $(git status -s) ]]; then
+            echo "::error::Chart documentation is out of date. Please run 'pre-commit run helm-docs' locally and commit the changes."
+            git diff
+            exit 1
+          else
+            echo "Chart documentation is up to date."
+          fi
