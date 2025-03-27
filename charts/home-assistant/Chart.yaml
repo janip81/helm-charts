@@ -1,31 +1,24 @@
 apiVersion: v2
 name: home-assistant
 description: An unofficial Helm chart to deploy Home Assistant
-
-# A chart can be either an 'application' or a 'library' chart.
-#
-# Application charts are a collection of templates that can be packaged into versioned archives
-# to be deployed.
-#
-# Library charts provide useful utilities or functions for the chart developer. They're included as
-# a dependency of application charts to inject those utilities and functions into the rendering
-# pipeline. Library charts do not define any templates and therefore cannot be deployed.
 type: application
-
-# This is the chart version. This version number should be incremented each time you make changes
-# to the chart and its templates, including the app version.
 version: 0.0.1
-
-# This is the version number of the application being deployed. This version number should be
-# incremented each time you make changes to the application.
 appVersion: 0.0.1
 home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
 #icon:
-keywords:
-  - home-assistant
 maintainers:
   - name: Jani Pesonen
     email: jani@techmonkeys.se
     url: https://github.com/janip81
+keywords:
+  - home-assistant
 sources:
   - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+  artifacthub.io/images: |
+    - name: valheim
+      image: mbround18/valheim:3.1.0
