@@ -19,6 +19,3 @@ annotations:
   artifacthub.io/links: |
     - name: Chart source
       url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
-  artifacthub.io/images: |
-    - name: valheim
-      image: mbround18/valheim:3.1.0
