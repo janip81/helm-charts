@@ -45,7 +45,7 @@ This is my modifed fork of the [kriegalex/valheim-server](https://github.com/kri
 ## TL;DR
 
 ```bash
-helm repo add k8s-charts janip81 https://janip81.github.io/helm-charts/
+helm repo add janip81 https://janip81.github.io/helm-charts/
 helm install my-valheim-server janip81/valheim-server
 ```
 
@@ -64,7 +64,7 @@ The default values for this chart include a placeholder password. For production
 helm upgrade --install my-valheim-server \
   --set server.password="YourStrongPassword" \
   --set server.name="Your Awesome Valheim Server" \
-  k8s-charts/valheim-server
+  janip81/valheim-server
 ```
 
 ### Custom Configuration File
