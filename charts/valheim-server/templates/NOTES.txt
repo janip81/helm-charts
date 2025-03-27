@@ -1,0 +1,40 @@
+Thank you for installing the Valheim Dedicated Server Helm chart!
+
+Your server should be starting up now with the following settings:
+
+Server Name: {{ .Values.server.name }}
+World: {{ .Values.server.world }}
+Game Port: {{ .Values.server.port }} (UDP)
+
+{{- if eq .Values.service.type "LoadBalancer" }}
+To connect to your server:
+
+1. Get the external IP address:
+   kubectl get svc {{ include "valheim-server.fullname" . }} --namespace {{ .Release.Namespace }}
+
+2. In Valheim, select "Join Game" and add the server manually using:
+   <EXTERNAL-IP>:{{ .Values.server.port }}
+
+3. Enter your server password when prompted.
+{{- else if eq .Values.service.type "NodePort" }}
+To connect to your server:
+
+1. Get the NodePort assigned to your service:
+   kubectl get svc {{ include "valheim-server.fullname" . }} --namespace {{ .Release.Namespace }}
+
+2. In Valheim, select "Join Game" and add the server manually using:
+   <NODE-IP>:<NODEPORT>
+
+3. Enter your server password when prompted.
+{{- else }}
+Note: You've deployed with service type "{{ .Values.service.type }}" which may not be accessible from outside the cluster.
+You might need to set up port forwarding or ingress to access your server.
+{{- end }}
+
+IMPORTANT SECURITY NOTES:
+- Make sure your server password is at least 5 characters long
+- Properly secure access to your Kubernetes cluster
+- Consider changing the default port if your server is public
+
+For more information and troubleshooting, please visit:
+{{ .Chart.Home }}

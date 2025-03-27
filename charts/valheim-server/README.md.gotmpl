@@ -1,0 +1,120 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## Overview
+
+This Helm chart deploys a Valheim dedicated server based on the [mbround18/valheim-docker](https://github.com/mbround18/valheim-docker) project.
+And Helm chart is a fork of [kriegalex/valheim-server](https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server).
+
+## DISCLAIMER
+
+This is my modifed fork of the [kriegalex/valheim-server](https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server) chart. I have made some changes to the values.yaml file and the README.md file to better suit my needs.
+
+## Features
+
+- Configurable server settings
+- Automatic updates and backups
+- Discord webhook notifications
+- Persistent storage for game saves, server files, and backups
+- Resource management for Kubernetes
+
+## Prerequisites
+
+- Kubernetes 1.29+
+- Helm 3.16.0+
+- PV provisioner support in the underlying infrastructure (for persistent storage)
+- LoadBalancer support or an Ingress controller
+
+## TL;DR
+
+```bash
+helm repo add k8s-charts janip81 https://janip81.github.io/helm-charts/
+helm install my-valheim-server janip81/valheim-server
+```
+
+## Important Security Notice
+The default values for this chart include a placeholder password. For production use:
+
+1. Always specify a secure password
+2. Consider using Kubernetes secrets for sensitive values
+3. Restrict access to your server using appropriate network policies
+
+## Installation
+
+### Simple Install with Custom Password and Server Name
+
+```bash
+helm upgrade --install my-valheim-server \
+  --set server.password="YourStrongPassword" \
+  --set server.name="Your Awesome Valheim Server" \
+  k8s-charts/valheim-server
+```
+
+### Custom Configuration File
+Create a YAML file with your custom values:
+
+```yaml
+server:
+  name: "My Custom Valheim Server"
+  password: "SuperSecretPassword"
+  world: "MyWorld"
+  public: 1
+  
+persistence:
+  saves:
+    size: 5Gi
+  backups:
+    size: 20Gi
+    
+automation:
+  autoBackup: 1  # disabled by default
+  autoBackupSchedule: "*/30 * * * *"
+  
+resources:
+  requests:
+    memory: 4Gi
+    cpu: 2000m
+  limits:
+    memory: 12Gi
+    cpu: 4000m
+```
+
+Then install the chart:
+
+```bash
+helm install my-valheim-server -f my-values.yaml janip81/valheim-server
+```
+
+## Updating
+
+```bash
+helm upgrade my-valheim-server janip81/valheim-server
+```
+
+## Uninstallation
+
+```bash
+helm uninstall my-valheim-server
+```
+
+Note: This will not delete the Persistent Volume Claims. To delete them:
+
+```bash
+kubectl delete pvc -l app.kubernetes.io/instance=my-valheim-server
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

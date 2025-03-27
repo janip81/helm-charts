@@ -1,0 +1,30 @@
+apiVersion: v2
+name: valheim-server
+description: A Helm chart for deploying a Valheim dedicated server on Kubernetes
+type: application
+version: 1.0.0
+appVersion: "3.1.0"
+home: https://www.valheimgame.com/
+icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+keywords:
+  - game
+  - valheim
+  - gameserver
+  - dedicated-server
+sources:
+  - https://github.com/mbround18/valheim-docker
+  - https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server
+  - https://github.com/janip81/helm-charts/tree/main/charts/valheim-server
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/kriegalex/k8s-charts/tree/main/charts/valheim-server
+    - name: Docker image source
+      url: https://github.com/mbround18/valheim-docker
+  artifacthub.io/images: |
+    - name: valheim
+      image: mbround18/valheim:3.1.0
