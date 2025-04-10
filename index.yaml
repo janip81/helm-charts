@@ -755,6 +755,29 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/cluster-autoscaler-9.29.3.tgz
     version: 9.29.3
+  frigate:
+  - apiVersion: v2
+    appVersion: 0.14.1
+    created: "2025-04-10T06:57:17.986433553Z"
+    description: NVR With Realtime Object Detection for IP Cameras
+    digest: de81caa3a30180bf6d68151a841f8f880da26250d04167592bbcc6e39e43b850
+    home: https://github.com/blakeblackshear/blakeshome-charts/tree/master/charts/frigate
+    icon: https://github.com/blakeblackshear/frigate/blob/master/docs/static/img/frigate.png
+    keywords:
+    - tensorflow
+    - coral
+    - ml
+    maintainers:
+    - email: blakeb@blakeshome.com
+      name: blakeblackshear
+    - email: jeff@billimek.com
+      name: billimek
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/frigate-7.8.0/frigate-7.8.0.tgz
+    version: 7.8.0
   home-assistant:
   - apiVersion: v2
     appVersion: 0.0.1
@@ -809,4 +832,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-03-27T08:29:49.128643728Z"
+generated: "2025-04-10T06:57:18.192103411Z"
