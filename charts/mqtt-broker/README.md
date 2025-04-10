@@ -27,7 +27,10 @@ It provides a lightweight and secure message broker for your home automation, Io
 - Simple deployment of the Eclipse Mosquitto MQTT broker
 - Optional persistence support via PVC
 - Configurable listener ports (MQTT and WebSocket)
-- Helm-native customization with values.yaml
+- Optional password authentication support
+  - Automatically creates a password file secret if `auth.username` and `auth.password` are provided in `values.yaml` or via `--set`
+  - Skips secret creation and runs in passwordless mode if `auth.enabled: false`
+  - Can mount an existing manually-created password secret via `auth.existingSecret`
 
 ## Prerequisites
 
@@ -44,19 +47,46 @@ helm install my-mqtt-broker janip81/mqtt-broker
 
 ## Installation
 
+### Without Authentication (open broker)
+
 ```bash
 helm install mqtt janip81/mqtt-broker \
   --namespace mqtt \
-  --create-namespace
+  --create-namespace \
+  --set auth.enabled=false
 ```
 
-Or with custom values:
+### With Authentication (inline credentials via CLI)
 
 ```bash
-helm upgrade --install mqtt janip81/mqtt-broker \
-  -n mqtt \
-  -f values.yaml
+helm install mqtt janip81/mqtt-broker \
+  --namespace mqtt \
+  --create-namespace \
+  -f values.yaml \
+  --set auth.enabled=true \
+  --set auth.username=mqttuser \
+  --set auth.password=mqttpassword
 ```
+
+> ⚠️ This creates a simple username:password pair in a secret using Helm — not bcrypt-hashed.
+> Best for internal/test clusters only.
+
+### With Authentication (pre-created password file)
+
+```bash
+mosquitto_passwd -c passwd.txt mqttuser
+kubectl create secret generic mqtt-auth \
+  --from-file=passwd=passwd.txt \
+  -n mqtt
+
+helm install mqtt janip81/mqtt-broker \
+  --namespace mqtt \
+  --create-namespace \
+  --set auth.enabled=true \
+  --set auth.existingSecret=mqtt-auth
+```
+
+> This is the most secure option. `passwd.txt` must contain bcrypt-hashed credentials.
 
 ## Uninstallation
 
@@ -73,6 +103,12 @@ kubectl delete pvc -l app.kubernetes.io/instance=mqtt -n mqtt
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| auth.enabled | bool | `false` |  |
+| auth.existingSecret | string | `""` |  |
+| auth.password | string | `"ChangeMe!"` |  |
+| auth.username | string | `"mqttuser"` |  |
+| config.allowAnonymous | bool | `true` |  |
+| config.passwordFile | string | `"/mosquitto/config/passwd"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"eclipse-mosquitto"` |  |
 | image.tag | string | `"2.0.18"` |  |
