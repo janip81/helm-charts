@@ -1,0 +1,70 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## Overview
+
+This Helm chart deploys the [Eclipse Mosquitto MQTT broker](https://mosquitto.org/) using the official Docker image.
+It provides a lightweight and secure message broker for your home automation, IoT, or internal messaging needs.
+
+## Features
+
+- Simple deployment of the Eclipse Mosquitto MQTT broker
+- Optional persistence support via PVC
+- Configurable listener ports (MQTT and WebSocket)
+- Helm-native customization with values.yaml
+
+## Prerequisites
+
+- Kubernetes 1.22+
+- Helm 3.6.0+
+- PV provisioner support in the underlying infrastructure (for persistence)
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install my-mqtt-broker janip81/mqtt-broker
+```
+
+## Installation
+
+```bash
+helm install mqtt janip81/mqtt-broker \
+  --namespace mqtt \
+  --create-namespace
+```
+
+Or with custom values:
+
+```bash
+helm upgrade --install mqtt janip81/mqtt-broker \
+  -n mqtt \
+  -f values.yaml
+```
+
+## Uninstallation
+
+```bash
+helm uninstall mqtt -n mqtt
+```
+
+> To remove persistent data:
+```bash
+kubectl delete pvc -l app.kubernetes.io/instance=mqtt -n mqtt
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
