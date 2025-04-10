@@ -81,12 +81,12 @@ fullnameOverride: ""
   #   # Optional: interval in seconds for publishing stats (default: shown below)
   #   stats_interval: 60
 
-  detectors:
-    # coral:
-    #   type: edgetpu
-    #   device: usb
-    cpu1:
-      type: cpu
+  # detectors:
+  #   # coral:
+  #   #   type: edgetpu
+  #   #   device: usb
+  #   cpu1:
+  #     type: cpu
 
   # cameras:
   #   # Name of your camera
