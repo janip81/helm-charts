@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: mosquitto
+  ports:
+    - name: mqtt
+      port: {{ .Values.service.port }}
+      targetPort: mqtt
+    - name: websocket
+      port: {{ .Values.service.websocketPort }}
+      targetPort: websocket
