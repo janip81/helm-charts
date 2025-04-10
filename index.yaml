@@ -798,6 +798,36 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.1/home-assistant-0.0.1.tgz
     version: 0.0.1
+  mqtt-broker:
+  - annotations:
+      artifacthub.io/images: |
+        - name: eclipse-mosquitto
+          image: docker.io/eclipse-mosquitto:2.0.18
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+        - name: Docker image source
+          url: https://hub.docker.com/_/eclipse-mosquitto
+    apiVersion: v2
+    appVersion: 2.0.18
+    created: "2025-04-10T13:21:21.582588374Z"
+    description: A Helm chart for Eclipse Mosquitto
+    digest: ab7f632a63cb4434a6e835e78a3ccbb00b8d5e761e07fced379351e1c09abe40
+    home: https://mosquitto.org/
+    icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
+    keywords:
+    - mqtt
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: mqtt-broker
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/mqtt-broker-0.1.0/mqtt-broker-0.1.0.tgz
+    version: 0.1.0
   valheim-server:
   - annotations:
       artifacthub.io/images: |-
@@ -832,4 +862,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-04-10T06:57:18.192103411Z"
+generated: "2025-04-10T13:21:21.582671849Z"
