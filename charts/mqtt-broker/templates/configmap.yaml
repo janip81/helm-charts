@@ -7,7 +7,12 @@ data:
     persistence true
     persistence_location /mosquitto/data/
     log_dest stdout
+    {{- if not .Values.auth.enabled }}
     allow_anonymous true
+    {{- else }}
+    allow_anonymous {{ .Values.config.allowAnonymous | default "false" }}
+    password_file {{ .Values.config.passwordFile | default "/mosquitto/config/passwd" }}
+    {{- end }}
     listener 1883
     listener 9001
     protocol websockets

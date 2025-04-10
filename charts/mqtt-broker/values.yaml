@@ -13,6 +13,16 @@ persistence:
   size: 1Gi
   storageClass: vsphere-csi
 
+auth:
+  enabled: false
+  username: mqttuser
+  password: ChangeMe!
+  existingSecret: ""  # Set to an existing secret name to use pre-created password file
+
+config:
+  allowAnonymous: true
+  passwordFile: "/mosquitto/config/passwd"
+
 resources:
   limits:
     cpu: 100m
