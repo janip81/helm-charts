@@ -16,7 +16,7 @@ An unofficial Helm chart to deploy Home Assistant
 
 * <https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/>
 
-# home-assistant helm-chart
+# Overview
 Helm-chart for deploying Home Assistant
 
 ## Adding this helm repository
