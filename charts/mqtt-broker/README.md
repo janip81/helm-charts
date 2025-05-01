@@ -62,7 +62,6 @@ helm install mqtt janip81/mqtt-broker \
 helm install mqtt janip81/mqtt-broker \
   --namespace mqtt \
   --create-namespace \
-  -f values.yaml \
   --set auth.enabled=true \
   --set auth.username=mqttuser \
   --set auth.password=mqttpassword
