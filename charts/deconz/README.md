@@ -2,7 +2,7 @@
 
 ![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 2.29.2](https://img.shields.io/badge/AppVersion-2.29.2-informational?style=flat-square)
 
-A Helm chart to deploy deCONZ with USB passthrough and optional Gateway/Ingress support
+A Helm chart to deploy deCONZ
 
 **Homepage:** <https://github.com/janip81/helm-charts/tree/main/charts/deconz>
 
