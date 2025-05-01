@@ -1,8 +1,8 @@
 # deconz
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![AppVersion: 2.29.2](https://img.shields.io/badge/AppVersion-2.29.2-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 2.29.2](https://img.shields.io/badge/AppVersion-2.29.2-informational?style=flat-square)
 
-A Helm chart to deploy deCONZ with USB passthrough and optional Gateway/Ingress support
+A Helm chart to deploy deCONZ
 
 **Homepage:** <https://github.com/janip81/helm-charts/tree/main/charts/deconz>
 
@@ -67,13 +67,12 @@ To uninstall the chart:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | conbee.devicePath | string | `"/dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_DM01H1HD-if00-port0"` |  |
-| env.TZ | string | `"UTC"` |  |
+| env.TZ | string | `"Europe/Stockholm"` |  |
 | env.VERBOSE | string | `"1"` |  |
 | env.VNC_MODE | string | `"1"` |  |
 | env.VNC_PORT | string | `"5900"` |  |
 | env.WEB_PORT | string | `"80"` |  |
 | env.WS_PORT | string | `"443"` |  |
-| env.timezone | string | `"Europe/Stockholm"` |  |
 | gateway.enabled | bool | `false` |  |
 | gateway.hostname | string | `"deconz.domain.com"` |  |
 | gateway.name | string | `"internal-shared"` |  |
@@ -86,10 +85,13 @@ To uninstall the chart:
 | ingress.hosts[0].host | string | `"deconz.example.com"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| ingress.tls | list | `[]` |  |
+| ingress.tls[0].hosts[0] | string | `"deconz.example.com"` |  |
+| ingress.tls[0].secretName | string | `"deconz-tls"` |  |
+| nodeSelector.usb | string | `"zigbee"` |  |
 | pvc.name | string | `"deconz-config"` |  |
 | pvc.size | string | `"2560Mi"` |  |
 | pvc.storageClassName | string | `"vsphere-csi"` |  |
+| securityContext.privileged | bool | `true` |  |
 | service.ports[0].name | string | `"http"` |  |
 | service.ports[0].port | int | `80` |  |
 | service.ports[0].targetPort | string | `"http"` |  |
@@ -101,6 +103,8 @@ To uninstall the chart:
 | service.ports[2].targetPort | string | `"vnc"` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccountName | string | `"deconz"` |  |
+| vnc.create | bool | `true` |  |
+| vnc.password | string | `"changeme"` |  |
 | vnc.secretName | string | `"deconz-vnc-password"` |  |
 
 ----------------------------------------------

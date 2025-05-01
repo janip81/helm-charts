@@ -1,3 +1,4 @@
+---
 image:
   repository: deconzcommunity/deconz
   tag: 2.29.2
@@ -8,18 +9,29 @@ env:
   WEB_PORT: "80"
   WS_PORT: "443"
   VERBOSE: "1"
-  TZ: "UTC"
-  timezone: "Europe/Stockholm"
+  TZ: "Europe/Stockholm"
 
 serviceAccountName: deconz
+
+securityContext:
+  privileged: true
+
+vnc:
+  create: true
+  secretName: deconz-vnc-password
+  password: changeme
+
+## nodeSelector is used to select the node where the pod will be scheduled
+## label the node that has the USB device.
+## with the label "usb=zigbee" or change the value to match your node label
+nodeSelector:
+  usb: zigbee
 
 pvc:
   name: deconz-config
   storageClassName: vsphere-csi
   size: 2560Mi
 
-vnc:
-  secretName: deconz-vnc-password
 
 conbee:
   devicePath: /dev/serial/by-id/usb-FTDI_FT230X_Basic_UART_DM01H1HD-if00-port0
@@ -46,7 +58,11 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls:
+    - hosts:
+        - deconz.example.com
+      secretName: deconz-tls
+
 
 gateway:
   enabled: false
