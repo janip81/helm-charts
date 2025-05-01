@@ -755,6 +755,30 @@ entries:
     urls:
     - https://janip81.github.io/helm-charts/cluster-autoscaler-9.29.3.tgz
     version: 9.29.3
+  deconz:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/deconz/
+    apiVersion: v2
+    appVersion: 2.29.2
+    created: "2025-05-01T09:18:52.962237678Z"
+    description: A Helm chart to deploy deCONZ with USB passthrough and optional Gateway/Ingress
+      support
+    digest: e93e4bdebf2919a8ab987be919fd1382ae51eeb68c84cdfc6f1900443a19fa2c
+    home: https://github.com/janip81/helm-charts/tree/main/charts/deconz
+    keywords:
+    - deconz
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: Jani Pesonen
+      url: https://github.com/janip81
+    name: deconz
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/deconz/
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/deconz-0.1.0/deconz-0.1.0.tgz
+    version: 0.1.0
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
@@ -862,4 +886,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-04-10T13:21:21.582671849Z"
+generated: "2025-05-01T09:18:53.639387558Z"
