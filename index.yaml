@@ -762,6 +762,28 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/deconz/
     apiVersion: v2
     appVersion: 2.29.2
+    created: "2025-05-01T09:58:46.433734674Z"
+    description: A Helm chart to deploy deCONZ
+    digest: d31a7790c62353ddc8404495f0ad9a597b21a39dcc2954deb6c79cd47e5ffff8
+    home: https://github.com/janip81/helm-charts/tree/main/charts/deconz
+    keywords:
+    - deconz
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: Jani Pesonen
+      url: https://github.com/janip81
+    name: deconz
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/deconz/
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/deconz-0.1.1/deconz-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/deconz/
+    apiVersion: v2
+    appVersion: 2.29.2
     created: "2025-05-01T09:18:52.962237678Z"
     description: A Helm chart to deploy deCONZ with USB passthrough and optional Gateway/Ingress
       support
@@ -886,4 +908,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-05-01T09:18:53.639387558Z"
+generated: "2025-05-01T09:58:46.433819582Z"
