@@ -18,13 +18,13 @@ spec:
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       nodeSelector:
-        usb: zigbee
+{{ toYaml .Values.nodeSelector | indent 8 }}
       containers:
         - name: deconz
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: true
+            {{- toYaml .Values.securityContext | nindent 12 }}
           env:
             - name: DECONZ_VNC_MODE
               value: "{{ .Values.env.VNC_MODE }}"
@@ -38,8 +38,6 @@ spec:
               value: "{{ .Values.env.VERBOSE }}"
             - name: TZ
               value: "{{ .Values.env.TZ }}"
-            - name: timezone
-              value: "{{ .Values.env.timezone }}"
             - name: DECONZ_VNC_PASSWORD
               valueFrom:
                 secretKeyRef:

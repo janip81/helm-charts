@@ -86,10 +86,13 @@ To uninstall the chart:
 | ingress.hosts[0].host | string | `"deconz.example.com"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| ingress.tls | list | `[]` |  |
+| ingress.tls[0].hosts[0] | string | `"deconz.example.com"` |  |
+| ingress.tls[0].secretName | string | `"deconz-tls"` |  |
+| nodeSelector.usb | string | `"zigbee"` |  |
 | pvc.name | string | `"deconz-config"` |  |
 | pvc.size | string | `"2560Mi"` |  |
 | pvc.storageClassName | string | `"vsphere-csi"` |  |
+| securityContext.privileged | bool | `true` |  |
 | service.ports[0].name | string | `"http"` |  |
 | service.ports[0].port | int | `80` |  |
 | service.ports[0].targetPort | string | `"http"` |  |
@@ -101,6 +104,8 @@ To uninstall the chart:
 | service.ports[2].targetPort | string | `"vnc"` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccountName | string | `"deconz"` |  |
+| vnc.create | bool | `true` |  |
+| vnc.password | string | `"changeme"` |  |
 | vnc.secretName | string | `"deconz-vnc-password"` |  |
 
 ----------------------------------------------
