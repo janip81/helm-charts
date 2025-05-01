@@ -1,8 +1,9 @@
+---
 apiVersion: v2
 name: deconz
 version: 0.1.1
 appVersion: 2.29.2
-description: A Helm chart to deploy deCONZ with USB passthrough and optional Gateway/Ingress support
+description: A Helm chart to deploy deCONZ
 home: https://github.com/janip81/helm-charts/tree/main/charts/deconz
 maintainers:
   - name: Jani Pesonen

@@ -1,3 +1,4 @@
+---
 image:
   repository: deconzcommunity/deconz
   tag: 2.29.2
@@ -20,7 +21,8 @@ vnc:
   secretName: deconz-vnc-password
   password: changeme
 
-## nodeSelector is used to select the node where the pod will be scheduled, label the node that has the USB device
+## nodeSelector is used to select the node where the pod will be scheduled
+## label the node that has the USB device.
 ## with the label "usb=zigbee" or change the value to match your node label
 nodeSelector:
   usb: zigbee
