@@ -12,7 +12,7 @@ spec:
       labels:
         app: k8s-ui-backend
     spec:
-      serviceAccountName: k8s-ui-backend
+      serviceAccountName: {{ .Values.serviceAccount.name | default "k8s-ui-backend" }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       containers:
