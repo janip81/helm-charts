@@ -16,24 +16,3 @@ gateway:
   namespace: gateway-system
   hostname: k8s-ui.example.com
 
-kubeconfigSecret:
-  name: management-cluster-kubeconfig
-  create: true
-  kubeconfig: |
-    apiVersion: v1
-    kind: Config
-    clusters:
-    - cluster:
-        server: https://your-cluster-endpoint:6443
-        certificate-authority-data: ...
-      name: your-cluster
-    contexts:
-    - context:
-        cluster: your-cluster
-        user: admin
-      name: default
-    current-context: default
-    users:
-    - name: admin
-      user:
-        token: your-token
