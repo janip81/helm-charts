@@ -12,6 +12,7 @@ spec:
       labels:
         app: k8s-ui-backend
     spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | default "k8s-ui-backend" }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       containers:
@@ -19,14 +20,3 @@ spec:
           image: "{{ .Values.image.backend }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 8080
-          env:
-            - name: KUBECONFIG
-              value: /kubeconfigs/config
-          volumeMounts:
-            - name: kubeconfig
-              mountPath: /kubeconfigs
-              readOnly: true
-      volumes:
-        - name: kubeconfig
-          secret:
-            secretName: {{ .Values.kubeconfigSecret.name }}
