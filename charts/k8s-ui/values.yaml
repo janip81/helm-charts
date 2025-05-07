@@ -6,6 +6,11 @@ image:
   tag: latest
   pullSecret: ghcr-secret
 
+serviceAccount:
+  create: true
+  name: k8s-ui-backend
+  annotations: {}
+
 service:
   type: ClusterIP
   port: 80
