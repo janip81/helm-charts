@@ -86,7 +86,7 @@ jobs:
         uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (install)
-        run: ct install --config ct-install-skip.yaml 2>&1
+        run: ct install --config ./ct-install-skip.yaml 2>&1
 
   release:
     needs: changes
