@@ -858,6 +858,43 @@ entries:
           url: https://github.com/kubernetes-sigs/cluster-api
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2025-05-07T16:25:50.36007188Z"
+    description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with
+      CAPI integration.
+    digest: 40ccbcaaf1fceb24ffa6f4b20dad0f90d3604c4b1f67f5a95808042476f19cf7
+    home: https://github.com/janip81/k8s-ui
+    icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    keywords:
+    - kubernetes
+    - dashboard
+    - capi
+    - multi-cluster
+    - ui
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: k8s-ui
+    sources:
+    - https://github.com/janip81/k8s-ui
+    - https://github.com/kubernetes-sigs/cluster-api
+    - https://github.com/kubernetes/dashboard
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/k8s-ui-1.0.6/k8s-ui-1.0.6.tgz
+    version: 1.0.6
+  - annotations:
+      artifacthub.io/images: |
+        - name: frontend
+          image: ghcr.io/janip81/k8s-ui-frontend:latest
+        - name: backend
+          image: ghcr.io/janip81/k8s-ui-backend:latest
+      artifacthub.io/links: |
+        - name: Project Source
+          url: https://github.com/janip81/k8s-ui
+        - name: Cluster API
+          url: https://github.com/kubernetes-sigs/cluster-api
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2025-05-07T15:38:12.288892852Z"
     description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with
       CAPI integration.
@@ -1131,4 +1168,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-05-07T15:38:12.289032402Z"
+generated: "2025-05-07T16:25:50.36018392Z"
