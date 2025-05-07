@@ -20,4 +20,3 @@ gateway:
   name: main-gateway
   namespace: gateway-system
   hostname: k8s-ui.example.com
-

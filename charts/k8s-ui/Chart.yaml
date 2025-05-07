@@ -2,7 +2,7 @@ apiVersion: v2
 name: k8s-ui
 description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with CAPI integration.
 type: application
-version: 1.0.5
+version: 1.0.6
 appVersion: "0.1.0"
 home: https://github.com/janip81/k8s-ui
 icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
