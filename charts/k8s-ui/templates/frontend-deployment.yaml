@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-ui-frontend
+  name: {{ include "k8s-ui.fullname" . }}-frontend
+  labels:
+    app: {{ include "k8s-ui.name" . }}-frontend
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: k8s-ui-frontend
+      app: {{ include "k8s-ui.name" . }}-frontend
   template:
     metadata:
       labels:
-        app: k8s-ui-frontend
+        app: {{ include "k8s-ui.name" . }}-frontend
     spec:
-      imagePullSecrets:
-        - name: {{ .Values.image.pullSecret }}
       containers:
         - name: frontend
           image: "{{ .Values.image.frontend }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 80
+          imagePullPolicy: IfNotPresent
