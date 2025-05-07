@@ -124,9 +124,6 @@ MIT
 | image.frontend | string | `"ghcr.io/janip81/k8s-ui-frontend"` |  |
 | image.pullSecret | string | `"ghcr-secret"` |  |
 | image.tag | string | `"latest"` |  |
-| kubeconfigSecret.create | bool | `true` |  |
-| kubeconfigSecret.kubeconfig | string | `"apiVersion: v1\nkind: Config\nclusters:\n- cluster:\n    server: https://your-cluster-endpoint:6443\n    certificate-authority-data: ...\n  name: your-cluster\ncontexts:\n- context:\n    cluster: your-cluster\n    user: admin\n  name: default\ncurrent-context: default\nusers:\n- name: admin\n  user:\n    token: your-token\n"` |  |
-| kubeconfigSecret.name | string | `"management-cluster-kubeconfig"` |  |
 | replicaCount | int | `1` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
