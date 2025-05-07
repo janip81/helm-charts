@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-ui-backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: k8s-ui-backend
+  template:
+    metadata:
+      labels:
+        app: k8s-ui-backend
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: backend
+          image: "{{ .Values.image.backend }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KUBECONFIG
+              value: /kubeconfigs/config
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /kubeconfigs
+              readOnly: true
+      volumes:
+        - name: kubeconfig
+          secret:
+            secretName: {{ .Values.kubeconfigSecret }}

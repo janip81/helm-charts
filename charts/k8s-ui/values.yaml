@@ -1,0 +1,39 @@
+replicaCount: 1
+
+image:
+  backend: ghcr.io/janip81/k8s-ui-backend
+  frontend: ghcr.io/janip81/k8s-ui-frontend
+  tag: latest
+  pullSecret: ghcr-secret
+
+service:
+  type: ClusterIP
+  port: 80
+
+gateway:
+  enabled: true
+  name: main-gateway
+  namespace: gateway-system
+  hostname: k8s-ui.example.com
+
+kubeconfigSecret:
+  name: management-cluster-kubeconfig
+  create: true
+  kubeconfig: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        server: https://your-cluster-endpoint:6443
+        certificate-authority-data: ...
+      name: your-cluster
+    contexts:
+    - context:
+        cluster: your-cluster
+        user: admin
+      name: default
+    current-context: default
+    users:
+    - name: admin
+      user:
+        token: your-token
