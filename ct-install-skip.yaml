@@ -1,0 +1,5 @@
+chart-dirs:
+  - charts
+check-version-increment: false
+upgrade: true
+install: true
