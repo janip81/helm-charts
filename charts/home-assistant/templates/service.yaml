@@ -2,37 +2,35 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ include "home-assistant.fullname" . }}
   labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
-  name: home-assistant
+    {{- include "home-assistant.labels" . | nindent 4 }}
 spec:
-  selector:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
   type: {{ .Values.service.type }}
   ports:
-    - port: 80
-      name: http
-      targetPort: {{ .Values.service.port }}
+    - port: {{ .Values.service.port }}
+      targetPort: 8123
       protocol: TCP
-{{- if .Values.addons.codeserver.enabled }}
+      nodePort: {{ .Values.service.nodePort | default nil }}
+  selector:
+    {{- include "home-assistant.selectorLabels" . | nindent 4 }}
+{{- range $name, $addon := .Values.addons }}
+{{- if and $addon.enabled $addon.service }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ include "home-assistant.fullname" $ }}-{{ $name }}
   labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
-  name: hass-code-server
+    {{- include "home-assistant.labels" $ | nindent 4 }}
+    addon: {{ $name }}
 spec:
-  selector:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
-  type: 
+  type: {{ $addon.service.type }}
   ports:
-    - port: 80
-      name: http
-      targetPort: {{ .Values.addons.codeserver.service.port }}
+    - port: {{ $addon.service.port }}
+      targetPort: {{ $addon.service.port }}
       protocol: TCP
+  selector:
+    {{- include "home-assistant.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}
