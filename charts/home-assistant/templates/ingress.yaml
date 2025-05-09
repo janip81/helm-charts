@@ -1,0 +1,51 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "home-assistant.fullname" . }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "home-assistant.fullname" $ }}
+                port:
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- range $name, $addon := .Values.addons }}
+{{- if and $addon.enabled $addon.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "home-assistant.fullname" $ }}-{{ $name }}
+  annotations:
+    {{- toYaml $addon.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ $addon.ingress.ingressClassName }}
+  rules:
+    {{- toYaml $addon.ingress.rules | nindent 4 }}
+  {{- if $addon.ingress.tls }}
+  tls:
+    {{- toYaml $addon.ingress.tls | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

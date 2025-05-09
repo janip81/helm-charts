@@ -1,87 +1,72 @@
-{{- if and (ne .Values.httpRoute.internalGateway "") .Values.httpRoute.enabled }}
+{{- if .Values.ciliumGateway.enabled }}
+{{- if .Values.ciliumGateway.gatewayName }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
-  name: home-assistant
-  labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
+  name: {{ include "home-assistant.fullname" . }}-external
+  annotations:
+    {{- toYaml .Values.ciliumGateway.external.annotations | nindent 4 }}
 spec:
   parentRefs:
-  - group: gateway.networking.k8s.io	
-    name: {{ .Values.httpRoute.internalGateway }}
-    namespace: cilium
-    kind: Gateway
+    - name: {{ .Values.ciliumGateway.gatewayName }}
+      namespace: {{ .Values.ciliumGateway.gatewayNamespace }}
   hostnames:
-    - {{ .Values.httpRoute.hostname }}
+    - {{ .Values.ciliumGateway.hostname }}
   rules:
-  - backendRefs:
-    - group: ''
-      kind: Service
-      name: home-assistant
-      port: 80
-      weight: 1	
-    matches:	
-      - path:	
-          type: PathPrefix	
-          value: /
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "home-assistant.fullname" . }}
+          port: {{ .Values.service.port }}
 {{- end }}
-{{- if and (ne .Values.httpRoute.externalGateway "") .Values.httpRoute.enabled }}
+
+{{- if .Values.ciliumGateway.internalGatewayName }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
-  name: home-assistant-external
-  labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
+  name: {{ include "home-assistant.fullname" . }}-internal
+  annotations:
+    {{- toYaml .Values.ciliumGateway.internal.annotations | nindent 4 }}
 spec:
   parentRefs:
-  - group: gateway.networking.k8s.io	
-    name: {{ .Values.httpRoute.externalGateway }}
-    namespace: cilium
-    kind: Gateway
+    - name: {{ .Values.ciliumGateway.internalGatewayName }}
+      namespace: {{ .Values.ciliumGateway.internalGatewayNamespace }}
   hostnames:
-    - {{ .Values.httpRoute.hostname }}
+    - {{ .Values.ciliumGateway.internalHostname }}
   rules:
-  - backendRefs:
-    - group: ''
-      kind: Service
-      name: home-assistant
-      port: 80
-      weight: 1	
-    matches:	
-      - path:	
-          type: PathPrefix	
-          value: /
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "home-assistant.fullname" . }}
+          port: {{ .Values.service.port }}
 {{- end }}
-{{- if .Values.addons.codeserver.enabled }}
+{{- end }}
+{{- range $name, $addon := .Values.addons }}
+{{- if and $addon.enabled $addon.httpRoute.enabled }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
-  name: hass-code-server
-  labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
+  name: {{ include "home-assistant.fullname" $ }}-{{ $name }}
 spec:
   parentRefs:
-  - group: gateway.networking.k8s.io	
-    name: {{ .Values.addons.codeserver.httpRoute.gateway }}
-    namespace: cilium
-    kind: Gateway	
+    - name: {{ $addon.httpRoute.gateway }}
+      namespace: {{ $.Values.ciliumGateway.internalGatewayNamespace }}
   hostnames:
-    - {{ .Values.addons.codeserver.httpRoute.hostname }}
+    - {{ $addon.httpRoute.hostname }}
   rules:
-  - backendRefs:
-    - group: ''
-      kind: Service
-      name: hass-code-server
-      port: 80
-      weight: 1	
-    matches:	
-      - path:	
-          type: PathPrefix	
-          value: /
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "home-assistant.fullname" $ }}-{{ $name }}
+          port: {{ $addon.service.port }}
+{{- end }}
 {{- end }}

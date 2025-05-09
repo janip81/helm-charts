@@ -1,38 +1,19 @@
-{{- if .Values.metrics.serviceMonitor.enabled }}
----
+{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: home-assistant
+  name: {{ include "home-assistant.fullname" . }}
+  namespace: {{ .Values.metrics.serviceMonitor.namespace }}
   labels:
-    app.kubernetes.io/name: home-assistant
-    app.kubernetes.io/instance: home-assistant
-    {{- with .Values.metrics.serviceMonitor.labels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
+    {{- toYaml .Values.metrics.serviceMonitor.labels | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: home-assistant
-      app.kubernetes.io/name: home-assistant
+      {{- include "home-assistant.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: http
-      {{- with .Values.metrics.serviceMonitor.interval }}
-      interval: {{ . }}
-      {{- end }}
-      {{- with .Values.metrics.serviceMonitor.scrapeTimeout }}
-      scrapeTimeout: {{ . }}
-      {{- end }}
-      path: /api/prometheus
-      {{- with .Values.metrics.serviceMonitor.bearerTokenFile }}
-      bearerTokenFile: {{ . }}
-      {{- end }}
-      {{- with .Values.metrics.serviceMonitor.bearerTokenSecret }}
-      bearerTokenSecret:
-        name: {{ .name }}
-        key: {{ .key }}
-        {{- with .optional }}
-        optional: {{ . }}
-        {{- end }}
-      {{- end }}
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
 {{- end }}
