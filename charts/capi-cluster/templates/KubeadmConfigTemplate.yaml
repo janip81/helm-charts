@@ -22,6 +22,9 @@ spec:
         >/etc/hosts
       - echo "127.0.0.1   {{ printf "{{ ds.meta_data.hostname }} {{ local_hostname }}" }} localhost
         localhost.localdomain localhost4 localhost4.localdomain4" >>/etc/hosts
+      - mkdir -p /etc/pre-kubeadm-commands
+      - for script in $(find /etc/pre-kubeadm-commands/ -name '*.sh' -type f | sort);
+        do echo "Running script $script"; "$script"; done
       users:
       - name: capv
         sshAuthorizedKeys:

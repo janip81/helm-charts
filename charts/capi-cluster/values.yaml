@@ -11,7 +11,7 @@ cluster:
 # podSecurityStandards. if enabled on cluster level make sure deployments follow the rules
 podSecurityStandard:
   # Enable pss default rules on cluster level (false will only enforce on ns with correct labels)
-  enabled: true
+  enabled: false
   # Enforce level (privileged / baseline / restricted)
   enforce: baseline
   # which baseline to audit
@@ -32,7 +32,7 @@ network:
 
 node:
   datastore: SSD01
-  template: ubuntu-2204-kube-v1.28.0
+  template: ubuntu-2404-kube-v1.33.0
   sshAuthorizedKeys: PublicKey
 
 vsphere:
@@ -49,14 +49,14 @@ vsphere:
     zone: zone
 
 controlPlaneNodes:
-  k8sVersion: 1.28.0
+  k8sVersion: 1.33.0
   vspehereMachineTemplate: ubnt2204-2cpu-4g-128
   replicas: 3
 
 machineDeployments:
   - name: md-0
     vspehereMachineTemplate: ubnt2204-4cpu-8g-128
-    k8sVersion: 1.28.0
+    k8sVersion: 1.33.0
     replicas: 2
     # Add additonal labels to nodes
     nodeLabels:
@@ -72,8 +72,8 @@ machineDeployments:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
   - name: md-1
-    vspehereMachineTemplate: ubnt2204-4cpu-8g-128
-    k8sVersion: 1.28.0
+    vspehereMachineTemplate: ubnt2204-4cpu-8g-133
+    k8sVersion: 1.33.0
     replicas: 3
     # Add additonal labels to nodes
     nodeLabels:
@@ -91,24 +91,24 @@ machineDeployments:
 
 # Machine templates
 machineTemplates:
-  - name: ubnt2204-2cpu-4g-128
+  - name: ubnt2204-2cpu-4g-133
     cpu: 2
     memory: 4096
     # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
     cloneMode: FullClone
     diskSize: 25
-    isoTemplate: ubuntu-2204-kube-v1.28.0
+    isoTemplate: ubuntu-2404-kube-v1.33.0
     vcenterDatastore: SSD01
     vcenterFolder: 
     network: vcenterNetwork
     storagePolicyName: ""
-  - name: ubnt2204-4cpu-8g-128
+  - name: ubnt2204-4cpu-8g-133
     cpu: 4 
     memory: 8192
     # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
     cloneMode: FullClone
     diskSize: 35
-    isoTemplate: ubuntu-2204-kube-v1.28.0
+    isoTemplate: ubuntu-2404-kube-v1.33.0
     vcenterDatastore: SSD01
     vcenterFolder:
     network: vcenterNetwork
@@ -117,7 +117,7 @@ machineTemplates:
 kubeVIP:
   image:
     repository: ghcr.io/kube-vip/kube-vip
-    tag: v0.6.2
+    tag: v0.8.9
     pullPolicy: IfNotPresent
 
 healthChecks:
@@ -167,7 +167,7 @@ addons:
       namespace:
       values: {}
   metricsServer:
-    enabled: True
+    enabled: false
     name: metrics-server
     chart:
       repo: https://kubernetes-sigs.github.io/metrics-server

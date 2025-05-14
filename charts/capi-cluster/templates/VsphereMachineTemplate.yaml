@@ -25,6 +25,7 @@ spec:
           networkName: {{ .network }}
       numCPUs: {{ .cpu }}
       os: Linux
+      powerOffMode: trySoft
       resourcePool: {{ .resourcePool }}
       server: {{ $.Values.vsphere.serverIP }}
       storagePolicyName: "{{ .storagePolicyName }}"
