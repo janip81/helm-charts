@@ -21,7 +21,7 @@ podSecurityStandard:
   # Exemptions (do not remove kube-system)
   exemptions:
     namespaces:
-      - kube-system # Do Not Remove this, kube-system needs exception!!
+      - kube-system   # Do Not Remove this, kube-system needs exception!!
 
 network:
   prefix: "24"
@@ -99,11 +99,11 @@ machineTemplates:
     diskSize: 25
     isoTemplate: ubuntu-2404-kube-v1.33.0
     vcenterDatastore: SSD01
-    vcenterFolder: 
+    vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
   - name: ubnt2204-4cpu-8g-133
-    cpu: 4 
+    cpu: 4
     memory: 8192
     # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
     cloneMode: FullClone
@@ -160,9 +160,9 @@ addons:
     enabled: false
     name: vsphere-cpi
     chart:
-      repo: 
-      name: 
-      version: 
+      repo:
+      name:
+      version:
     release:
       namespace:
       values: {}
