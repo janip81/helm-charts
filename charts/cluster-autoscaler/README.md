@@ -1,11 +1,3 @@
-# DISCLAIMER
-
-This is my modifed fork of the autoscaler chart. I have changed to be able to have extra rules for cluster role! Please see the original gitrepo for the autoscaler.
-
-https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler
-
-README below is for the original helm-chart.
-
 # cluster-autoscaler
 
 Scales Kubernetes worker nodes within autoscaling groups.
@@ -412,6 +404,11 @@ vpa:
 | prometheusRule.rules | list | `[]` | Rules spec template (see https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#rule). |
 | rbac.clusterScoped | bool | `true` | if set to false will only provision RBAC to alter resources in the current namespace. Most useful for Cluster-API |
 | rbac.create | bool | `true` | If `true`, create and use RBAC resources. |
+| rbac.extraRules[0].apiGroups[0] | string | `"infrastructure.cluster.x-k8s.io"` |  |
+| rbac.extraRules[0].resources[0] | string | `"vspheremachinetemplates"` |  |
+| rbac.extraRules[0].verbs[0] | string | `"get"` |  |
+| rbac.extraRules[0].verbs[1] | string | `"list"` |  |
+| rbac.extraRules[0].verbs[2] | string | `"watch"` |  |
 | rbac.pspEnabled | bool | `false` | If `true`, creates and uses RBAC resources required in the cluster with [Pod Security Policies](https://kubernetes.io/docs/concepts/policy/pod-security-policy/) enabled. Must be used with `rbac.create` set to `true`. |
 | rbac.serviceAccount.annotations | object | `{}` | Additional Service Account annotations. |
 | rbac.serviceAccount.automountServiceAccountToken | bool | `true` | Automount API credentials for a Service Account. |
