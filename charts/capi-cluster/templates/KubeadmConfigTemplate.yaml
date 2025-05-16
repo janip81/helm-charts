@@ -10,6 +10,7 @@ spec:
       joinConfiguration:
         nodeRegistration:
           criSocket: /var/run/containerd/containerd.sock
+          kubeletExtraArgs:
             {{- if .Values.cluster.bgpPolicyVlan }}
             node-labels: bgp-policy={{ .Values.cluster.bgpPolicyVlan }}
             {{- end }}
