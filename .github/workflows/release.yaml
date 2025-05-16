@@ -80,31 +80,23 @@ jobs:
 
       - name: Run chart-testing (lint)
         run: ct lint --target-branch main 2>&1
-
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.12.0
       
       - name: Determine if capi-cluster chart was changed
         id: changed
         run: |
-          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "capi_changed=false" >> $GITHUB_OUTPUT
           ct list-changed --target-branch main > changed.txt
           cat changed.txt
           if grep -q 'charts/capi-cluster' changed.txt; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "capi_changed=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Install Cluster API components
-        if: steps.changed.outputs.changed == 'true'
-        run: |
-          curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.7.3/clusterctl-linux-amd64 -o clusterctl
-          chmod +x clusterctl
-          sudo mv clusterctl /usr/local/bin/
-
-          clusterctl init --infrastructure vsphere --core cluster-api --bootstrap kubeadm --control-plane kubeadm
-
+      - name: Create kind cluster
+        if: steps.changed.outputs.capi_changed != 'true'
+        uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (install)
+        if: steps.changed.outputs.capi_changed != 'true'
         run: ct install --config ./ct-install-skip.yaml 2>&1
 
   release:
