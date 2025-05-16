@@ -83,6 +83,9 @@ jobs:
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.12.0
+      
+      - name: Install Cluster API CRDs
+        run: ./hack/install-crds.sh
 
       - name: Run chart-testing (install)
         run: ct install --config ./ct-install-skip.yaml 2>&1
