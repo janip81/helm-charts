@@ -9,9 +9,7 @@ spec:
     certificatesExpiryDays: 21
   kubeadmConfigSpec:
     clusterConfiguration:
-      apiServer:
-        extraArgs:
-          cloud-provider: external {{ if .Values.podSecurityStandard.enabled }}
+      apiServer: {{ if .Values.podSecurityStandard.enabled }}
           admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
         extraVolumes:
           - name: admission-pss
