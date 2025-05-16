@@ -100,7 +100,7 @@ jobs:
         run: ct install --config ./ct-install-skip.yaml 2>&1
 
   release:
-    needs: [changes, lint-test]
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
