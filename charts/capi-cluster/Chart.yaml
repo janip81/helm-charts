@@ -24,7 +24,7 @@ icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
 keywords:
   - cluster-api
 maintainers:
-  - name: Jani Pesonen
+  - name: janip81
     email: jani@techmonkeys.se
     url: https://github.com/janip81
 sources:
