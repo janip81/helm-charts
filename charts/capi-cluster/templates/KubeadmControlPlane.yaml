@@ -75,7 +75,7 @@ spec:
             - name: vip_retryperiod
               value: "2"
             - name: address
-              value: {{ .Values.cluster.controlPlaneEndpoint }}
+              value: {{ .Values.cluster.controlPlaneEndpointIP }}
             - name: prometheus_server
               value: :2112
             image: {{ .Values.kubeVIP.image.repository }}:{{ .Values.kubeVIP.image.tag }}
