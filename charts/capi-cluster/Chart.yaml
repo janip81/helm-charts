@@ -14,7 +14,7 @@ type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 0.0.47
+version: 0.0.48
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
@@ -24,7 +24,7 @@ icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
 keywords:
   - cluster-api
 maintainers:
-  - name: Jani Pesonen
+  - name: janip81
     email: jani@techmonkeys.se
     url: https://github.com/janip81
 sources:
