@@ -9,7 +9,9 @@ spec:
     certificatesExpiryDays: 21
   kubeadmConfigSpec:
     clusterConfiguration:
-      apiServer: {{ if .Values.podSecurityStandard.enabled }}
+      apiServer:
+        authorization-mode: Node,RBAC
+      {{- if .Values.podSecurityStandard.enabled }}
           admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
         extraVolumes:
           - name: admission-pss
@@ -17,7 +19,9 @@ spec:
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
             pathType: "File"
-        {{ end }}
+      {{- else}}
+        {}
+      {{- end }}
       controllerManager:
         extraArgs:
           cloud-provider: external
@@ -153,7 +157,8 @@ spec:
         fi
       owner: root:root
       path: /etc/pre-kubeadm-commands/50-kube-vip-prepare.sh
-      permissions: "0700" {{ if .Values.podSecurityStandard.enabled }}
+      permissions: "0700" 
+    {{- if .Values.podSecurityStandard.enabled }}
     - content: |
         apiVersion: apiserver.config.k8s.io/v1
         kind: AdmissionConfiguration
@@ -173,12 +178,13 @@ spec:
               usernames: []
               runtimeClasses: []
               namespaces:
-{{ toYaml .Values.podSecurityStandard.exemptions.namespaces | indent 16 }}
+{{- toYaml .Values.podSecurityStandard.exemptions.namespaces | indent 16 }}
       owner: root:root
       path: /etc/kubernetes/kube-apiserver-admission-pss.yaml {{ end }}
-    initConfiguration: {{ if (default .Values.cluster.skipKubeProxy false)}}
+    initConfiguration: {{- if (default .Values.cluster.skipKubeProxy false)}}
       skipPhases:
-        - addon/kube-proxy {{ end }}
+        - addon/kube-proxy 
+      {{- end }}
       nodeRegistration:
         criSocket: /var/run/containerd/containerd.sock
         kubeletExtraArgs:
