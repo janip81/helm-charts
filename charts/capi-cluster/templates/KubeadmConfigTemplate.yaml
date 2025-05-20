@@ -13,7 +13,7 @@ spec:
           kubeletExtraArgs:
             cloud-provider: external
             {{- if .Values.cluster.bgpPolicyVlan }}
-            node-labels: bgp-policy={{ .Values.cluster.bgpPolicyVlan }}
+            node-labels: "bgp-policy={{ .Values.cluster.bgpPolicyVlan }}"
             {{- end }}
           name: {{ printf "'{{ local_hostname }}'" }}
       preKubeadmCommands:

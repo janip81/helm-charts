@@ -10,18 +10,21 @@ spec:
   kubeadmConfigSpec:
     clusterConfiguration:
       apiServer:
-        authorization-mode: Node,RBAC
-      {{- if .Values.podSecurityStandard.enabled }}
-          admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
+        certSANs:
+          - {{ .Values.cluster.controlPlaneEndpointIP }}
+          - {{ .Values.cluster.controlPlaneEndpoint }}
+          - localhost
+        extraArgs:
+          authorization-mode: Node,RBAC
+        {{- if .Values.podSecurityStandard.enabled }}
+        admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
         extraVolumes:
           - name: admission-pss
             hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
             pathType: "File"
-      {{- else}}
-        {}
-      {{- end }}
+        {{- end }}
       controllerManager:
         extraArgs:
           cloud-provider: external
@@ -33,6 +36,8 @@ spec:
       scheduler:
         extraArgs:
           bind-address: 0.0.0.0
+      dns:
+        type: CoreDNS
     files:
     - content: |
         apiVersion: v1
@@ -189,6 +194,7 @@ spec:
         criSocket: /var/run/containerd/containerd.sock
         kubeletExtraArgs:
           cloud-provider: external
+          pod-infra-container-image: registry.k8s.io/pause:3.10
         name: {{ printf "'{{ local_hostname }}'" }}
     joinConfiguration:
       nodeRegistration:
