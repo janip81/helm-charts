@@ -67,6 +67,9 @@ machineDeployments:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
+    machineDeploymentLabels:
+      autoscaler: enabled
+
     # Add annotations to your machine deployments for example if you have autoscaler
     machideDeploymentAnnotations:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
