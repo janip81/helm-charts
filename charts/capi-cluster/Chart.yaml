@@ -18,7 +18,7 @@ version: 0.0.55
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
-appVersion: 1.33
+appVersion: "1.33"
 home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
 icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
 keywords:
