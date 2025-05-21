@@ -7,6 +7,7 @@ metadata:
   namespace: {{ $.Values.cluster.name }}
   labels:
     cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
+    cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
 {{- if .machineDeploymentLabels }}
 {{ toYaml .machineDeploymentLabels | nindent 4 }}
 {{- end }}
