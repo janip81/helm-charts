@@ -6,10 +6,9 @@ metadata:
   name: {{ $.Values.cluster.name }}-{{ .name }}
   namespace: {{ $.Values.cluster.name }}
   labels:
-    cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
-{{- if .machineDeploymentLabels }}
-{{ toYaml .machineDeploymentLabels | nindent 4 }}
-{{- end }}
+{{- $baseLabels := dict "cluster.x-k8s.io/cluster-name" $.Values.cluster.name "cluster.x-k8s.io/deployment-name" (print $.Values.cluster.name "-" .name) }}
+{{- $mergedLabels := merge $baseLabels .machineDeploymentLabels }}
+{{ toYaml $mergedLabels | nindent 4 }}
 {{- if .machideDeploymentAnnotations }}
   annotations: {{ toYaml .machideDeploymentAnnotations | nindent 4 }}
 {{- end }}
