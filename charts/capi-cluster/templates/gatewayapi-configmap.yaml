@@ -1,0 +1,18 @@
+{{- if .Values.gatewayapi.enabled }}
+{{- $name := printf "gateway-api-crds-%s-%s" (replace .Values.gatewayapi.version "." "-") .Values.gatewayapi.channel | trunc 63 }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ .Release.Name }}
+    addon: gateway-api
+  annotations:
+    checksum/content: {{ (printf "https://github.com/kubernetes-sigs/gateway-api/releases/download/%s/%s-install.yaml" .Values.gatewayapi.version .Values.gatewayapi.channel) | sha256sum }}
+data:
+  install.yaml: |
+{{- $url := printf "https://github.com/kubernetes-sigs/gateway-api/releases/download/%s/%s-install.yaml" .Values.gatewayapi.version .Values.gatewayapi.channel }}
+{{- $crds := (fetch $url | indent 4) }}
+{{ $crds }}
+{{- end }}

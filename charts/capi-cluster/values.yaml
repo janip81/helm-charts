@@ -31,6 +31,12 @@ network:
   poolStart: "192.168.1.2"
   poolEnd: "192.168.1.254"
 
+gatewayapi:
+  enabled: true
+  version: v1.3.0
+  channel: standard  # Or Experimental
+  applyStrategy: ApplyOnce  # Or future: ApplyOnceWithRetry
+
 node:
   datastore: SSD01
   template: ubuntu-2404-kube-v1.33.0
