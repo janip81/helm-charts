@@ -4,8 +4,9 @@ apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: VSphereMachineTemplate
 metadata:
   name: {{ $.Values.cluster.name }}-{{ .name }}
-  cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
   namespace: {{ $.Values.cluster.name }}
+  labels:
+    cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
 spec:
   template:
     spec:
