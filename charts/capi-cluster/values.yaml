@@ -69,7 +69,7 @@ machineDeployments:
 
     machineDeploymentLabels:
       autoscaler: enabled
-    
+
     machineSetLabels:
       autoscaler: enabled
 
