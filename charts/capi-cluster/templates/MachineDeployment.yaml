@@ -26,8 +26,8 @@ spec:
       labels:
         cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}
         cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
-{{- if .nodeLabels }}
-{{ toYaml .nodeLabels | trim | nindent 8 }}
+{{- if .machineSetLabels }}
+{{ toYaml .machineSetLabels | trim | nindent 8 }}
 {{- end }}
 {{- if .nodeAnnotations }}
       annotations: {{ toYaml .nodeAnnotations | nindent 8 }}
