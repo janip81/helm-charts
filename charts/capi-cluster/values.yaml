@@ -64,11 +64,10 @@ machineDeployments:
       node-role.kubernetes.io/worker: "true"
 
     nodeAnnotations:
-      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
-      # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
+      # test: test
 
     machineDeploymentLabels:
-      autoscaler: enabled
+    #  autoscaler: enabled
 
     machineSetLabels:
       autoscaler: enabled
