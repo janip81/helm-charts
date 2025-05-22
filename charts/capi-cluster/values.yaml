@@ -69,6 +69,9 @@ machineDeployments:
 
     machineDeploymentLabels:
       autoscaler: enabled
+    
+    machineSetLabels:
+      autoscaler: enabled
 
     # Add annotations to your machine deployments for example if you have autoscaler
     machideDeploymentAnnotations:
