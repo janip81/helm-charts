@@ -29,6 +29,9 @@ spec:
 {{- if .machineSetLabels }}
 {{ toYaml .machineSetLabels | trim | nindent 8 }}
 {{- end }}
+{{- if .nodeLabels }}
+{{ toYaml .nodeLabels | trim | nindent 8 }}
+{{- end }}
 {{- if .nodeAnnotations }}
       annotations: {{ toYaml .nodeAnnotations | nindent 8 }}
 {{- end }}
