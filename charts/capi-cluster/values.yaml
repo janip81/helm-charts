@@ -128,7 +128,7 @@ machineTemplates:
     vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
-    #pciDevices:
+    # pciDevices:
     #  - deviceId: 21      # decimal format, not hex
     #    vendorId: 6418    # decimal format, not hex
 
