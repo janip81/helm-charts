@@ -36,7 +36,8 @@ spec:
 {{- if .pciDevices }}
       pciDevices:
 {{- range .pciDevices }}
-        - id: "{{ .id }}"
+        - deviceId: {{ .deviceId }}
+          vendorId: {{ .vendorId }}
 {{- end }}
 {{- end }}
 {{- end }}
