@@ -128,9 +128,9 @@ machineTemplates:
     vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
-    pciDevices:
-    #  - id: "pci-1002_67DF"
-    #  - id: "pci-8086_10ed"
+    # pciDevices:
+    #  - deviceId: 21      # decimal format, not hex
+    #    vendorId: 6418    # decimal format, not hex
 
 kubeVIP:
   image:
