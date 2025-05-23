@@ -99,7 +99,10 @@ machineDeployments:
     machideDeploymentAnnotations:
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
-
+    taints:
+      - key: "dedicated"
+        value: "pci"
+        effect: "NoSchedule"
 
 # Machine templates
 machineTemplates:
@@ -125,6 +128,9 @@ machineTemplates:
     vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
+    pciDevices:
+    #  - id: "pci-1002_67DF"
+    #  - id: "pci-8086_10ed"
 
 kubeVIP:
   image:

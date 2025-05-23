@@ -16,6 +16,14 @@ spec:
             node-labels: "bgp-policy={{ .Values.cluster.bgpPolicyVlan }}"
             {{- end }}
           name: {{ printf "'{{ local_hostname }}'" }}
+{{- if .taints }}
+          taints:
+{{- range .taints }}
+            - key: "{{ .key }}"
+              value: "{{ .value }}"
+              effect: "{{ .effect }}"
+{{- end }}
+{{- end }}
       preKubeadmCommands:
       - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
       - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6"

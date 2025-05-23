@@ -33,4 +33,10 @@ spec:
       storagePolicyName: "{{ .storagePolicyName }}"
       template: {{ .isoTemplate }}
       thumbprint: {{ $.Values.vsphere.thumbprint }}
+{{- if .pciDevices }}
+      pciDevices:
+{{- range .pciDevices }}
+        - id: "{{ .id }}"
+{{- end }}
+{{- end }}
 {{- end }}
