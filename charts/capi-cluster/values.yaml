@@ -31,6 +31,12 @@ network:
   poolStart: "192.168.1.2"
   poolEnd: "192.168.1.254"
 
+gatewayapi:
+  enabled: true
+  version: v1.3.0
+  channel: standard  # Or Experimental
+  applyStrategy: ApplyOnce  # Or future: ApplyOnceWithRetry
+
 node:
   datastore: SSD01
   template: ubuntu-2404-kube-v1.33.0
@@ -93,7 +99,10 @@ machineDeployments:
     machideDeploymentAnnotations:
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
-
+    taints:
+      - key: "dedicated"
+        value: "pci"
+        effect: "NoSchedule"
 
 # Machine templates
 machineTemplates:
@@ -119,6 +128,9 @@ machineTemplates:
     vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
+    pciDevices:
+    #  - id: "pci-1002_67DF"
+    #  - id: "pci-8086_10ed"
 
 kubeVIP:
   image:
