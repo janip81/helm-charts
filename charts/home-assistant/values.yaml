@@ -1,174 +1,128 @@
 image:
-  repository: ghcr.io/home-assistant/home-assistant
-  tag: 2023.10.1
-  imagePullPolicy: IfNotPresent
+  repo: ghcr.io/home-assistant/home-assistant
+  tag: "2024.5"
+  pullPolicy: IfNotPresent
+
+env:
+  TZ: "Europe/Stockholm"
+
+hostNetwork: true
+
+usb:
+  enabled: false
+  devices:
+    - /dev/ttyACM0
+    - /dev/ttyUSB0
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: home.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+ciliumGateway:
+  enabled: false
+  gatewayName: cilium-external
+  gatewayNamespace: kube-system
+  hostname: home.example.com
+  external:
+    annotations: {}
+  internalGatewayName: cilium-internal
+  internalGatewayNamespace: kube-system
+  internalHostname: home.internal.local
+  internal:
+    annotations: {}
 
 service:
   type: ClusterIP
   port: 8123
-
-podSecurityContext:
-  # runAsUser: 1000
-  # fsGroup: 2000
-  # runAsNonRoot: true
-  # seccompProfile:
-  #   type: RuntimeDefault
-
-## SecurityContext for hass is a mess you need a lot of capabilites or run as root but all these below are what i
-## tested is needed when not running as root.
-securityContext:
-  readOnlyRootFilesystem: false
-  capabilities:
-    # drop:
-    # - ALL
-    # add:
-      # - NET_RAW
-      # - NET_BIND_SERVICE
-      # - SETGID
-      # - CHOWN
-      # - SYS_CHROOT
-      # - SETUID
-      # - DAC_OVERRIDE
-      # - FOWNER
-      # - KILL
-      # - SETFCAP
-
-httpRoute:
-  enabled: false
-  hostname: hass.domain.com
-  # Leave externalGateway empty to not create it.
-  externalGateway: ""
-  # Leave internalGateway empty to not create it.
-  internalGateway: ""
-
-# Ingress not yet implemented
-ingress:
-  enabled: false
-  annotations:
-    kubernetes.io/ingress.class: "haproxy"
-    haproxy.org/forwarded-for: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-  ingressClassName: "nginx-example"
-  hosts:
-    name: "hass.domain.com"
-    path: /
-    pathType: Prefix
-    backend:
-      service:
-        name: test
-        portnumber: 8123
-  tls: []
-#    - hosts:
-#        - hass.domain.com
-#    tlsSecret: testsecret-tls
-
-metrics:
-  serviceMonitor:
-    enabled: true
-    scrapeTimeout: 
-    bearerTokenFile: 
-    bearerTokenSecret:
-      name: "prometheus"
-      key: "azt2FBZ5GBshXpYYZ7_Vku6qSwhZeRP8iyQWBNfWaIU"
-    interval: 1m
-    labels: {}
-
-
-probes:
-  liveness:
-    tcpSocket:
-      port: 8123
-    #initialDelaySeconds: 0
-    failureThreshold: 3
-    timeoutSeconds: 1
-    periodSeconds: 10
-  readiness:
-    tcpSocket:
-      port: 8123
-    #initialDelaySeconds: 0
-    failureThreshold: 3
-    timeoutSeconds: 1
-    periodSeconds: 10
-  startup:
-    tcpSocket:
-      port: 8123
-    #initialDelaySeconds: 0
-    failureThreshold: 30
-    timeoutSeconds: 1
-    periodSeconds: 5
-
-persistence:
-  enabled: true
-  config:
-    storageClass: "storageclass"
-    accessMode: ReadWriteOnce
-    size: "10Gi"
+  nodePort: 30812
 
 resources:
-  limits:
-    memory: 1024Mi
-    cpu: 500m
   requests:
-    cpu: 20m
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
     memory: 512Mi
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 30s
+    labels:
+      release: prometheus
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
 
 addons:
   codeserver:
     enabled: true
-    image:
-      repository: codercom/code-server
-      tag: 4.7.1
+    container:
+      name: codeserver
+      image: codercom/code-server:4.7.1
       imagePullPolicy: IfNotPresent
-    workingDir: "/config"
-    args:
-    - --auth
-    - "none"
-    - --user-data-dir
-    - "/config/.vscode"
-    - --extensions-dir
-    - "/config/.vscode"
-    - '--port'
-    - '12321'
-    - /config
-
-    securityContext:
-      capabilities:
-        drop:
-        - all
-      readOnlyRootFilesystem: true
-
+      workingDir: "/config"
+      args:
+        - --auth
+        - "none"
+        - --user-data-dir
+        - "/config/.vscode"
+        - --extensions-dir
+        - "/config/.vscode"
+        - --port
+        - "12321"
+        - /config
+      ports:
+        - containerPort: 12321
+      volumeMounts:
+        - name: config
+          mountPath: /config
+      env:
+        - name: TZ
+          value: "Europe/Stockholm"
+      securityContext:
+        capabilities:
+          drop:
+            - all
+        readOnlyRootFilesystem: true
+      resources: {}
     service:
-        type: ClusterIP
-        port: 12321
-    
-    resources: {}
-
+      type: ClusterIP
+      port: 12321
     httpRoute:
-      enabled: true
+      enabled: false
       hostname: vshass.domain.com
-      # Dont expose vscode on a public gateway
       gateway: internal-shared
-
     ingress:
       enabled: false
       ingressClassName: nginx-example
       annotations:
         kubernetes.io/ingress.class: "haproxy"
       rules:
-      - host: hass.domain.com
-        http:
-          paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: test
-                port:
-                  number: 12321
+        - host: hass.domain.com
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: test
+                    port:
+                      number: 12321
       tls: []
-#       - hosts:
-#         - hass.domain.com
-#         tlsSecret: testsecret-tls
-    volumeMounts:
-    - name: config
-      mountPath: /config

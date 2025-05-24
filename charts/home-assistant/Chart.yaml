@@ -2,12 +2,12 @@ apiVersion: v2
 name: home-assistant
 description: An unofficial Helm chart to deploy Home Assistant
 type: application
-version: 0.0.1
-appVersion: 0.0.1
+version: "0.0.2"
+appVersion: "2025.5.3"
 home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
-#icon:
+icon: https://www.home-assistant.io/images/favicon-192x192.png
 maintainers:
-  - name: Jani Pesonen
+  - name: janip81
     email: jani@techmonkeys.se
     url: https://github.com/janip81
 keywords:
