@@ -9,7 +9,7 @@ env:
 hostNetwork: true
 
 usb:
-  enabled: true
+  enabled: false
   devices:
     - /dev/ttyACM0
     - /dev/ttyUSB0
@@ -21,7 +21,7 @@ persistence:
   size: 10Gi
 
 ingress:
-  enabled: true
+  enabled: false
   className: ""
   annotations: {}
   hosts:
@@ -32,7 +32,7 @@ ingress:
   tls: []
 
 ciliumGateway:
-  enabled: true
+  enabled: false
   gatewayName: cilium-external
   gatewayNamespace: kube-system
   hostname: home.example.com
@@ -45,7 +45,7 @@ ciliumGateway:
     annotations: {}
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8123
   nodePort: 30812
 

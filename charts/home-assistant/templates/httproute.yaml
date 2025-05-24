@@ -5,8 +5,11 @@ apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: {{ include "home-assistant.fullname" . }}-external
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.ciliumGateway.external.annotations }}
   annotations:
-    {{- toYaml .Values.ciliumGateway.external.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   parentRefs:
     - name: {{ .Values.ciliumGateway.gatewayName }}
@@ -29,6 +32,7 @@ apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
   name: {{ include "home-assistant.fullname" . }}-internal
+  namespace: {{ $.Release.Namespace }}
   annotations:
     {{- toYaml .Values.ciliumGateway.internal.annotations | nindent 4 }}
 spec:
