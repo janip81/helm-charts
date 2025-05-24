@@ -1239,6 +1239,30 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/frigate-7.8.0/frigate-7.8.0.tgz
     version: 7.8.0
   home-assistant:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    apiVersion: v2
+    appVersion: 2025.5.3
+    created: "2025-05-24T07:34:31.606662771Z"
+    description: An unofficial Helm chart to deploy Home Assistant
+    digest: fd4fbde75eccfa2e7f359b10f8b265a2bf7e4e0d3e03b0fd5fa83746c1272866
+    home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
+    icon: https://www.home-assistant.io/images/favicon-192x192.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: home-assistant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.2/home-assistant-0.0.2.tgz
+    version: 0.0.2
   - apiVersion: v2
     appVersion: 0.0.1
     created: "2025-03-27T08:24:48.075441631Z"
@@ -1582,4 +1606,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-05-23T13:52:17.365637654Z"
+generated: "2025-05-24T07:34:31.60681195Z"
