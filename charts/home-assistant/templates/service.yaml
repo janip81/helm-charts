@@ -11,9 +11,12 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: 8123
       protocol: TCP
-      nodePort: {{ .Values.service.nodePort | default nil }}
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
     {{- include "home-assistant.selectorLabels" . | nindent 4 }}
+
 {{- range $name, $addon := .Values.addons }}
 {{- if and $addon.enabled $addon.service }}
 ---

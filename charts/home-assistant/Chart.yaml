@@ -2,7 +2,7 @@ apiVersion: v2
 name: home-assistant
 description: An unofficial Helm chart to deploy Home Assistant
 type: application
-version: "0.0.2"
+version: "0.0.3"
 appVersion: "2025.5.3"
 home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
 icon: https://www.home-assistant.io/images/favicon-192x192.png
