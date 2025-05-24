@@ -126,15 +126,3 @@ addons:
                     port:
                       number: 12321
       tls: []
-ciliumGateway:
-  enabled: true
-  gatewayName: cilium-external
-  gatewayNamespace: kube-system
-  hostname: home.example.com
-  external:
-    annotations: {}
-  internalGatewayName: cilium-internal
-  internalGatewayNamespace: kube-system
-  internalHostname: home.internal.local
-  internal:
-    annotations: {}
