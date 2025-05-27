@@ -108,6 +108,7 @@ addons:
       enabled: false
       hostname: vshass.domain.com
       gateway: internal-shared
+      gatewayNamespace: kube-system
     ingress:
       enabled: false
       ingressClassName: nginx-example
