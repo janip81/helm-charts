@@ -61,7 +61,7 @@ metadata:
 spec:
   parentRefs:
     - name: {{ $addon.httpRoute.gateway }}
-      namespace: {{ $addon.httpRoute.gateway.gatewayNamespace }}
+      namespace: {{ $addon.httpRoute.gatewayNamespace }}
   hostnames:
     - {{ $addon.httpRoute.hostname }}
   rules:
