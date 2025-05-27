@@ -61,7 +61,7 @@ metadata:
 spec:
   parentRefs:
     - name: {{ $addon.httpRoute.gateway }}
-      namespace: {{ $.Values.ciliumGateway.internalGatewayNamespace }}
+      namespace: {{ $addon.httpRoute.gateway.gatewayNamespace }}
   hostnames:
     - {{ $addon.httpRoute.hostname }}
   rules:
