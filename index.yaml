@@ -1245,6 +1245,30 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
     apiVersion: v2
     appVersion: 2025.5.3
+    created: "2025-05-27T11:49:03.949712239Z"
+    description: An unofficial Helm chart to deploy Home Assistant
+    digest: 73e0395739c724d1e1a31c5e1fbffc1f800fa89a77817ace2dbdefea81bdb905
+    home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
+    icon: https://www.home-assistant.io/images/favicon-192x192.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: home-assistant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.4/home-assistant-0.0.4.tgz
+    version: 0.0.4
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    apiVersion: v2
+    appVersion: 2025.5.3
     created: "2025-05-24T09:00:55.909375189Z"
     description: An unofficial Helm chart to deploy Home Assistant
     digest: 356808074c010f56f788bae895078e4ff7a60e04b1ba9dfe076458e1ea2eccf8
@@ -1630,4 +1654,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-05-24T09:00:55.909517927Z"
+generated: "2025-05-27T11:49:03.949876105Z"
