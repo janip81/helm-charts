@@ -14,6 +14,16 @@ usb:
     - /dev/ttyACM0
     - /dev/ttyUSB0
 
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+
 persistence:
   enabled: true
   storageClass: ""
