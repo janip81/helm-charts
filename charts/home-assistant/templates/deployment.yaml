@@ -9,6 +9,8 @@ spec:
   selector:
     matchLabels:
       {{- include "home-assistant.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
