@@ -64,6 +64,8 @@ spec:
 {{- end }}
 
       volumes:
+        - name: docker-env-empty
+          emptyDir: {}
         - name: config
           persistentVolumeClaim:
             claimName: {{ include "home-assistant.fullname" . }}
