@@ -29,6 +29,8 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: docker-env-empty
+              mountPath: /.dockerenv
             {{- if .Values.usb.enabled }}
             {{- range .Values.usb.devices }}
             - name: usb-{{ . | replace "/" "-" }}
@@ -62,6 +64,8 @@ spec:
 {{- end }}
 
       volumes:
+        - name: docker-env-empty
+          emptyDir: {}
         - name: config
           persistentVolumeClaim:
             claimName: {{ include "home-assistant.fullname" . }}
