@@ -33,6 +33,7 @@ spec:
               mountPath: /config
             - name: docker-env-empty
               mountPath: /.dockerenv
+              subPath: .dockerenv
             {{- if .Values.usb.enabled }}
             {{- range .Values.usb.devices }}
             - name: usb-{{ . | replace "/" "-" }}
