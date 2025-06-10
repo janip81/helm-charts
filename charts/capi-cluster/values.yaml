@@ -128,9 +128,14 @@ machineTemplates:
     vcenterFolder:
     network: vcenterNetwork
     storagePolicyName: ""
-    # pciDevices:
-    #  - deviceId: 21      # decimal format, not hex
-    #    vendorId: 6418    # decimal format, not hex
+    pciDevices:
+      - deviceId: 21      # decimal format, not hex
+        vendorId: 6418    # decimal format, not hex
+    customVMXKeys:
+      pciPassthru0.msiEnabled: "TRUE"
+      pciPassthru1.msiEnabled: "TRUE"
+      pciPassthru2.msiEnabled: "TRUE"
+      pciPassthru3.msiEnabled: "TRUE"
 
 kubeVIP:
   image:
