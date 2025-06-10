@@ -18,13 +18,13 @@ spec:
       memoryMiB: {{ .memory }}
       network:
         devices:
-        - addressesFromPools:
-          - apiGroup: ipam.cluster.x-k8s.io
-            kind: InClusterIPPool
-            name: {{ $.Values.cluster.name }}-ip-pool
-          nameservers:
-          - {{ $.Values.network.nameserver }}
-          networkName: {{ .network }}
+          - addressesFromPools:
+              - apiGroup: ipam.cluster.x-k8s.io
+                kind: InClusterIPPool
+                name: {{ $.Values.cluster.name }}-ip-pool
+            nameservers:
+              - {{ $.Values.network.nameserver }}
+            networkName: {{ .network }}
       numCPUs: {{ .cpu }}
       os: Linux
       powerOffMode: trySoft
@@ -38,6 +38,12 @@ spec:
 {{- range .pciDevices }}
         - deviceId: {{ .deviceId }}
           vendorId: {{ .vendorId }}
+{{- end }}
+{{- end }}
+{{- if .customVMXKeys }}
+      customVMXKeys:
+{{- range $key, $value := .customVMXKeys }}
+        {{ $key }}: "{{ $value }}"
 {{- end }}
 {{- end }}
 {{- end }}
