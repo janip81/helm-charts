@@ -108,7 +108,9 @@ addons:
         - name: HOME
           value: /config
       securityContext:
-        runAsUser: 0
+        runAsUser: 1000  # ✅ safe non-root user
+        runAsGroup: 1000
+        allowPrivilegeEscalation: false
       resources: {}
     service:
       type: ClusterIP
