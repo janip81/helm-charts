@@ -1,147 +1,80 @@
-image:
-  repo: ghcr.io/home-assistant/home-assistant
-  tag: "2024.5"
-  pullPolicy: IfNotPresent
-
-env:
-  TZ: "Europe/Stockholm"
-
-hostNetwork: true
-
-usb:
-  enabled: false
-  devices: []
-
-podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
-  runAsNonRoot: true
-
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-
-homeassistant:
-  securityContext:
-    runAsUser: 0
-    runAsGroup: 0
-    allowPrivilegeEscalation: true
-    readOnlyRootFilesystem: false
-
-persistence:
-  enabled: true
-  storageClass: ""
-  accessMode: ReadWriteOnce
-  size: 10Gi
-
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts:
-    - host: home.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: []
-
-ciliumGateway:
-  enabled: false
-  gatewayName: cilium-external
-  gatewayNamespace: kube-system
-  hostname: home.example.com
-  external:
-    annotations: {}
-  internalGatewayName: cilium-internal
-  internalGatewayNamespace: kube-system
-  internalHostname: home.internal.local
-  internal:
-    annotations: {}
-
-service:
-  type: ClusterIP
-  port: 8123
-  nodePort: 30812
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 256Mi
-  limits:
-    cpu: 500m
-    memory: 512Mi
-
-metrics:
-  enabled: false
-  serviceMonitor:
-    enabled: true
-    namespace: monitoring
-    interval: 30s
-    labels:
-      release: prometheus
-
-nodeSelector: {}
-tolerations: []
-affinity: {}
-
-addons:
-  codeserver:
-    enabled: true
-    container:
-      name: codeserver
-      image: codercom/code-server:4.7.1
-      imagePullPolicy: IfNotPresent
-      workingDir: "/config"
-      args:
-        - --auth
-        - "none"
-        - --user-data-dir
-        - "/config/.vscode"
-        - --extensions-dir
-        - "/config/.vscode"
-        - --port
-        - "12321"
-        - /config
-      ports:
-        - containerPort: 12321
-      volumeMounts:
-        - name: config
-          mountPath: /config
-      env:
-        - name: TZ
-          value: "Europe/Stockholm"
-        - name: HOME
-          value: /config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "home-assistant.fullname" . }}
+  labels:
+    {{- include "home-assistant.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "home-assistant.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "home-assistant.selectorLabels" . | nindent 8 }}
+    spec:
+      hostNetwork: {{ .Values.hostNetwork | default false }}
+      dnsPolicy: {{ if .Values.hostNetwork }}ClusterFirstWithHostNet{{ else }}ClusterFirst{{ end }}
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        allowPrivilegeEscalation: false
-      resources: {}
-    service:
-      type: ClusterIP
-      port: 12321
-    httpRoute:
-      enabled: false
-      hostname: vshass.domain.com
-      gateway: internal-shared
-      gatewayNamespace: kube-system
-    ingress:
-      enabled: false
-      ingressClassName: nginx-example
-      annotations:
-        kubernetes.io/ingress.class: "haproxy"
-      rules:
-        - host: hass.domain.com
-          http:
-            paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: test
-                    port:
-                      number: 12321
-      tls: []
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: home-assistant
+          image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - containerPort: 8123
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: docker-env-empty
+              mountPath: /.dockerenv
+              subPath: .dockerenv
+            {{- if .Values.usb.enabled }}
+            {{- range .Values.usb.devices }}
+            {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+            - name: usb-{{ $sanitized }}
+              mountPath: {{ . }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+          env:
+            - name: TZ
+              value: {{ .Values.env.TZ | quote }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8123
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8123
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+      volumes:
+        - name: docker-env-empty
+          emptyDir: {}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "home-assistant.fullname" . }}
+        {{- if .Values.usb.enabled }}
+        {{- range .Values.usb.devices }}
+        {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+        - name: usb-{{ $sanitized }}
+          hostPath:
+            path: {{ . }}
+            type: CharDevice
+        {{- end }}
+        {{- end }}
+
+{{- range $name, $addon := .Values.addons }}
+{{- if and $addon.enabled $addon.container }}
