@@ -18,11 +18,13 @@ podSecurityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
+  runAsNonRoot: false
 
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: false
-  runAsNonRoot: true
+  runAsNonRoot: false
+
 
 persistence:
   enabled: true
