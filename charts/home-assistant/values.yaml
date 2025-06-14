@@ -10,21 +10,18 @@ hostNetwork: true
 
 usb:
   enabled: false
-  devices:
-    - /dev/ttyACM0
-    - /dev/ttyUSB0
+  devices: []
 
 podSecurityContext:
   runAsUser: 1000
   runAsGroup: 1000
   fsGroup: 1000
-  runAsNonRoot: false
+  runAsNonRoot: true
 
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: false
-  runAsNonRoot: false
-
+  runAsNonRoot: true
 
 persistence:
   enabled: true
