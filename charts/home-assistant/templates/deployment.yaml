@@ -36,7 +36,8 @@ spec:
               subPath: .dockerenv
             {{- if .Values.usb.enabled }}
             {{- range .Values.usb.devices }}
-            - name: usb-{{ . | replace "/" "-" }}
+            {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+            - name: usb-{{ $sanitized }}
               mountPath: {{ . }}
               readOnly: true
             {{- end }}
@@ -59,13 +60,6 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
-{{- range $name, $addon := .Values.addons }}
-{{- if and $addon.enabled $addon.container }}
-        - name: {{ $addon.container.name | quote }}
-{{ toYaml $addon.container | nindent 10 }}
-{{- end }}
-{{- end }}
-
       volumes:
         - name: docker-env-empty
           emptyDir: {}
@@ -74,9 +68,13 @@ spec:
             claimName: {{ include "home-assistant.fullname" . }}
         {{- if .Values.usb.enabled }}
         {{- range .Values.usb.devices }}
-        - name: usb-{{ . | replace "/" "-" }}
+        {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+        - name: usb-{{ $sanitized }}
           hostPath:
             path: {{ . }}
             type: CharDevice
         {{- end }}
         {{- end }}
+
+{{- range $name, $addon := .Values.addons }}
+{{- if and $addon.enabled $addon.container }}
