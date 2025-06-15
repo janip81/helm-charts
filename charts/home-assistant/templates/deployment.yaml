@@ -36,7 +36,8 @@ spec:
               subPath: .dockerenv
             {{- if .Values.usb.enabled }}
             {{- range .Values.usb.devices }}
-            - name: usb-{{ . | replace "/" "-" }}
+            {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+            - name: usb-{{ $sanitized }}
               mountPath: {{ . }}
               readOnly: true
             {{- end }}
@@ -74,7 +75,8 @@ spec:
             claimName: {{ include "home-assistant.fullname" . }}
         {{- if .Values.usb.enabled }}
         {{- range .Values.usb.devices }}
-        - name: usb-{{ . | replace "/" "-" }}
+        {{- $sanitized := . | lower | regexReplaceAll "[^a-z0-9]+" "-" | trunc 63 | trimSuffix "-" }}
+        - name: usb-{{ $sanitized }}
           hostPath:
             path: {{ . }}
             type: CharDevice
