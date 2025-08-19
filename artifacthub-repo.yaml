@@ -17,4 +17,5 @@ ignore:
   - name: cluster-autoscaler
   - name: frigate
 #    version: beta # Regular expression (when omitted, all versions are ignored)
-  - name: frigate
+  - name: k8s-ui
+  - name: valheim-server
