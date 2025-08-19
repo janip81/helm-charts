@@ -20,7 +20,7 @@ version: 0.0.64
 # incremented each time you make changes to the application.
 appVersion: "1.33"
 home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
-icon: https://raw.githubusercontent.com/janip81/helm-charts/.logos/capi-logo.svg
+icon: https://raw.githubusercontent.com/janip81/helm-charts/logos/capi-logo.svg
 keywords:
   - cluster-api
 maintainers:
