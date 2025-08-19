@@ -1,0 +1,7 @@
+owner: janip81
+git-repo: helm-charts
+charts-dir: charts
+release-dir: .cr-release-packages
+index-path: index.yaml
+pages-branch: gh-pages
+pages-index-path: index.yaml
