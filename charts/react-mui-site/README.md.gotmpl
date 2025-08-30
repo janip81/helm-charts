@@ -1,0 +1,112 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## Overview
+
+This Helm chart deploys a multi-cluster Kubernetes dashboard (`k8s-ui`) that integrates with Cluster API (CAPI) to manage and inspect workload clusters.
+
+It consists of a Go-based backend and a React + Material UI frontend. Backend reads kubeconfigs from secrets and optionally creates HTTPRoutes via the Gateway API.
+
+## Features
+
+- Lists workload clusters from Cluster API
+- Displays Kubernetes objects from downstream clusters
+- Backend in Go, frontend in React + Material UI
+- Kubeconfig injection via Helm values
+- HTTPRoute support using Gateway API
+- Deployable via Helm with configurable options
+
+## Prerequisites
+
+- Kubernetes 1.26+
+- Helm 3.8.0+
+- Gateway API (if `gateway.enabled=true`)
+- A kubeconfig secret (or inline config via Helm)
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install k8s-ui janip81/k8s-ui
+```
+
+## Installation
+
+### Option 1: Use Inline Kubeconfig
+
+```yaml
+kubeconfigSecret:
+  create: true
+  kubeconfig: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+      - name: mgmt
+        cluster:
+          server: https://your-k8s-api:6443
+          certificate-authority-data: BASE64DATA
+    contexts:
+      - name: default
+        context:
+          cluster: mgmt
+          user: admin
+    current-context: default
+    users:
+      - name: admin
+        user:
+          token: YOUR_TOKEN
+```
+
+```bash
+helm install k8s-ui -f my-values.yaml janip81/k8s-ui
+```
+
+### Option 2: Use Pre-Created Secret
+
+```yaml
+kubeconfigSecret:
+  create: false
+  name: my-kubeconfig-secret
+```
+
+## Updating
+
+```bash
+helm upgrade k8s-ui janip81/k8s-ui -f my-values.yaml
+```
+
+## Uninstallation
+
+```bash
+helm uninstall k8s-ui
+```
+
+(Optionally delete the kubeconfig secret manually if you created it separately.)
+
+## Gateway API Support
+
+If enabled, this chart will create an `HTTPRoute` resource pointing to the frontend.
+
+You must provide:
+- A valid Gateway (`gateway.name`)
+- A hostname and Gateway namespace
+
+## License
+
+MIT
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

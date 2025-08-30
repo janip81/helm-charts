@@ -1,0 +1,29 @@
+apiVersion: v2
+name: react-mui-site
+description: A Helm chart for deploying a website in react mui.
+type: application
+version: 0.0.1
+appVersion: "0.0.1"
+home: https://github.com/janip81/helm-charts/react-mui-site
+icon: icon: https://raw.githubusercontent.com/your-org/helm-charts/main/charts/react-mui-site/assets/react-mui-site-icon.png
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+keywords:
+  - kubernetes
+  - react
+  - mui
+  - blog
+  - ui
+sources:
+  - https://github.com/janip81/react-mui-site
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Project Source
+      url: https://github.com/janip81/helm-charts/react-mui-site
+  # artifacthub.io/images: |
+  #   - name: frontend
+  #     image: ghcr.io/janip81/k8s-ui-frontend:latest
+  #   - name: backend
+  #     image: ghcr.io/janip81/k8s-ui-backend:latest
