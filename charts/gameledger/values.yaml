@@ -12,7 +12,7 @@ service:
   annotations: {}
 
 migrations:
-  enabled: true
+  enabled: false
 
 env:                       # non-secret env
   NODE_ENV: "production"
