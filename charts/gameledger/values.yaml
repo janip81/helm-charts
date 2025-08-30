@@ -60,7 +60,7 @@ gateway:
 
 metrics:
   serviceMonitor:
-    enabled: true
+    enabled: false
     labels: {}
     interval: 30s
     scrapeTimeout: 10s
