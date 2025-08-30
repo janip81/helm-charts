@@ -46,7 +46,7 @@ ingress:
                            #   hosts: [gameledger.example.com]
 
 gateway:
-  enabled: true            # toggle HTTPRoute
+  enabled: false            # toggle HTTPRoute
   # one of:
   parentRefs:
     - name: my-gateway     # Gateway name
