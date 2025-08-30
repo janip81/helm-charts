@@ -1,0 +1,22 @@
+{{- if .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "gameledger.fullname" . }}
+  labels:
+    {{- include "gameledger.labels" . | nindent 4 }}
+    {{- with .Values.metrics.serviceMonitor.labels }}{{ toYaml . | nindent 4 }}{{ end }}
+spec:
+  selector:
+    matchLabels: {{- include "gameledger.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.serviceMonitor.path }}
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout }}
+      scheme: {{ .Values.metrics.serviceMonitor.scheme }}
+      # metricRelabelings:
+      #   {{- with .Values.metrics.serviceMonitor.metricRelabelings }}{{ toYaml . | nindent 6 }}{{ end }}
+      # relabelings:
+      #   {{- with .Values.metrics.serviceMonitor.relabelings }}{{ toYaml . | nindent 6 }}{{ end }}
+{{- end }}
