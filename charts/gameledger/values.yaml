@@ -1,0 +1,73 @@
+image:
+  repository: ghcr.io/YOUR_ORG/YOUR_REPO
+  tag: ""                 # pin full tag (e.g., sha-abc123) from GitOps
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+  annotations: {}
+
+migrations:
+  enabled: false
+
+env:                       # non-secret env
+  NODE_ENV: "production"
+
+secretEnv:                 # AVP will render these
+  DATABASE_URL: "<path:kv/kubernetes/k8s-prod/postgres#gameledger-prod-url>"
+  SESSION_SECRET: "<path:kv/kubernetes/k8s-prod/app-secrets#session-secret>"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: gameledger.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []                  # - secretName: tls-secret
+                           #   hosts: [gameledger.example.com]
+
+gateway:
+  enabled: false            # toggle HTTPRoute
+  # one of:
+  parentRefs:
+    - name: my-gateway     # Gateway name
+      namespace: gateway-system
+      kind: Gateway
+      group: gateway.networking.k8s.io
+  hostnames:
+    - gameledger.example.com
+  annotations: {}
+  httpRouteLabels: {}
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: 30s
+    scrapeTimeout: 10s
+    path: /metrics
+    scheme: http
+    # relabelings: []
+    # metricRelabelings: []
+
+podAnnotations: {}
+podLabels: {}
