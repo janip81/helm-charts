@@ -12,7 +12,7 @@ metadata:
 {{ toYaml .machineDeploymentLabels | nindent 4 }}
 {{- end }}
 {{- if .machideDeploymentAnnotations }}
-  annotations: {{ toYaml .machideDeploymentAnnotations | nindent 4 }}
+  annotations: {{ toYaml .machineDeploymentAnnotations | nindent 4 }}
 {{- end }}
 spec:
   clusterName: {{ $.Values.cluster.name }}
