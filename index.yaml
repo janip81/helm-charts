@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: "1.33"
+    created: "2025-09-05T06:54:44.828357106Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: fc0d29a528543575eabeb49cbc0dc221d5cec76115dbb85f438f76784bb5e925
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.67/capi-cluster-0.0.67.tgz
+    version: 0.0.67
+  - apiVersion: v2
+    appVersion: "1.33"
     created: "2025-09-05T06:37:56.361082508Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -1926,4 +1949,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-09-05T06:37:56.442606069Z"
+generated: "2025-09-05T06:54:44.828612264Z"
