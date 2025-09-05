@@ -11,8 +11,9 @@ metadata:
 {{- if .machineDeploymentLabels }}
 {{ toYaml .machineDeploymentLabels | nindent 4 }}
 {{- end }}
-{{- if .machideDeploymentAnnotations }}
-  annotations: {{ toYaml .machineDeploymentAnnotations | nindent 4 }}
+{{- if .machineDeploymentAnnotations }}
+  annotations: 
+{{ toYaml .machineDeploymentAnnotations | nindent 4 }}
 {{- end }}
 spec:
   clusterName: {{ $.Values.cluster.name }}
