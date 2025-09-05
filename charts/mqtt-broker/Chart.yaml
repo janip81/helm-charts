@@ -2,7 +2,7 @@ apiVersion: v2
 name: mqtt-broker
 description: A Helm chart for Eclipse Mosquitto
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "2.0.18"
 home: https://mosquitto.org/
 icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
