@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: "1.33"
+    created: "2025-09-05T06:37:56.361082508Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: 02ad1bb14075d14e1627fe5dd9f090185fcfef9a7e0c01c59a17061e770a57c1
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.66/capi-cluster-0.0.66.tgz
+    version: 0.0.66
+  - apiVersion: v2
+    appVersion: "1.33"
     created: "2025-06-10T13:16:47.466974073Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -1793,6 +1816,35 @@ entries:
           url: https://hub.docker.com/_/eclipse-mosquitto
     apiVersion: v2
     appVersion: 2.0.18
+    created: "2025-09-05T06:37:56.442310034Z"
+    description: A Helm chart for Eclipse Mosquitto
+    digest: b44aedc147059a18ed7bbb7fb0fb312b18d506b7f5422b4b02bd57be6007667a
+    home: https://mosquitto.org/
+    icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
+    keywords:
+    - mqtt
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: mqtt-broker
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/mqtt-broker-0.1.2/mqtt-broker-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      artifacthub.io/images: |
+        - name: eclipse-mosquitto
+          image: docker.io/eclipse-mosquitto:2.0.18
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+        - name: Docker image source
+          url: https://hub.docker.com/_/eclipse-mosquitto
+    apiVersion: v2
+    appVersion: 2.0.18
     created: "2025-09-05T06:20:25.422656258Z"
     description: A Helm chart for Eclipse Mosquitto
     digest: 1dffe811414a05e08719404b20eb9a27f9a6e86a01f5784e0a9830c0d9292811
@@ -1874,4 +1926,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-09-05T06:20:25.422834651Z"
+generated: "2025-09-05T06:37:56.442606069Z"
