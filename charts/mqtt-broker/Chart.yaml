@@ -24,8 +24,3 @@ annotations:
   artifacthub.io/images: |
     - name: eclipse-mosquitto
       image: docker.io/eclipse-mosquitto:2.0.18
-
-
-
-
-
