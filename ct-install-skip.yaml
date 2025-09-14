@@ -3,3 +3,14 @@ chart-dirs:
 check-version-increment: false
 upgrade: true
 install: true
+helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
+# Also helpful when charts share these toggles but you prefer CLI switches:
+helm-extra-set-args: >
+  --set global.ci=true
+  --set persistence.enabled=false
+  --set metrics.enabled=false
+  --set metrics.serviceMonitor.enabled=false
+  --set gatewayApi.enabled=false
+  --set ingress.enabled=false
+  --set secrets.create=false
+  --set replicaCount=0

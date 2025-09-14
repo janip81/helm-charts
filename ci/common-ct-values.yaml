@@ -1,0 +1,28 @@
+# Turn off things Kind doesn't have
+global:
+  ci: true
+
+database:
+  # postgresdb | sqlite
+  type: postgresdb
+
+gatewayApi:
+  enabled: false
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+  # if other charts have PodMonitor/PrometheusRule, gate them on global.ci too
+
+ingress:
+  enabled: false
+
+persistence:
+  enabled: false
+
+secrets:
+  create: false
+
+# No pods in CI unless a chart explicitly needs them
+replicaCount: 1
