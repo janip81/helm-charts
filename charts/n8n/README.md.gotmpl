@@ -1,0 +1,92 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+Helm-chart for deploying n8n - Workflow Automation Tool
+
+## Adding this helm repository
+
+To add the helm repository, run the following commands:
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo n8n
+```
+
+`values.yaml` files for the charts can be found in the `charts/[chartname]` directories.
+
+## Pre-requisites
+
+If you want to use the postgres bootstrap job, you need to create a secret with the name `<release-name>-n8n-postgres-bootstrap` in the namespace where you want to install n8n. The secret must contain the following
+
+```bash
+kubectl -n <ns> create secret generic postgres-admin \
+  --from-literal=username=postgres \
+  --from-literal=password='<ADMIN_PASS>'
+```
+
+Or you can create db,user and password manually and disable bootstrap job
+
+```sql
+-- connect as an admin/superuser via psql
+-- 1) role
+CREATE ROLE n8n LOGIN PASSWORD 'REPLACE_WITH_STRONG_PASSWORD';
+
+-- 2) database owned by that role
+CREATE DATABASE n8n OWNER n8n ENCODING 'UTF8';
+
+-- 3) lock down defaults
+REVOKE ALL ON DATABASE n8n FROM PUBLIC;
+GRANT CONNECT, TEMPORARY ON DATABASE n8n TO n8n;
+
+-- 4) inside the new DB, ensure the schema is owned by n8n
+\c n8n
+ALTER SCHEMA public OWNER TO n8n;
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+GRANT USAGE, CREATE ON SCHEMA public TO n8n;
+```
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install my-app-name janip81/n8n -f YOU-OWN-VALUES.yaml
+```
+
+[Helm](https://helm.sh) must be installed to use the charts.  Please refer to
+Helm's [documentation](https://helm.sh/docs) to get started.
+
+If you had already added this repo earlier, run `helm repo update` to retrieve
+the latest versions of the packages.  You can then run `helm search repo
+<alias>` to see the charts.
+
+To install the <chart-name> chart:
+
+    helm install my-<chart-name> <alias>/<chart-name>
+
+To uninstall the chart:
+
+    helm delete my-<chart-name>
+
+## Prerequisites
+
+- [Kubernetes](https://kubernetes.io/)
+- [Helm 3.1.0](https://helm.sh)
+- PV provisioner support in the underlying infrastructure (for persistent storage)
+- LoadBalancer support or an Ingress controller
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

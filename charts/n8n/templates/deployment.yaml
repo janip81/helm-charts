@@ -1,0 +1,212 @@
+{{- /* ---------- Nil-safe locals & helpers ---------- */ -}}
+{{- $ns := .Release.Namespace -}}
+
+{{- $secrets := .Values.secrets | default (dict) -}}
+{{- $enc := (index $secrets "encryption") | default (dict) -}}
+{{- $encName := (index $enc "name") | default "" -}}
+{{- $encKey  := (index $enc "key")  | default "" -}}
+{{- $encObj  := and $encName (lookup "v1" "Secret" $ns $encName) -}}
+{{- $haveEnc := and $encObj (hasKey $encObj.data $encKey) -}}
+
+{{- $dbsec := (index $secrets "database") | default (dict) -}}
+{{- $dbSecName := (index $dbsec "name")    | default "" -}}
+{{- $dbSecKey  := (index $dbsec "key")     | default "" -}}
+{{- $dbUserKey := (index $dbsec "userKey") | default "" -}}
+{{- $dbSecObj  := and $dbSecName (lookup "v1" "Secret" $ns $dbSecName) -}}
+{{- $haveDbPass := and $dbSecObj (hasKey $dbSecObj.data $dbSecKey) -}}
+{{- $haveDbUser := and $dbSecObj (ne $dbUserKey "") (hasKey $dbSecObj.data $dbUserKey) -}}
+
+{{- $pg := .Values.postgres | default (dict) -}}
+{{- $pgUserSec := (index $pg "userSecret")     | default (dict) -}}
+{{- $pgPassSec := (index $pg "passwordSecret") | default (dict) -}}
+{{- $pgUserSecName := (index $pgUserSec "name") | default "" -}}
+{{- $pgUserSecKey  := (index $pgUserSec "key")  | default "" -}}
+{{- $pgPassSecName := (index $pgPassSec "name") | default "" -}}
+{{- $pgPassSecKey  := (index $pgPassSec "key")  | default "" -}}
+{{- $pgUserSecObj := and $pgUserSecName (lookup "v1" "Secret" $ns $pgUserSecName) -}}
+{{- $pgPassSecObj := and $pgPassSecName (lookup "v1" "Secret" $ns $pgPassSecName) -}}
+{{- $havePgUser := and $pgUserSecObj (hasKey $pgUserSecObj.data $pgUserSecKey) -}}
+{{- $havePgPass := and $pgPassSecObj (hasKey $pgPassSecObj.data $pgPassSecKey) -}}
+{{- $pgUser := (index $pg "user")     | default "" -}}
+{{- $pgPass := (index $pg "password") | default "" -}}
+
+{{- $database := .Values.database | default (dict) -}}
+{{- $dbType := "postgresdb" -}}
+{{- if and $database (kindIs "map" $database) -}}
+  {{- $dbType = (index $database "type" | default "postgresdb") -}}
+{{- else if and $database (kindIs "string" $database) -}}
+  {{- $dbType = $database -}}
+{{- end -}}
+{{- $usePostgres := eq $dbType "postgresdb" -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "n8n.fullname" . }}
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+spec:
+  replicas: {{ default 1 .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "n8n.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "n8n.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "n8n.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: n8n
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5678
+              protocol: TCP
+          env:
+            # ---- Core n8n settings ----
+            - name: N8N_PROTOCOL
+              value: {{ .Values.env.N8N_PROTOCOL | quote }}
+            - name: N8N_HOST
+              value: {{ .Values.env.N8N_HOST | quote }}
+            - name: N8N_PORT
+              value: {{ .Values.env.N8N_PORT | quote }}
+            - name: WEBHOOK_URL
+              value: {{ if .Values.env.WEBHOOK_URL }}{{ .Values.env.WEBHOOK_URL | quote }}{{ else }}{{ printf "%s://%s" .Values.env.N8N_PROTOCOL .Values.env.N8N_HOST | quote }}{{ end }}
+            - name: N8N_DIAGNOSTICS_ENABLED
+              value: {{ .Values.env.N8N_DIAGNOSTICS_ENABLED | quote }}
+            - name: N8N_METRICS
+              value: {{ .Values.env.N8N_METRICS | quote }}
+            - name: GENERIC_TIMEZONE
+              value: {{ .Values.env.GENERIC_TIMEZONE | quote }}
+
+            # ---- Encryption key: Secret if present, else inline fallback (dev/ct) ----
+            - name: N8N_ENCRYPTION_KEY
+              {{- if $haveEnc }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $encName }}
+                  key:  {{ $encKey }}
+              {{- else }}
+              value: "development-only-not-secure"
+              {{- end }}
+
+            # ---- Database type ----
+            - name: DB_TYPE
+              value: {{ $dbType | quote }}
+
+            {{- if $usePostgres }}
+            # ---- Postgres settings ----
+            - name: DB_POSTGRESDB_HOST
+              value: {{ .Values.postgres.host | quote }}
+            - name: DB_POSTGRESDB_PORT
+              value: {{ .Values.postgres.port | quote }}
+            - name: DB_POSTGRESDB_DATABASE
+              value: {{ .Values.postgres.database | quote }}
+            - name: DB_POSTGRESDB_SCHEMA
+              value: {{ .Values.postgres.schema | quote }}
+
+            # DB USER: db secret -> pg userSecret -> plain -> fallback
+            - name: DB_POSTGRESDB_USER
+              {{- if $haveDbUser }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $dbSecName }}
+                  key:  {{ $dbUserKey }}
+              {{- else if $havePgUser }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgUserSecName }}
+                  key:  {{ $pgUserSecKey }}
+              {{- else if $pgUser }}
+              value: {{ $pgUser | quote }}
+              {{- else }}
+              value: "n8n"
+              {{- end }}
+
+            # DB PASSWORD: db secret -> pg passwordSecret -> plain -> fallback
+            - name: DB_POSTGRESDB_PASSWORD
+              {{- if $haveDbPass }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $dbSecName }}
+                  key:  {{ $dbSecKey }}
+              {{- else if $havePgPass }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $pgPassSecName }}
+                  key:  {{ $pgPassSecKey }}
+              {{- else if $pgPass }}
+              value: {{ $pgPass | quote }}
+              {{- else }}
+              value: "changeme"
+              {{- end }}
+
+            {{- if .Values.postgres.ssl.enabled }}
+            - name: DB_POSTGRESDB_SSL
+              value: "true"
+            - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+              value: {{ .Values.postgres.ssl.rejectUnauthorized | quote }}
+            {{- end }}
+            {{- else }}
+            # ---- SQLite settings (for ct/dev) ----
+            - name: DB_SQLITE_DATABASE
+              value: "/home/node/.n8n/database.sqlite"
+            {{- end }}
+
+          {{- if and .Values.persistence.enabled $usePostgres }}
+          volumeMounts:
+            - name: data
+              mountPath: /home/node/.n8n
+          {{- end }}
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      {{- if and .Values.persistence.enabled $usePostgres }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "n8n.fullname" . }}
+      {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

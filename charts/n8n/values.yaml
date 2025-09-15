@@ -1,0 +1,137 @@
+image:
+  repository: n8nio/n8n
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 5678
+  annotations: {}
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+
+env:
+  # Base URL config
+  N8N_PROTOCOL: "https"
+  N8N_HOST: "n8n.example.com"
+  N8N_PORT: "5678"
+  WEBHOOK_URL: ""     # If empty, chart builds from protocol+host
+  N8N_DIAGNOSTICS_ENABLED: "false"
+  N8N_METRICS: "true"    # enable /metrics
+  GENERIC_TIMEZONE: "Europe/Stockholm"
+
+persistence:
+  enabled: false
+  size: 5Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s
+    labels: {}
+    namespace: ""        # default: same ns
+    # n8n exposes /metrics when N8N_METRICS=true
+    path: /metrics
+    portName: http
+    scheme: http
+    tlsConfig: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: n8n.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []     # - secretName: n8n-tls; hosts: [n8n.example.com]
+
+gatewayApi:
+  enabled: false
+  host: n8n.example.com
+  tls:
+    enabled: false
+    secretName: ""     # provide if you terminate TLS at the route
+  parentRefs:
+    - name: cilium-gateway
+      namespace: ""    # set if your Gateway is in another namespace
+
+postgres:
+  type: postgresdb
+  # App DB connection
+  host: "postgres.postgres.svc.cluster.local"
+  port: 5432
+  database: "n8n"
+  user: "n8n"
+  passwordSecret:
+    name: n8n-db
+    key: password
+  schema: "public"
+  ssl:
+    enabled: false
+    rejectUnauthorized: "true"
+    caSecretName: ""     # optional, mount if needed
+
+  # Bootstrap job (create role & database if not exists)
+  bootstrap:
+    enabled: false
+    image: bitnami/postgresql:16
+    admin:
+      host: ""        # defaults to postgres.host if empty
+      port: 5432
+      userSecret:
+        name: postgres-admin
+        keyUser: username     # e.g. "postgres"
+        keyPassword: password
+    annotations: {}
+    backoffLimit: 2
+
+secrets:
+  create: true
+  # Use stringData so AVP placeholders like <path:...#key> work without base64.
+  useStringData: true
+
+  # Main n8n secrets
+  encryption:
+    name: n8n-encryption
+    key: encryptionKey
+    value: ""           # e.g., "<path:kv/data/n8n#encryptionKey>"
+    annotations: {}     # e.g., avp.kubernetes.io/path: "kv/data/n8n"
+
+  database:
+    name: n8n-db
+    key: password
+    value: ""           # e.g., "<path:kv/data/n8n#dbPassword>"
+    annotations: {}     # e.g., avp.kubernetes.io/path: "kv/data/n8n"
+
+  # Optional extra Secrets you want the chart to create
+  extra: []
+  # Example:
+  # extra:
+  #   - name: n8n-oauth-google
+  #     type: Opaque
+  #     annotations:
+  #       avp.kubernetes.io/path: "kv/data/n8n/google"
+  #     stringData:
+  #       GOOGLE_CLIENT_ID: "<path:kv/data/n8n/google#client_id>"
+  #       GOOGLE_CLIENT_SECRET: "<path:kv/data/n8n/google#client_secret>"
+
+
+podSecurityContext: {}
+securityContext: {}
