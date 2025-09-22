@@ -50,4 +50,8 @@ spec:
         name: {{ $.Values.cluster.name }}-{{ .vspehereMachineTemplate }}
         namespace: {{ $.Values.cluster.name }}
       version: v{{ .k8sVersion }}
+{{- if .taints }}
+      taints:
+{{ toYaml .taints | indent 8 }}
+{{- end }}
 {{- end }}
