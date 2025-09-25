@@ -1,0 +1,15 @@
+{{- if and .Values.service.enabled (eq .Values.mode "deployment") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vsphere-cns-volume-monitor.fullname" . }}
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
+spec:
+  selector:
+    app: {{ include "vsphere-cns-volume-monitor.name" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: 8080
+{{- end }}
