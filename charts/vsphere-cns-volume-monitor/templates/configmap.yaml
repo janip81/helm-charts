@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vsphere-cns-volume-monitor.fullname" . }}-config
+data:
+  VCENTER_URL: {{ .Values.vcenter.url | quote }}
+  VCENTER_INSECURE: {{ .Values.vcenter.insecure | quote }}

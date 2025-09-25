@@ -1,0 +1,41 @@
+mode: deployment     # or "cronjob"
+
+image:
+  repository: ghcr.io/janip81/vsphere-cns-volume-monitor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+vcenter:
+  url: https://vcenter.example.com
+  username: 
+  createSecret: false
+  password: changeme
+  insecure: true
+  existingSecret: ""
+
+scan:
+  delete: false     # Not implemented yet
+  interval: 600     # in seconds (used in server mode)
+
+resources: {}
+
+service:
+  enabled: true
+  port: 8080
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+
+cronjob:
+  schedule: "0 * * * *"
+
+rbac:
+  create: false
+
+serviceMonitor:
+  enabled: false
+  namespace: ""     # optional, if you want to create in a specific namespace
+  interval: 30s
+  scrapeTimeout: 10s
+  labels:
+    release: prometheus

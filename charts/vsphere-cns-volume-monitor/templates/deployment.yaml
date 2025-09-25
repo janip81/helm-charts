@@ -1,0 +1,38 @@
+{{- if eq .Values.mode "deployment" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vsphere-cns-volume-monitor.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "vsphere-cns-volume-monitor.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "vsphere-cns-volume-monitor.name" . }}
+      annotations:
+        {{- toYaml .Values.service.annotations | nindent 8 }}
+    spec:
+      containers:
+      - name: monitor
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MODE
+          value: "server"
+        - name: DELETE
+          value: {{ .Values.scan.delete | quote }}
+        - name: INTERVAL
+          value: {{ .Values.scan.interval | quote }}
+        - name: PORT
+          value: "8080"
+        envFrom:
+        - configMapRef:
+            name: {{ include "vsphere-cns-volume-monitor.fullname" . }}-config
+        - secretRef:
+            name: {{ include "vsphere-cns-volume-monitor.fullname" . }}-credentials
+        ports:
+        - containerPort: 8080
+{{- end }}

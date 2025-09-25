@@ -1,0 +1,27 @@
+{{- if eq .Values.mode "cronjob" }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "vsphere-cns-volume-monitor.fullname" . }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: checker
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            env:
+            - name: MODE
+              value: "once"
+            - name: DELETE
+              value: {{ .Values.scan.delete | quote }}
+            envFrom:
+            - configMapRef:
+                name: {{ include "vsphere-cns-volume-monitor.fullname" . }}-config
+            - secretRef:
+                name: {{ include "vsphere-cns-volume-monitor.fullname" . }}-credentials
+          restartPolicy: OnFailure
+{{- end }}
