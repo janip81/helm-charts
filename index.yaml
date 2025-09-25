@@ -1972,4 +1972,30 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/valheim-server-1.0.0/valheim-server-1.0.0.tgz
     version: 1.0.0
-generated: "2025-09-22T14:00:47.15520976Z"
+  vsphere-cns-volume-monitor:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor/
+    apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-09-25T16:15:40.440132923Z"
+    description: A tool to monitor and optionally delete orphaned vSphere CNS volumes
+    digest: cd27858d53b15472ae2c5c2d60ae25083a7ce6434e5855c7ce9d45c186b221df
+    home: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor
+    icon: https://raw.githubusercontent.com/janip81/vsphere-cns-volume-monitor/main/k8s/helm-chart/icon.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: vsphere-cns-volume-monitor
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor
+    - https://github.com/janip81/vsphere-cns-volume-monitor
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
+    version: 0.0.1-dev
+generated: "2025-09-25T16:15:40.440325846Z"
