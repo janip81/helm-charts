@@ -44,18 +44,20 @@ spec:
           env:
             - name: TZ
               value: {{ .Values.env.TZ | quote }}
+          {{- if .Values.probes.startup.enabled }}
+          startupProbe:
+            {{- toYaml .Values.probes.startup | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.probes.liveness.enabled }}
           livenessProbe:
-            httpGet:
-              path: /
-              port: 8123
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.probes.readiness.enabled }}
           readinessProbe:
-            httpGet:
-              path: /
-              port: 8123
-            initialDelaySeconds: 15
-            periodSeconds: 5
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         {{- range $name, $addon := .Values.addons }}
