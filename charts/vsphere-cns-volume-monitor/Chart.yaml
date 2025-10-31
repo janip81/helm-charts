@@ -2,7 +2,7 @@ apiVersion: v2
 name: vsphere-cns-volume-monitor
 description: A tool to monitor and optionally delete orphaned vSphere CNS volumes
 type: application
-version: 0.0.1-dev
+version: 0.0.2-dev
 appVersion: "0.0.1"
 home: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor
 icon: https://raw.githubusercontent.com/janip81/vsphere-cns-volume-monitor/main/k8s/helm-chart/icon.png
