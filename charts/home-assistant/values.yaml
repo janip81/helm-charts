@@ -1,6 +1,6 @@
 image:
   repo: ghcr.io/home-assistant/home-assistant
-  tag: "2024.5"
+  tag: "2024.10.4"
   pullPolicy: IfNotPresent
 
 env:
@@ -68,6 +68,30 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+probes:
+  liveness:
+    enabled: true
+    httpGet:
+      path: /
+      port: 8123
+    initialDelaySeconds: 60
+    periodSeconds: 10
+  readiness:
+    enabled: true
+    httpGet:
+      path: /
+      port: 8123
+    initialDelaySeconds: 30
+    periodSeconds: 5
+  # Optional: add startupProbe
+  startup:
+    enabled: true
+    httpGet:
+      path: /
+      port: 8123
+    failureThreshold: 60
+    periodSeconds: 10
+
 metrics:
   enabled: false
   serviceMonitor:
@@ -86,7 +110,7 @@ addons:
     enabled: true
     container:
       name: codeserver
-      image: codercom/code-server:4.7.1
+      image: codercom/code-server:4.104.3-39
       imagePullPolicy: IfNotPresent
       workingDir: "/config"
       args:
