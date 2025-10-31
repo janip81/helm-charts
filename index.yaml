@@ -1336,6 +1336,30 @@ entries:
         - name: Chart source
           url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
     apiVersion: v2
+    appVersion: 2025.10.4
+    created: "2025-10-31T10:50:59.43936507Z"
+    description: An unofficial Helm chart to deploy Home Assistant
+    digest: d9a90de6915f698a91f1011e575ad55a173c4efe4f099dde94a24bad955ce2d3
+    home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
+    icon: https://www.home-assistant.io/images/favicon-192x192.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: home-assistant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.1.2/home-assistant-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    apiVersion: v2
     appVersion: 2025.5.3
     created: "2025-06-15T12:19:53.585843895Z"
     description: An unofficial Helm chart to deploy Home Assistant
@@ -1979,6 +2003,31 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor/
     apiVersion: v2
     appVersion: 0.0.1
+    created: "2025-10-31T10:50:59.578854355Z"
+    description: A tool to monitor and optionally delete orphaned vSphere CNS volumes
+    digest: 0b2ee6d417b51e96aece315443373b343a6c646f7966574600ae8324c1ecccd0
+    home: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor
+    icon: https://raw.githubusercontent.com/janip81/vsphere-cns-volume-monitor/main/k8s/helm-chart/icon.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: vsphere-cns-volume-monitor
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor
+    - https://github.com/janip81/vsphere-cns-volume-monitor
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.2-dev/vsphere-cns-volume-monitor-0.0.2-dev.tgz
+    version: 0.0.2-dev
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/vsphere-cns-volume-monitor/
+    apiVersion: v2
+    appVersion: 0.0.1
     created: "2025-09-25T16:15:40.440132923Z"
     description: A tool to monitor and optionally delete orphaned vSphere CNS volumes
     digest: cd27858d53b15472ae2c5c2d60ae25083a7ce6434e5855c7ce9d45c186b221df
@@ -1998,4 +2047,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2025-09-25T16:15:40.440325846Z"
+generated: "2025-10-31T10:50:59.579043599Z"
