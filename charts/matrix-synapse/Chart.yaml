@@ -1,0 +1,6 @@
+apiVersion: v2
+name: matrix-synapse
+description: Matrix Synapse homeserver
+type: application
+version: 0.1.0
+appVersion: "1.116.0"
