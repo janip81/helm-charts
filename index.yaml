@@ -1874,6 +1874,30 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/k8s-ui-1.0.0/k8s-ui-1.0.0.tgz
     version: 1.0.0
+  matrix-synapse:
+  - apiVersion: v2
+    appVersion: 1.116.0
+    created: "2025-11-30T11:07:59.263678517Z"
+    description: Matrix Synapse homeserver Helm chart
+    digest: 0310f653378d50e152c930c8185d3e1114e8d8ca7c770916fa9d26916eff820a
+    home: https://github.com/matrix-org/synapse
+    keywords:
+    - matrix
+    - synapse
+    - chat
+    - homeserver
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: jani
+      url: https://techmonkeys.se
+    name: matrix-synapse
+    sources:
+    - https://github.com/matrix-org/synapse
+    - https://github.com/janip81/helm-charts
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/matrix-synapse-0.1.0/matrix-synapse-0.1.0.tgz
+    version: 0.1.0
   mqtt-broker:
   - annotations:
       artifacthub.io/images: |
@@ -2047,4 +2071,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2025-10-31T10:50:59.579043599Z"
+generated: "2025-11-30T11:07:59.263880673Z"
