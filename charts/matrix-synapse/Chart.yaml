@@ -1,0 +1,23 @@
+apiVersion: v2
+name: matrix-synapse
+description: Matrix Synapse homeserver Helm chart
+type: application
+
+version: 0.1.0
+appVersion: "1.116.0"
+
+home: "https://github.com/matrix-org/synapse"
+sources:
+  - "https://github.com/matrix-org/synapse"
+  - "https://github.com/janip81/helm-charts"
+
+keywords:
+  - matrix
+  - synapse
+  - chat
+  - homeserver
+
+maintainers:
+  - name: jani
+    email: jani@techmonkeys.se
+    url: "https://techmonkeys.se"

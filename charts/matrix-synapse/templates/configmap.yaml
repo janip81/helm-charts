@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}-config
+data:
+  homeserver.yaml: |
+    server_name: "{{ .Values.serverName }}"
+    public_baseurl: "https://{{ .Values.gateway.hostname }}/"
+
+    listeners:
+      - port: 8008
+        type: http
+        tls: false
+        x_forwarded: true
+        resources:
+          - names: [client, federation]
+            compress: false
+
+    database:
+      name: psycopg2
+      args:
+        user: "{{ .Values.postgres.user }}"
+        password: "{{`{{`}} synapse_db_password {{`}}`}}"   # from env
+        database: "{{ .Values.postgres.database }}"
+        host: "{{ .Values.postgres.host }}"
+        port: {{ .Values.postgres.port }}
+
+    log_config: "/config/log.yaml"
+    media_store_path: "/data/media"
+
+    registration_shared_secret: "{{`{{`}} synapse_registration_shared_secret {{`}}`}}"
+    macaroon_secret_key: "{{`{{`}} synapse_macaroon_secret_key {{`}}`}}"
+    form_secret: "{{`{{`}} synapse_form_secret {{`}}`}}"
+
+    {{- if and .Values.bridges.appserviceConfigMap .Values.bridges.mountPath }}
+    app_service_config_files:
+      - "{{ .Values.bridges.mountPath }}/*.yaml"
+    {{- end }}
+
+    {{- if .Values.turn.enabled }}
+    turn_uris:
+    {{- range .Values.turn.uris }}
+      - "{{ . }}"
+    {{- end }}
+    {{- if .Values.turn.sharedSecret }}
+    turn_shared_secret: "{{ .Values.turn.sharedSecret }}"
+    {{- end }}
+    {{- if and .Values.turn.username .Values.turn.password }}
+    turn_user_lifetime: "{{ .Values.turn.userLifetime }}"
+    turn_allow_guests: true
+    {{- end }}
+    {{- end }}
+
+    enable_metrics: {{ ternary "true" "false" .Values.metrics.enabled }}

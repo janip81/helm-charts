@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "matrix-synapse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "matrix-synapse.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "matrix-synapse.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "matrix-synapse.serviceAccountName" . }}
+      containers:
+        - name: synapse
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "-m"
+            - "synapse.app.homeserver"
+            - "--config-path=/config/homeserver.yaml"
+          env:
+            - name: SYNAPSE_SERVER_NAME
+              value: "{{ .Values.serverName }}"
+            - name: SYNAPSE_REPORT_STATS
+              value: "no"
+            - name: SYNAPSE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.existingSecret }}
+                  key: {{ .Values.postgres.passwordKey }}
+            - name: SYNAPSE_REGISTRATION_SHARED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-synapse.fullname" . }}-secrets
+                  key: registration_shared_secret
+            - name: SYNAPSE_MACAROON_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-synapse.fullname" . }}-secrets
+                  key: macaroon_secret_key
+            - name: SYNAPSE_FORM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-synapse.fullname" . }}-secrets
+                  key: form_secret
+          ports:
+            - name: http
+              containerPort: 8008
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media
+              mountPath: /data/media
+            {{- if .Values.bridges.appserviceConfigMap }}
+            - name: appservices
+              mountPath: {{ .Values.bridges.mountPath }}
+            {{- end }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "matrix-synapse.fullname" . }}-config
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ default (printf "%s-media" (include "matrix-synapse.fullname" .)) .Values.persistence.existingClaim }}
+        {{- if .Values.bridges.appserviceConfigMap }}
+        - name: appservices
+          configMap:
+            name: {{ .Values.bridges.appserviceConfigMap }}
+        {{- end }}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations: {{- toYaml .Values.tolerations | nindent 8 }}
+      affinity: {{- toYaml .Values.affinity | nindent 8 }}
