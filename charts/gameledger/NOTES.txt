@@ -1,0 +1,28 @@
+{{- if .Values.gateway.enabled -}}
+GameLedger (Gateway API)
+------------------------
+Hostnames:
+{{- range .Values.gateway.hostnames }}
+  - {{ . }}
+{{- end }}
+ParentRefs:
+{{- range .Values.gateway.parentRefs }}
+  - {{ .name }} (ns: {{ .namespace | default "default" }})
+{{- end }}
+
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
+{{- else if .Values.ingress.enabled -}}
+GameLedger (Ingress)
+--------------------
+{{- range .Values.ingress.hosts }}
+  - http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
+{{- else -}}
+GameLedger (ClusterIP only)
+--------------------------
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
+
+Tip: enable .ingress.enabled or .gateway.enabled to expose it.
+{{- end }}
