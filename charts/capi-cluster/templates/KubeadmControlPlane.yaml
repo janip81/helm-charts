@@ -1,5 +1,5 @@
 ---
-apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+apiVersion: controlplane.cluster.x-k8s.io/v1beta2
 kind: KubeadmControlPlane
 metadata:
   name: {{ .Values.cluster.name }}
@@ -15,205 +15,197 @@ spec:
           - {{ .Values.cluster.controlPlaneEndpoint }}
           - localhost
         extraArgs:
-          authorization-mode: Node,RBAC
+          - name: authorization-mode
+            value: Node,RBAC
         {{- if .Values.podSecurityStandard.enabled }}
-        admission-control-config-file: "/etc/kubernetes/kube-apiserver-admission-pss.yaml"
+          - name: admission-control-config-file
+            value: /etc/kubernetes/kube-apiserver-admission-pss.yaml
         extraVolumes:
           - name: admission-pss
             hostPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             mountPath: /etc/kubernetes/kube-apiserver-admission-pss.yaml
             readOnly: true
-            pathType: "File"
+            pathType: File
         {{- end }}
       controllerManager:
         extraArgs:
-          cloud-provider: external
-          bind-address: 0.0.0.0
+          - name: cloud-provider
+            value: external
+          - name: bind-address
+            value: "0.0.0.0"
       etcd:
         local:
           extraArgs:
-            listen-metrics-urls: http://0.0.0.0:2381
+            - name: listen-metrics-urls
+              value: http://0.0.0.0:2381
       scheduler:
         extraArgs:
-          bind-address: 0.0.0.0
-    files:
-    - content: |
-        apiVersion: v1
-        kind: Pod
-        metadata:
-          creationTimestamp: null
-          name: kube-vip
-          namespace: kube-system
-        spec:
-          containers:
-          - args:
-            - manager
-            env:
-            - name: vip_arp
-              value: "true"
-            - name: port
-              value: "6443"
-            - name: vip_interface
-              value: ""
-            - name: vip_cidr
-              value: "32"
-            - name: cp_enable
-              value: "true"
-            - name: cp_namespace
-              value: kube-system
-            - name: vip_ddns
-              value: "false"
-            - name: svc_enable
-              value: "true"
-            - name: svc_leasename
-              value: plndr-svcs-lock
-            - name: svc_election
-              value: "true"
-            - name: vip_leaderelection
-              value: "true"
-            - name: vip_leasename
-              value: plndr-cp-lock
-            - name: vip_leaseduration
-              value: "15"
-            - name: vip_renewdeadline
-              value: "10"
-            - name: vip_retryperiod
-              value: "2"
-            - name: address
-              value: {{ .Values.cluster.controlPlaneEndpointIP }}
-            - name: prometheus_server
-              value: :2112
-            image: {{ .Values.kubeVIP.image.repository }}:{{ .Values.kubeVIP.image.tag }}
-            imagePullPolicy: {{ .Values.kubeVIP.image.pullPolicy }}
-            name: kube-vip
-            resources: {}
-            securityContext:
-              capabilities:
-                add:
-                - NET_ADMIN
-                - NET_RAW
-            volumeMounts:
-            - mountPath: /etc/kubernetes/admin.conf
-              name: kubeconfig
-            - mountPath: /etc/hosts
-              name: etchosts
-          hostNetwork: true
-          volumes:
-          - hostPath:
-              path: /etc/kubernetes/admin.conf
-              type: FileOrCreate
-            name: kubeconfig
-          - hostPath:
-              path: /etc/kube-vip.hosts
-              type: File
-            name: etchosts
-        status: {}
-      owner: root:root
-      path: /etc/kubernetes/manifests/kube-vip.yaml
-    - content: 127.0.0.1 localhost kubernetes
-      owner: root:root
-      path: /etc/kube-vip.hosts
-      permissions: "0644"
-    - content: |
-        #!/bin/bash
-
-        # Copyright 2020 The Kubernetes Authors.
-        #
-        # Licensed under the Apache License, Version 2.0 (the "License");
-        # you may not use this file except in compliance with the License.
-        # You may obtain a copy of the License at
-        #
-        #     http://www.apache.org/licenses/LICENSE-2.0
-        #
-        # Unless required by applicable law or agreed to in writing, software
-        # distributed under the License is distributed on an "AS IS" BASIS,
-        # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        # See the License for the specific language governing permissions and
-        # limitations under the License.
-
-        set -e
-
-        # Configure the workaround required for kubeadm init with kube-vip:
-        # xref: https://github.com/kube-vip/kube-vip/issues/684
-
-        # Nothing to do for kubernetes < v1.29
-        KUBEADM_MINOR="$(kubeadm version -o short | cut -d '.' -f 2)"
-        if [[ "$KUBEADM_MINOR" -lt "29" ]]; then
-          exit 0
-        fi
-
-        IS_KUBEADM_INIT="false"
-
-        # cloud-init kubeadm init
-        if [[ -f /run/kubeadm/kubeadm.yaml ]]; then
-          IS_KUBEADM_INIT="true"
-        fi
-
-        # ignition kubeadm init
-        if [[ -f /etc/kubeadm.sh ]] && grep -q -e "kubeadm init" /etc/kubeadm.sh; then
-          IS_KUBEADM_INIT="true"
-        fi
-
-        if [[ "$IS_KUBEADM_INIT" == "true" ]]; then
-          sed -i 's#path: /etc/kubernetes/admin.conf#path: /etc/kubernetes/super-admin.conf#' \
-            /etc/kubernetes/manifests/kube-vip.yaml
-        fi
-      owner: root:root
-      path: /etc/pre-kubeadm-commands/50-kube-vip-prepare.sh
-      permissions: "0700" 
-    {{- if .Values.podSecurityStandard.enabled }}
-    - content: |
-        apiVersion: apiserver.config.k8s.io/v1
-        kind: AdmissionConfiguration
-        plugins:
-        - name: PodSecurity
-          configuration:
-            apiVersion: pod-security.admission.config.k8s.io/v1{{ if semverCompare "< v1.25" .Values.controlPlaneNodes.k8sVersion }}beta1{{ end }}
-            kind: PodSecurityConfiguration
-            defaults:
-              enforce: "{{ .Values.podSecurityStandard.enforce }}"
-              enforce-version: "latest"
-              audit: "{{ .Values.podSecurityStandard.audit }}"
-              audit-version: "latest"
-              warn: "{{ .Values.podSecurityStandard.warn }}"
-              warn-version: "latest"
-            exemptions:
-              usernames: []
-              runtimeClasses: []
-              namespaces:
-{{- toYaml .Values.podSecurityStandard.exemptions.namespaces | indent 16 }}
-      owner: root:root
-      path: /etc/kubernetes/kube-apiserver-admission-pss.yaml {{ end }}
-    initConfiguration: {{- if (default .Values.cluster.skipKubeProxy false)}}
+          - name: bind-address
+            value: "0.0.0.0"
+    initConfiguration:
+      {{- if (default .Values.cluster.skipKubeProxy false) }}
       skipPhases:
-        - addon/kube-proxy 
+        - addon/kube-proxy
       {{- end }}
       nodeRegistration:
         criSocket: /var/run/containerd/containerd.sock
         kubeletExtraArgs:
-          cloud-provider: external
-          pod-infra-container-image: registry.k8s.io/pause:3.10
+          - name: cloud-provider
+            value: external
+          - name: pod-infra-container-image
+            value: registry.k8s.io/pause:3.10
         name: {{ printf "'{{ local_hostname }}'" }}
     joinConfiguration:
       nodeRegistration:
         criSocket: /var/run/containerd/containerd.sock
         kubeletExtraArgs:
-          cloud-provider: external
+          - name: cloud-provider
+            value: external
         name: {{ printf "'{{ local_hostname }}'" }}
     preKubeadmCommands:
-    - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
-    - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6"
-      >/etc/hosts
-    - echo "127.0.0.1   {{ printf "{{ ds.meta_data.hostname }} {{ local_hostname }}" }} localhost
-      localhost.localdomain localhost4 localhost4.localdomain4" >>/etc/hosts
-    - mkdir -p /etc/pre-kubeadm-commands
-    - for script in $(find /etc/pre-kubeadm-commands/ -name '*.sh' -type f | sort);
-      do echo "Running script $script"; "$script"; done
+      - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
+      - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6" > /etc/hosts
+      - echo "127.0.0.1   {{ printf "{{ ds.meta_data.hostname }} {{ local_hostname }}" }} localhost localhost.localdomain localhost4 localhost4.localdomain4" >> /etc/hosts
+      - mkdir -p /etc/pre-kubeadm-commands
+      - for script in $(find /etc/pre-kubeadm-commands/ -name '*.sh' -type f | sort); do echo "Running script $script"; "$script"; done
+    files:
+      - content: |
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            creationTimestamp: null
+            name: kube-vip
+            namespace: kube-system
+          spec:
+            containers:
+              - args:
+                  - manager
+                env:
+                  - name: vip_arp
+                    value: "true"
+                  - name: port
+                    value: "6443"
+                  - name: vip_interface
+                    value: ""
+                  - name: vip_cidr
+                    value: "32"
+                  - name: cp_enable
+                    value: "true"
+                  - name: cp_namespace
+                    value: kube-system
+                  - name: vip_ddns
+                    value: "false"
+                  - name: svc_enable
+                    value: "true"
+                  - name: svc_leasename
+                    value: plndr-svcs-lock
+                  - name: svc_election
+                    value: "true"
+                  - name: vip_leaderelection
+                    value: "true"
+                  - name: vip_leasename
+                    value: plndr-cp-lock
+                  - name: vip_leaseduration
+                    value: "15"
+                  - name: vip_renewdeadline
+                    value: "10"
+                  - name: vip_retryperiod
+                    value: "2"
+                  - name: address
+                    value: {{ .Values.cluster.controlPlaneEndpointIP }}
+                  - name: prometheus_server
+                    value: :2112
+                image: {{ .Values.kubeVIP.image.repository }}:{{ .Values.kubeVIP.image.tag }}
+                imagePullPolicy: {{ .Values.kubeVIP.image.pullPolicy }}
+                name: kube-vip
+                resources: {}
+                securityContext:
+                  capabilities:
+                    add:
+                      - NET_ADMIN
+                      - NET_RAW
+                volumeMounts:
+                  - mountPath: /etc/kubernetes/admin.conf
+                    name: kubeconfig
+                  - mountPath: /etc/hosts
+                    name: etchosts
+            hostNetwork: true
+            volumes:
+              - hostPath:
+                  path: /etc/kubernetes/admin.conf
+                  type: FileOrCreate
+                name: kubeconfig
+              - hostPath:
+                  path: /etc/kube-vip.hosts
+                  type: File
+                name: etchosts
+        owner: root:root
+        path: /etc/kubernetes/manifests/kube-vip.yaml
+      - content: 127.0.0.1 localhost kubernetes
+        owner: root:root
+        path: /etc/kube-vip.hosts
+        permissions: "0644"
+      - content: |
+          #!/bin/bash
+
+          # Copyright 2020 The Kubernetes Authors.
+          # Licensed under the Apache License, Version 2.0
+          # https://www.apache.org/licenses/LICENSE-2.0
+
+          set -e
+
+          # Workaround for kubeadm + kube-vip (https://github.com/kube-vip/kube-vip/issues/684)
+          KUBEADM_MINOR="$(kubeadm version -o short | cut -d '.' -f 2)"
+          if [[ "$KUBEADM_MINOR" -lt "29" ]]; then
+            exit 0
+          fi
+
+          IS_KUBEADM_INIT="false"
+
+          if [[ -f /run/kubeadm/kubeadm.yaml ]]; then
+            IS_KUBEADM_INIT="true"
+          fi
+
+          if [[ -f /etc/kubeadm.sh ]] && grep -q -e "kubeadm init" /etc/kubeadm.sh; then
+            IS_KUBEADM_INIT="true"
+          fi
+
+          if [[ "$IS_KUBEADM_INIT" == "true" ]]; then
+            sed -i 's#path: /etc/kubernetes/admin.conf#path: /etc/kubernetes/super-admin.conf#' \
+              /etc/kubernetes/manifests/kube-vip.yaml
+          fi
+        owner: root:root
+        path: /etc/pre-kubeadm-commands/50-kube-vip-prepare.sh
+        permissions: "0700"
+      {{- if .Values.podSecurityStandard.enabled }}
+      - content: |
+          apiVersion: apiserver.config.k8s.io/v1
+          kind: AdmissionConfiguration
+          plugins:
+            - name: PodSecurity
+              configuration:
+                apiVersion: pod-security.admission.config.k8s.io/v1{{ if semverCompare "< v1.25" .Values.controlPlaneNodes.k8sVersion }}beta1{{ end }}
+                kind: PodSecurityConfiguration
+                defaults:
+                  enforce: "{{ .Values.podSecurityStandard.enforce }}"
+                  enforce-version: "latest"
+                  audit: "{{ .Values.podSecurityStandard.audit }}"
+                  audit-version: "latest"
+                  warn: "{{ .Values.podSecurityStandard.warn }}"
+                  warn-version: "latest"
+                exemptions:
+                  usernames: []
+                  runtimeClasses: []
+                  namespaces:
+{{ toYaml .Values.podSecurityStandard.exemptions.namespaces | indent 20 }}
+        owner: root:root
+        path: /etc/kubernetes/kube-apiserver-admission-pss.yaml
+      {{- end }}
     users:
-    - name: capv
-      sshAuthorizedKeys:
-      - {{ .Values.node.sshAuthorizedKeys }}
-      sudo: ALL=(ALL) NOPASSWD:ALL
+      - name: capv
+        sshAuthorizedKeys:
+          - {{ .Values.node.sshAuthorizedKeys }}
+        sudo: ALL=(ALL) NOPASSWD:ALL
   machineTemplate:
     infrastructureRef:
       apiVersion: infrastructure.cluster.x-k8s.io/v1beta1

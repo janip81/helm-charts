@@ -10,9 +10,9 @@ metadata:
 spec:
   template:
     spec:
-      cloneMode: {{ .cloneMode }}
-      datacenter: {{ $.Values.vsphere.datacenter }}
-      datastore: {{ .vcenterDatastore }}
+      cloneMode: "{{ .cloneMode }}"
+      datacenter: "{{ $.Values.vsphere.datacenter }}"
+      datastore: "{{ .vcenterDatastore }}"
       diskGiB: {{ .diskSize }}
       folder: "{{ .vcenterFolder }}"
       memoryMiB: {{ .memory }}
@@ -24,26 +24,26 @@ spec:
                 name: {{ $.Values.cluster.name }}-ip-pool
             nameservers:
               - {{ $.Values.network.nameserver }}
-            networkName: {{ .network }}
+            networkName: "{{ .network }}"
       numCPUs: {{ .cpu }}
       os: Linux
       powerOffMode: trySoft
-      resourcePool: {{ .resourcePool }}
-      server: {{ $.Values.vsphere.serverIP }}
+      resourcePool: "{{ .resourcePool }}"
+      server: "{{ $.Values.vsphere.serverIP }}"
       storagePolicyName: "{{ .storagePolicyName }}"
-      template: {{ .isoTemplate }}
-      thumbprint: {{ $.Values.vsphere.thumbprint }}
+      template: "{{ .isoTemplate }}"
+      thumbprint: "{{ $.Values.vsphere.thumbprint }}"
 {{- if .pciDevices }}
       pciDevices:
 {{- range .pciDevices }}
-        - deviceId: {{ .deviceId }}
-          vendorId: {{ .vendorId }}
+        - deviceId: "{{ .deviceId }}"
+          vendorId: "{{ .vendorId }}"
 {{- end }}
 {{- end }}
 {{- if .customVMXKeys }}
       customVMXKeys:
 {{- range $key, $value := .customVMXKeys }}
-        {{ $key }}: "{{ $value }}"
+        "{{ $key }}": "{{ $value }}"
 {{- end }}
 {{- end }}
 {{- end }}

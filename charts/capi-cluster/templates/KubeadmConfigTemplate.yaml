@@ -11,9 +11,11 @@ spec:
         nodeRegistration:
           criSocket: /var/run/containerd/containerd.sock
           kubeletExtraArgs:
-            cloud-provider: external
+            - name: cloud-provider
+              value: external
             {{- if .Values.cluster.bgpPolicyVlan }}
-            node-labels: "bgp-policy={{ .Values.cluster.bgpPolicyVlan }}"
+            - name: node-labels
+              value: "bgp-policy={{ .Values.cluster.bgpPolicyVlan }}"
             {{- end }}
           name: {{ printf "'{{ local_hostname }}'" }}
 {{- if .taints }}
