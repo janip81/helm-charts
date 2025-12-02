@@ -204,10 +204,5 @@ spec:
         sshAuthorizedKeys:
           - {{ .Values.node.sshAuthorizedKeys }}
         sudo: ALL=(ALL) NOPASSWD:ALL
-  machineTemplate:
-    infrastructureRef:
-      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
-      kind: VSphereMachineTemplate
-      name: {{ .Values.cluster.name }}-{{ .Values.controlPlaneNodes.vspehereMachineTemplate }}
   replicas: {{ .Values.controlPlaneNodes.replicas }}
   version: v{{ .Values.controlPlaneNodes.k8sVersion }}
