@@ -22,7 +22,7 @@ gateway:
   hostname: k8s-ui.example.com
 
 oidc:
-  enabled: true
+  enabled:  
   issuerURL: "https://keycloak.example.com/realms/k8s-ui"
   clientID: "k8s-ui"
   redirectURI: "https://k8s-ui.example.com/callback"
