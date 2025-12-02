@@ -125,7 +125,7 @@ MIT
 | image.pullSecret | string | `"ghcr-secret"` |  |
 | image.tag | string | `"latest"` |  |
 | oidc.clientID | string | `"k8s-ui"` |  |
-| oidc.enabled | bool | `true` |  |
+| oidc.enabled | string | `nil` |  |
 | oidc.issuerURL | string | `"https://keycloak.example.com/realms/k8s-ui"` |  |
 | oidc.redirectURI | string | `"https://k8s-ui.example.com/callback"` |  |
 | replicaCount | int | `1` |  |
