@@ -20,3 +20,11 @@ gateway:
   name: main-gateway
   namespace: gateway-system
   hostname: k8s-ui.example.com
+
+oidc:
+  enabled: true
+  issuerURL: "https://keycloak.example.com/realms/k8s-ui"
+  clientID: "k8s-ui"
+  redirectURI: "https://k8s-ui.example.com/callback"
+  # clientSecret is in a Secret:
+  # kubectl create secret generic k8s-ui-oidc --from-literal=clientSecret=XXXX

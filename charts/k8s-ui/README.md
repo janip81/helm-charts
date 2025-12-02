@@ -1,6 +1,6 @@
 # k8s-ui
 
-![Version: 1.0.6](https://img.shields.io/badge/Version-1.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 1.0.7](https://img.shields.io/badge/Version-1.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 A Helm chart for deploying a multi-cluster Kubernetes dashboard with CAPI integration.
 
@@ -124,6 +124,10 @@ MIT
 | image.frontend | string | `"ghcr.io/janip81/k8s-ui-frontend"` |  |
 | image.pullSecret | string | `"ghcr-secret"` |  |
 | image.tag | string | `"latest"` |  |
+| oidc.clientID | string | `"k8s-ui"` |  |
+| oidc.enabled | bool | `true` |  |
+| oidc.issuerURL | string | `"https://keycloak.example.com/realms/k8s-ui"` |  |
+| oidc.redirectURI | string | `"https://k8s-ui.example.com/callback"` |  |
 | replicaCount | int | `1` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
