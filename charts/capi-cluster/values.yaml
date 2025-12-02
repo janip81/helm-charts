@@ -152,8 +152,8 @@ healthChecks:
 
     nodeStartupTimeoutSeconds: 900
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
-    unhealthyTimeoutUnknown: 5m0s
-    unhealthyTimeoutFalse: 5m0s
+    unhealthyTimeoutUnknown: 300
+    unhealthyTimeoutFalse: 300
 
   # This chart will build one healtcheck per MachineDeployment
   workernodes:
@@ -164,8 +164,8 @@ healthChecks:
 
     nodeStartupTimeoutSeconds: 900
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
-    unhealthyTimeoutUnknown: 5m0s
-    unhealthyTimeoutFalse: 5m0s
+    unhealthyTimeoutUnknown: 300
+    unhealthyTimeoutFalse: 300
 
 addons:
   # Addons are installed via the helm provider for clusterapi
