@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: "1.33"
+    created: "2025-12-02T10:31:48.959985049Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: f711131fa335eb96355c14f42ae99f198e35712edb09bba18d13cb389897c138
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.70/capi-cluster-0.0.70.tgz
+    version: 0.0.70
+  - apiVersion: v2
+    appVersion: "1.33"
     created: "2025-12-02T10:17:52.30513691Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -1651,6 +1674,43 @@ entries:
           url: https://github.com/kubernetes-sigs/cluster-api
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2025-12-02T10:31:49.093129524Z"
+    description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with
+      CAPI integration.
+    digest: 915db79a3ea6860b7549aefdfdbf2b2a8182dfd9673937677fd930cc10fceb34
+    home: https://github.com/janip81/k8s-ui
+    icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    keywords:
+    - kubernetes
+    - dashboard
+    - capi
+    - multi-cluster
+    - ui
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: k8s-ui
+    sources:
+    - https://github.com/janip81/k8s-ui
+    - https://github.com/kubernetes-sigs/cluster-api
+    - https://github.com/kubernetes/dashboard
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/k8s-ui-1.0.7/k8s-ui-1.0.7.tgz
+    version: 1.0.7
+  - annotations:
+      artifacthub.io/images: |
+        - name: frontend
+          image: ghcr.io/janip81/k8s-ui-frontend:latest
+        - name: backend
+          image: ghcr.io/janip81/k8s-ui-backend:latest
+      artifacthub.io/links: |
+        - name: Project Source
+          url: https://github.com/janip81/k8s-ui
+        - name: Cluster API
+          url: https://github.com/kubernetes-sigs/cluster-api
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2025-05-07T16:25:50.36007188Z"
     description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with
       CAPI integration.
@@ -2094,4 +2154,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2025-12-02T10:17:52.305444184Z"
+generated: "2025-12-02T10:31:49.093360616Z"
