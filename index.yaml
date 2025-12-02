@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: "1.33"
+    created: "2025-12-02T10:41:35.388409795Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: 0be86e72affdd0a0ef0dd3fdd4dd7b8a277b1d14a91c28e77f8088342e2b9ae4
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.72/capi-cluster-0.0.72.tgz
+    version: 0.0.72
+  - apiVersion: v2
+    appVersion: "1.33"
     created: "2025-12-02T10:36:48.97360914Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -2177,4 +2200,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2025-12-02T10:36:48.973947282Z"
+generated: "2025-12-02T10:41:35.388934355Z"
