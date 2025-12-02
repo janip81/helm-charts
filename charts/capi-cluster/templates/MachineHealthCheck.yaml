@@ -9,16 +9,17 @@ spec:
   maxUnhealthy: {{ $.Values.healthChecks.workernodes.maxUnhealthy }}
   selector:
     matchLabels:
-      # nodepool: vsphere-quickstart-md-0
       cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
-  conditions:
-  - type: Ready
-    status: Unknown
-    timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
-  - type: Ready
-    status: "False"
-    timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
-{{ end }}
+  checks:
+    nodeStartupTimeoutSeconds: {{ $.Values.healthChecks.workernodes.nodeStartupTimeoutSeconds }}
+    unhealthyNodeConditions:
+      - type: Ready
+        status: Unknown
+        timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
+      - type: Ready
+        status: "False"
+        timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
+{{- end }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta2
 kind: MachineHealthCheck
@@ -30,10 +31,12 @@ spec:
   selector:
     matchLabels:
       cluster.x-k8s.io/control-plane: ""
-  conditions:
-    - type: Ready
-      status: Unknown
-      timeout: {{ .Values.healthChecks.controlplane.unhealthyTimeoutUnknown }}
-    - type: Ready
-      status: "False"
-      timeout: {{ .Values.healthChecks.controlplane.unhealthyTimeoutFalse }}
+  checks:
+    nodeStartupTimeoutSeconds: {{ .Values.healthChecks.controlplane.nodeStartupTimeoutSeconds }}
+    unhealthyNodeConditions:
+      - type: Ready
+        status: Unknown
+        timeout: {{ .Values.healthChecks.controlplane.unhealthyTimeoutUnknown }}
+      - type: Ready
+        status: "False"
+        timeout: {{ .Values.healthChecks.controlplane.unhealthyTimeoutFalse }}
