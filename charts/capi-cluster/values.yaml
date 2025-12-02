@@ -150,6 +150,7 @@ healthChecks:
     # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
     maxUnhealthy: 100%
 
+    nodeStartupTimeoutSeconds: 900
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
     unhealthyTimeoutUnknown: 5m0s
     unhealthyTimeoutFalse: 5m0s
@@ -161,6 +162,7 @@ healthChecks:
     # maxUnhealthy prevents further remediation if the cluster is already partially unhealthy
     maxUnhealthy: 40%
 
+    nodeStartupTimeoutSeconds: 900
     # Timeout for unhealthy condition when node status Ready is unknown or False. When timeout is reached node is considered unhealthy
     unhealthyTimeoutUnknown: 5m0s
     unhealthyTimeoutFalse: 5m0s
