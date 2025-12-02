@@ -36,8 +36,8 @@ spec:
 {{- if .pciDevices }}
       pciDevices:
 {{- range .pciDevices }}
-        - deviceId: "{{ .deviceId }}"
-          vendorId: "{{ .vendorId }}"
+        - deviceId: {{ .deviceId }}
+          vendorId: {{ .vendorId }}
 {{- end }}
 {{- end }}
 {{- if .customVMXKeys }}
