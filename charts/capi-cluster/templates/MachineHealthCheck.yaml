@@ -11,7 +11,7 @@ spec:
     matchLabels:
       # nodepool: vsphere-quickstart-md-0
       cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
-  unhealthyConditions:
+  conditions:
   - type: Ready
     status: Unknown
     timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
@@ -30,7 +30,7 @@ spec:
   selector:
     matchLabels:
       cluster.x-k8s.io/control-plane: ""
-  unhealthyConditions:
+  conditions:
     - type: Ready
       status: Unknown
       timeout: {{ .Values.healthChecks.controlplane.unhealthyTimeoutUnknown }}
