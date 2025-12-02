@@ -3,11 +3,10 @@
 apiVersion: cluster.x-k8s.io/v1beta2
 kind: MachineHealthCheck
 metadata:
-  name: {{ $.Values.cluster.name }}-node-unhealthy-5m
+  name: {{ $.Values.cluster.name }}-{{ .name }}-unhealthy-5m
 spec:
   clusterName: {{ $.Values.cluster.name }}
   maxUnhealthy: {{ $.Values.healthChecks.workernodes.maxUnhealthy }}
-  nodeStartupTimeout: {{ $.Values.healthChecks.workernodes.nodeStartupTimeout }}
   selector:
     matchLabels:
       # nodepool: vsphere-quickstart-md-0
@@ -21,14 +20,13 @@ spec:
     timeout: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
 {{ end }}
 ---
-apiVersion: cluster.x-k8s.io/v1beta1
+apiVersion: cluster.x-k8s.io/v1beta2
 kind: MachineHealthCheck
 metadata:
   name: {{ .Values.cluster.name }}-{{ .Values.healthChecks.controlplane.name }}
 spec:
   clusterName: {{ .Values.cluster.name }}
   maxUnhealthy: {{ .Values.healthChecks.controlplane.maxUnhealthy }}
-  nodeStartupTimeout: {{ .Values.healthChecks.controlplane.nodeStartupTimeout }}
   selector:
     matchLabels:
       cluster.x-k8s.io/control-plane: ""
