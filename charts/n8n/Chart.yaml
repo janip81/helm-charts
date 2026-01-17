@@ -1,0 +1,23 @@
+apiVersion: v2
+name: n8n
+description: n8n workflow automation
+type: application
+version: 0.1.0-dev
+appVersion: "1.0.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/n8n
+icon: https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png
+keywords:
+  - n8n
+  - automation
+  - workflows
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/

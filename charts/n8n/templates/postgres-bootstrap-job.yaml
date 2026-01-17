@@ -1,0 +1,70 @@
+{{- if .Values.postgres.bootstrap.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "n8n.fullname" . }}-db-bootstrap
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.postgres.bootstrap.annotations | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.postgres.bootstrap.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "n8n.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: psql
+          image: {{ .Values.postgres.bootstrap.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PGHOST
+              value: {{ default .Values.postgres.host .Values.postgres.bootstrap.admin.host | quote }}
+            - name: PGPORT
+              value: {{ .Values.postgres.bootstrap.admin.port | quote }}
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.bootstrap.admin.userSecret.name }}
+                  key: {{ .Values.postgres.bootstrap.admin.userSecret.keyUser }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.bootstrap.admin.userSecret.name }}
+                  key: {{ .Values.postgres.bootstrap.admin.userSecret.keyPassword }}
+          command:
+            - /bin/bash
+            - -ceu
+            - |
+              set -o pipefail
+              echo "Ensuring role {{ .Values.postgres.user }} and db {{ .Values.postgres.database }} exist..."
+              psql -v ON_ERROR_STOP=1 <<'SQL'
+              DO $$
+              BEGIN
+                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '{{ .Values.postgres.user }}') THEN
+                  CREATE ROLE "{{ .Values.postgres.user }}" LOGIN PASSWORD '{{ "{{PASSWORD}}" }}';
+                END IF;
+              END$$;
+
+              DO $$
+              BEGIN
+                IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ .Values.postgres.database }}') THEN
+                  CREATE DATABASE "{{ .Values.postgres.database }}" OWNER "{{ .Values.postgres.user }}";
+                END IF;
+              END$$;
+              SQL
+
+              echo "Granting privileges..."
+              psql -v ON_ERROR_STOP=1 -d postgres -c 'GRANT "{{ .Values.postgres.user }}" TO '||quote_ident(current_user)||';' >/dev/null 2>&1 || true
+              PGPASSWORD="{{ "{{PASSWORD}}" }}" psql -v ON_ERROR_STOP=1 -U "{{ .Values.postgres.user }}" -h "${PGHOST}" -p "${PGPORT}" -d "{{ .Values.postgres.database }}" -c "CREATE SCHEMA IF NOT EXISTS {{ .Values.postgres.schema }} AUTHORIZATION \"{{ .Values.postgres.user }}\";"
+          envFrom: []
+          # Inject app user password into the script via envsubst
+          env:
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.passwordSecret.name }}
+                  key: {{ .Values.postgres.passwordSecret.key }}
+{{- end }}

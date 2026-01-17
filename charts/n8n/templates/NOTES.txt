@@ -1,0 +1,13 @@
+n8n installed.
+
+URL:
+- Gateway API host: {{- if .Values.gatewayApi.enabled }} {{ .Values.gatewayApi.host }} {{- end }}
+- Ingress host: {{- if .Values.ingress.enabled }} {{ (index .Values.ingress.hosts 0).host }} {{- end }}
+
+Database:
+- DB Host: {{ .Values.postgres.host }}
+- DB Name: {{ .Values.postgres.database }}
+- DB User: {{ .Values.postgres.user }}
+- Password Secret: {{ .Values.postgres.passwordSecret.name }}/{{ .Values.postgres.passwordSecret.key }}
+
+Remember to point DNS at your Gateway/Ingress LB and set TLS as appropriate.
