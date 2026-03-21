@@ -60,7 +60,7 @@ fullnameOverride: ""
 
 ## -- frigate configuration - see [Docs](https://docs.frigate.video/configuration/index) for more info
 ## -- IF config is not set, you need to manually create a configmap names frigate-config
-#config: |
+# config: |
   # mqtt:
   #   # Required: host name
   #   host: mqtt.server.com
