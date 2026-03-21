@@ -17,8 +17,10 @@ spec:
       cidrBlocks:
         - {{ .Values.cluster.cidrBlocks }}
   controlPlaneRef:
+    apiGroup: controlplane.cluster.x-k8s.io
     kind: KubeadmControlPlane
     name: {{ .Values.cluster.name }}
   infrastructureRef:
+    apiGroup: infrastructure.cluster.x-k8s.io
     kind: VSphereCluster
     name: {{ .Values.cluster.name }}

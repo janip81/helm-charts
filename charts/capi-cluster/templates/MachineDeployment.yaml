@@ -39,10 +39,12 @@ spec:
     spec:
       bootstrap:
         configRef:
+          apiGroup: bootstrap.cluster.x-k8s.io
           kind: KubeadmConfigTemplate
           name: {{ $.Values.cluster.name }}-kubeadmconfig
       clusterName: {{ $.Values.cluster.name }}
       infrastructureRef:
+        apiGroup: infrastructure.cluster.x-k8s.io
         kind: VSphereMachineTemplate
         name: {{ $.Values.cluster.name }}-{{ .vspehereMachineTemplate }}
       version: v{{ .k8sVersion }}
