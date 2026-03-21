@@ -3,6 +3,29 @@ entries:
   capi-cluster:
   - apiVersion: v2
     appVersion: "1.33"
+    created: "2026-03-21T19:05:04.605998812Z"
+    description: An unofficial Helm chart to deploy workload cluster with Cluster
+      API
+    digest: 52789b5b8b50d24047e8bfa0ef6e1f94706d5d07c3da0db81d3945bbbf493885
+    home: https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/artifacthub/logos/capi-logo.svg
+    keywords:
+    - cluster-api
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: capi-cluster
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster
+    - https://github.com/kubernetes-sigs/cluster-api-provider-vsphere
+    - https://github.com/kubernetes-sigs/cluster-api
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/capi-cluster-0.0.87/capi-cluster-0.0.87.tgz
+    version: 0.0.87
+  - apiVersion: v2
+    appVersion: "1.33"
     created: "2026-03-21T14:30:21.035392792Z"
     description: An unofficial Helm chart to deploy workload cluster with Cluster
       API
@@ -1678,6 +1701,28 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
+    created: "2026-03-21T19:05:04.725656873Z"
+    description: NVR With Realtime Object Detection for IP Cameras
+    digest: 39c62805065a6d0a052911f0894993c8daa14591bee991d87892d3ec45d49239
+    home: https://github.com/blakeblackshear/blakeshome-charts/tree/master/charts/frigate
+    icon: https://raw.githubusercontent.com/blakeblackshear/frigate/master/docs/static/img/frigate.png
+    keywords:
+    - tensorflow
+    - coral
+    - ml
+    maintainers:
+    - email: blakeb@blakeshome.com
+      name: blakeblackshear
+    - email: jeff@billimek.com
+      name: billimek
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/frigate-7.8.1/frigate-7.8.1.tgz
+    version: 7.8.1
+  - apiVersion: v2
+    appVersion: 0.14.1
     created: "2025-04-10T06:57:17.986433553Z"
     description: NVR With Realtime Object Detection for IP Cameras
     digest: de81caa3a30180bf6d68151a841f8f880da26250d04167592bbcc6e39e43b850
@@ -1983,6 +2028,43 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.0.1/home-assistant-0.0.1.tgz
     version: 0.0.1
   k8s-ui:
+  - annotations:
+      artifacthub.io/images: |
+        - name: frontend
+          image: ghcr.io/janip81/k8s-ui-frontend:latest
+        - name: backend
+          image: ghcr.io/janip81/k8s-ui-backend:latest
+      artifacthub.io/links: |
+        - name: Project Source
+          url: https://github.com/janip81/k8s-ui
+        - name: Cluster API
+          url: https://github.com/kubernetes-sigs/cluster-api
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-03-21T19:05:04.81524848Z"
+    description: A Helm chart for deploying a multi-cluster Kubernetes dashboard with
+      CAPI integration.
+    digest: 0d6a4b5b750cd4c4398876c3e9215ae5e01fda8c1057ac24efa8e7954abe5752
+    home: https://github.com/janip81/k8s-ui
+    icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
+    keywords:
+    - kubernetes
+    - dashboard
+    - capi
+    - multi-cluster
+    - ui
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: k8s-ui
+    sources:
+    - https://github.com/janip81/k8s-ui
+    - https://github.com/kubernetes-sigs/cluster-api
+    - https://github.com/kubernetes/dashboard
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/k8s-ui-1.0.8/k8s-ui-1.0.8.tgz
+    version: 1.0.8
   - annotations:
       artifacthub.io/images: |
         - name: frontend
@@ -2476,4 +2558,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2026-03-21T14:30:21.035751452Z"
+generated: "2026-03-21T19:05:04.815606368Z"
