@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "k8s-ui.fullname" . }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "k8s-ui.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: k8s-ui-backend
+    namespace: {{ .Release.Namespace }}
