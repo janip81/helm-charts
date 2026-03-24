@@ -1,0 +1,13 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+Frontend: https://{{ .Values.gateway.frontendHostname }}
+API:      https://{{ .Values.gateway.apiHostname }}
+
+API secret must exist before deploy:
+  kubectl create secret generic {{ .Values.api.secretName }} \
+    --from-literal=DATABASE_URL=... \
+    --from-literal=KEYCLOAK_URL=... \
+    --from-literal=KEYCLOAK_REALM=... \
+    -n {{ .Release.Namespace }}

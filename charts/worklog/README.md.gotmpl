@@ -1,0 +1,42 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Helm chart for the Worklog salary tracker — Go API + React frontend.
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo worklog
+```
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install worklog janip81/worklog -f your-values.yaml
+```
+
+## Prerequisites
+
+- Kubernetes with Gateway API (Cilium)
+- CNPG `Database` CRD applied to create the `worklog` db on `pg-main`
+- A Secret named `worklog-api-secret` with keys: `DATABASE_URL`, `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `FRONTEND_ORIGIN`
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

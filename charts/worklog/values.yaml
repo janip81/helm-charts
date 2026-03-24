@@ -1,0 +1,63 @@
+api:
+  image:
+    # -- API container image repository
+    repo: ghcr.io/janip81/worklog-api
+    # -- API image tag
+    tag: latest
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+
+  # -- Name of the Secret containing DATABASE_URL, KEYCLOAK_URL, KEYCLOAK_REALM
+  secretName: worklog-api-secret
+
+  resources:
+    requests:
+      # -- CPU request for the API container
+      cpu: 50m
+      # -- Memory request for the API container
+      memory: 64Mi
+    limits:
+      # -- CPU limit for the API container
+      cpu: 200m
+      # -- Memory limit for the API container
+      memory: 128Mi
+
+  service:
+    # -- Service port for the API
+    port: 8081
+
+frontend:
+  image:
+    # -- Frontend container image repository
+    repo: ghcr.io/janip81/worklog-frontend
+    # -- Frontend image tag
+    tag: latest
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      # -- CPU request for the frontend container
+      cpu: 20m
+      # -- Memory request for the frontend container
+      memory: 32Mi
+    limits:
+      # -- CPU limit for the frontend container
+      cpu: 100m
+      # -- Memory limit for the frontend container
+      memory: 64Mi
+
+  service:
+    # -- Service port for the frontend
+    port: 80
+
+# -- Gateway API HTTPRoute settings (Cilium / internal-shared gateway)
+gateway:
+  # -- Gateway name
+  name: internal-shared
+  # -- Gateway namespace
+  namespace: kube-system
+  # -- Hostname for the React frontend
+  frontendHostname: worklog.prod.threshold.se
+  # -- Hostname for the Go API
+  apiHostname: worklog-api.prod.threshold.se
