@@ -16,6 +16,10 @@ spec:
       labels:
         {{- include "worklog.api.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
+      {{- end }}
       containers:
         - name: api
           image: "{{ .Values.api.image.repo }}:{{ .Values.api.image.tag }}"
