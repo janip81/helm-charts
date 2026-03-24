@@ -2558,4 +2558,19 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
-generated: "2026-03-21T19:05:04.815606368Z"
+  worklog:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-03-24T07:12:12.124437669Z"
+    description: Worklog salary tracker — Go API + React frontend
+    digest: b723fcbb6dad46dfc8efb430b9d5db51ded87b420080fa38e9f7a5c640a38df2
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: worklog
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-03-24T07:12:12.124633745Z"
