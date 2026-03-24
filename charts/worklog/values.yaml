@@ -51,6 +51,9 @@ frontend:
     # -- Service port for the frontend
     port: 80
 
+# -- Image pull secret name for GHCR (kubernetes.io/dockerconfigjson)
+imagePullSecret: ""
+
 # -- Gateway API HTTPRoute settings (Cilium / internal-shared gateway)
 gateway:
   # -- Gateway name

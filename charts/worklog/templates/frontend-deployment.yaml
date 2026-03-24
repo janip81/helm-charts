@@ -16,6 +16,10 @@ spec:
       labels:
         {{- include "worklog.frontend.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
+      {{- end }}
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repo }}:{{ .Values.frontend.image.tag }}"
