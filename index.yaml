@@ -2561,6 +2561,20 @@ entries:
   worklog:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-03-24T07:42:57.216204899Z"
+    description: Worklog salary tracker — Go API + React frontend
+    digest: c5fb04ab64eb78edaf587176d41c258150b7ea093bb36933beea167941d70b06
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: worklog
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.1/worklog-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-03-24T07:12:12.124437669Z"
     description: Worklog salary tracker — Go API + React frontend
     digest: b723fcbb6dad46dfc8efb430b9d5db51ded87b420080fa38e9f7a5c640a38df2
@@ -2573,4 +2587,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-24T07:12:12.124633745Z"
+generated: "2026-03-24T07:42:57.216467817Z"
