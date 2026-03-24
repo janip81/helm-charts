@@ -1,0 +1,43 @@
+api:
+  image:
+    repo: ghcr.io/janip81/worklog-api
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # Env vars injected from a Secret named by secretName
+  secretName: worklog-api-secret
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+  service:
+    port: 8081
+
+frontend:
+  image:
+    repo: ghcr.io/janip81/worklog-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+  service:
+    port: 80
+
+# Gateway API HTTPRoute settings (Cilium / internal-shared gateway)
+gateway:
+  name: internal-shared
+  namespace: kube-system
+  frontendHostname: worklog.prod.threshold.se
+  apiHostname: worklog-api.prod.threshold.se

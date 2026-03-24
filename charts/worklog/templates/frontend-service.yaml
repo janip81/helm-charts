@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "worklog.frontend.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "worklog.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "worklog.frontend.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.port }}
+      protocol: TCP

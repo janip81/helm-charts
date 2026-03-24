@@ -1,0 +1,10 @@
+apiVersion: v2
+name: worklog
+description: Worklog salary tracker — Go API + React frontend
+type: application
+version: "0.1.0"
+appVersion: "0.1.0"
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
