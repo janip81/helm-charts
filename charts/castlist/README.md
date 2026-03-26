@@ -1,6 +1,6 @@
 # castlist
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
 
@@ -58,29 +58,28 @@ helm upgrade --install castlist janip81/castlist \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | api.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| api.image.repository | string | `""` | API container image repository |
+| api.image.repository | string | `"ghcr.io/janip81/castlist-api"` | API container image repository |
 | api.image.tag | string | `"latest"` | Image tag |
 | api.port | int | `8000` | API container port |
 | api.replicas | int | `1` | Number of API replicas |
-| api.resources | object | `{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}}` | Resource requests and limits for the API container |
-| config.chromecastFriendlyName | string | `"Bedroom TV"` | Chromecast device friendly name (display only) |
-| config.keycloakClientId | string | `"castlist"` | Keycloak client ID |
+| api.resources | object | `{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}}` | Resource requests and limits |
+| config.chromecasts | list | `[]` | Chromecast devices — list of name/ip pairs |
+| config.keycloakClientId | string | `"castlist"` | Keycloak client ID (public client — no secret required) |
 | config.keycloakRealm | string | `""` | Keycloak realm name |
-| config.keycloakUrl | string | `""` | Keycloak base URL (e.g. `https://auth.example.com`) |
+| config.keycloakUrl | string | `""` | Keycloak base URL |
 | config.queueBackend | string | `"memory"` | Queue backend (`memory` or `redis`) |
 | frontend.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| frontend.image.repository | string | `""` | Frontend container image repository |
+| frontend.image.repository | string | `"ghcr.io/janip81/castlist-frontend"` | Frontend container image repository |
 | frontend.image.tag | string | `"latest"` | Image tag |
 | frontend.port | int | `80` | Frontend container port |
 | frontend.replicas | int | `1` | Number of frontend replicas |
-| frontend.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits for the frontend container |
-| imagePullSecrets | list | `[]` | Image pull secrets for private registries (e.g. ghcr.io) imagePullSecrets:   - name: ghcr-credentials |
-| ingress.className | string | `""` | Ingress class name (e.g. `nginx`) |
-| ingress.enabled | bool | `true` | Enable Ingress |
-| ingress.host | string | `"castlist.local"` | Hostname to expose castlist on |
-| ingress.tls | list | `[]` | TLS configuration |
+| frontend.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits |
+| gateway | object | `{"hostname":"castlist.prod.threshold.se","name":"internal-shared","namespace":"kube-system"}` | Gateway API HTTPRoute settings |
+| gateway.hostname | string | `"castlist.prod.threshold.se"` | Hostname for castlist |
+| gateway.name | string | `"internal-shared"` | Gateway name |
+| gateway.namespace | string | `"kube-system"` | Gateway namespace |
+| imagePullSecret | string | `""` | Image pull secret name for GHCR (kubernetes.io/dockerconfigjson) |
 | registry.create | bool | `false` | Create a ghcr.io image pull secret automatically |
 | registry.password | string | `""` | GitHub personal access token with read:packages scope |
 | registry.username | string | `""` | GitHub username |
-| secrets.chromecastIp | string | `""` | Static LAN IP of the Chromecast device (set via DHCP reservation on router) |
-| secrets.keycloakClientSecret | string | `""` | Keycloak client secret — set via `--set` or a values override file, never commit |
+| secrets | object | `{}` | Extra secrets to inject (arbitrary key/value, mounted as env vars) |

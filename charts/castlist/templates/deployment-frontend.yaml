@@ -15,9 +15,9 @@ spec:
       labels:
         app: castlist-frontend
     spec:
-      {{- if .Values.imagePullSecrets }}
+      {{- if .Values.imagePullSecret }}
       imagePullSecrets:
-        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+        - name: {{ .Values.imagePullSecret }}
       {{- end }}
       containers:
         - name: frontend
@@ -28,8 +28,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: castlist-config
+            {{- if .Values.secrets }}
             - secretRef:
                 name: castlist-secrets
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /

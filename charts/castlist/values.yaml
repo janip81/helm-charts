@@ -1,13 +1,10 @@
-# -- Image pull secrets for private registries (e.g. ghcr.io)
-# @default -- `[]`
-# imagePullSecrets:
-#   - name: ghcr-credentials
-imagePullSecrets: []
+# -- Image pull secret name for GHCR (kubernetes.io/dockerconfigjson)
+imagePullSecret: ""
 
 api:
   image:
     # -- API container image repository
-    repository: ""
+    repository: ghcr.io/janip81/castlist-api
     # -- Image tag
     tag: "latest"
     # -- Image pull policy
@@ -16,7 +13,7 @@ api:
   replicas: 1
   # -- API container port
   port: 8000
-  # -- Resource requests and limits for the API container
+  # -- Resource requests and limits
   resources:
     requests:
       memory: "256Mi"
@@ -28,7 +25,7 @@ api:
 frontend:
   image:
     # -- Frontend container image repository
-    repository: ""
+    repository: ghcr.io/janip81/castlist-frontend
     # -- Image tag
     tag: "latest"
     # -- Image pull policy
@@ -37,7 +34,7 @@ frontend:
   replicas: 1
   # -- Frontend container port
   port: 80
-  # -- Resource requests and limits for the frontend container
+  # -- Resource requests and limits
   resources:
     requests:
       memory: "64Mi"
@@ -46,37 +43,35 @@ frontend:
       memory: "128Mi"
       cpu: "100m"
 
-ingress:
-  # -- Enable Ingress
-  enabled: true
-  # -- Hostname to expose castlist on
-  host: castlist.local
-  # -- Ingress class name (e.g. `nginx`)
-  className: ""
-  # -- TLS configuration
-  tls: []
-  # tls:
-  #   - secretName: castlist-tls
-  #     hosts:
-  #       - castlist.local
+# -- Gateway API HTTPRoute settings
+gateway:
+  # -- Gateway name
+  name: internal-shared
+  # -- Gateway namespace
+  namespace: kube-system
+  # -- Hostname for castlist
+  hostname: castlist.prod.threshold.se
 
 config:
-  # -- Keycloak base URL (e.g. `https://auth.example.com`)
+  # -- Keycloak base URL
   keycloakUrl: ""
   # -- Keycloak realm name
   keycloakRealm: ""
-  # -- Keycloak client ID
+  # -- Keycloak client ID (public client — no secret required)
   keycloakClientId: "castlist"
-  # -- Chromecast device friendly name (display only)
-  chromecastFriendlyName: "Bedroom TV"
   # -- Queue backend (`memory` or `redis`)
   queueBackend: "memory"
+  # -- Chromecast devices — list of name/ip pairs
+  # @default -- `[]`
+  chromecasts: []
+  # chromecasts:
+  #   - name: "Bedroom TV"
+  #     ip: "192.168.x.x"
+  #   - name: "Living Room"
+  #     ip: "192.168.x.y"
 
-secrets:
-  # -- Keycloak client secret — set via `--set` or a values override file, never commit
-  keycloakClientSecret: ""
-  # -- Static LAN IP of the Chromecast device (set via DHCP reservation on router)
-  chromecastIp: ""
+# -- Extra secrets to inject (arbitrary key/value, mounted as env vars)
+secrets: {}
 
 registry:
   # -- Create a ghcr.io image pull secret automatically

@@ -11,9 +11,6 @@ frontend:
     repository: ghcr.io/janip81/castlist-frontend
     tag: "latest"
 
-ingress:
-  enabled: false
-
 config:
   keycloakUrl: "http://keycloak.example.com"
   keycloakRealm: "test"
