@@ -28,8 +28,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: castlist-config
+            {{- if .Values.secrets }}
             - secretRef:
                 name: castlist-secrets
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /

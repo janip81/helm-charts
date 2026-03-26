@@ -1,9 +1,6 @@
 # -- Image pull secret name for GHCR (kubernetes.io/dockerconfigjson)
 imagePullSecret: ""
 
-# -- Image pull secrets for private registries — auto-populated from imagePullSecret if set
-imagePullSecrets: []
-
 api:
   image:
     # -- API container image repository
@@ -16,7 +13,7 @@ api:
   replicas: 1
   # -- API container port
   port: 8000
-  # -- Resource requests and limits for the API container
+  # -- Resource requests and limits
   resources:
     requests:
       memory: "256Mi"
@@ -37,7 +34,7 @@ frontend:
   replicas: 1
   # -- Frontend container port
   port: 80
-  # -- Resource requests and limits for the frontend container
+  # -- Resource requests and limits
   resources:
     requests:
       memory: "64Mi"
@@ -60,18 +57,21 @@ config:
   keycloakUrl: ""
   # -- Keycloak realm name
   keycloakRealm: ""
-  # -- Keycloak client ID
+  # -- Keycloak client ID (public client — no secret required)
   keycloakClientId: "castlist"
-  # -- Chromecast device friendly name (display only)
-  chromecastFriendlyName: "Bedroom TV"
   # -- Queue backend (`memory` or `redis`)
   queueBackend: "memory"
+  # -- Chromecast devices — list of name/ip pairs
+  # @default -- `[]`
+  chromecasts: []
+  # chromecasts:
+  #   - name: "Bedroom TV"
+  #     ip: "192.168.x.x"
+  #   - name: "Living Room"
+  #     ip: "192.168.x.y"
 
-secrets:
-  # -- Keycloak client secret — set via `--set` or a values override file, never commit
-  keycloakClientSecret: ""
-  # -- Static LAN IP of the Chromecast device (set via DHCP reservation on router)
-  chromecastIp: ""
+# -- Extra secrets to inject (arbitrary key/value, mounted as env vars)
+secrets: {}
 
 registry:
   # -- Create a ghcr.io image pull secret automatically
