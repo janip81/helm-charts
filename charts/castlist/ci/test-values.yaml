@@ -1,0 +1,24 @@
+# Values used by chart-testing (ct install) in CI
+# Provides minimal config so containers start successfully
+
+api:
+  image:
+    repository: ghcr.io/janip81/castlist-api
+    tag: "latest"
+
+frontend:
+  image:
+    repository: ghcr.io/janip81/castlist-frontend
+    tag: "latest"
+
+ingress:
+  enabled: false
+
+config:
+  keycloakUrl: "http://keycloak.example.com"
+  keycloakRealm: "test"
+  keycloakClientId: "castlist"
+
+secrets:
+  keycloakClientSecret: "ci-placeholder"
+  chromecastIp: "127.0.0.1"
