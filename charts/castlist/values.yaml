@@ -1,6 +1,12 @@
 # -- Kubernetes namespace to deploy into
 namespace: castlist
 
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+# @default -- `[]`
+# imagePullSecrets:
+#   - name: ghcr-credentials
+imagePullSecrets: []
+
 api:
   image:
     # -- API container image repository
@@ -74,3 +80,11 @@ secrets:
   keycloakClientSecret: ""
   # -- Static LAN IP of the Chromecast device (set via DHCP reservation on router)
   chromecastIp: ""
+
+registry:
+  # -- Create a ghcr.io image pull secret automatically
+  create: false
+  # -- GitHub username
+  username: ""
+  # -- GitHub personal access token with read:packages scope
+  password: ""

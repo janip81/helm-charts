@@ -74,10 +74,14 @@ helm upgrade --install castlist janip81/castlist \
 | frontend.port | int | `80` | Frontend container port |
 | frontend.replicas | int | `1` | Number of frontend replicas |
 | frontend.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits for the frontend container |
+| imagePullSecrets | list | `[]` | Image pull secrets for private registries (e.g. ghcr.io) imagePullSecrets:   - name: ghcr-credentials |
 | ingress.className | string | `""` | Ingress class name (e.g. `nginx`) |
 | ingress.enabled | bool | `true` | Enable Ingress |
 | ingress.host | string | `"castlist.local"` | Hostname to expose castlist on |
 | ingress.tls | list | `[]` | TLS configuration |
 | namespace | string | `"castlist"` | Kubernetes namespace to deploy into |
+| registry.create | bool | `false` | Create a ghcr.io image pull secret automatically |
+| registry.password | string | `""` | GitHub personal access token with read:packages scope |
+| registry.username | string | `""` | GitHub username |
 | secrets.chromecastIp | string | `""` | Static LAN IP of the Chromecast device (set via DHCP reservation on router) |
 | secrets.keycloakClientSecret | string | `""` | Keycloak client secret — set via `--set` or a values override file, never commit |
