@@ -1,13 +1,13 @@
-# -- Image pull secrets for private registries (e.g. ghcr.io)
-# @default -- `[]`
-# imagePullSecrets:
-#   - name: ghcr-credentials
+# -- Image pull secret name for GHCR (kubernetes.io/dockerconfigjson)
+imagePullSecret: ""
+
+# -- Image pull secrets for private registries — auto-populated from imagePullSecret if set
 imagePullSecrets: []
 
 api:
   image:
     # -- API container image repository
-    repository: ""
+    repository: ghcr.io/janip81/castlist-api
     # -- Image tag
     tag: "latest"
     # -- Image pull policy
@@ -28,7 +28,7 @@ api:
 frontend:
   image:
     # -- Frontend container image repository
-    repository: ""
+    repository: ghcr.io/janip81/castlist-frontend
     # -- Image tag
     tag: "latest"
     # -- Image pull policy
@@ -46,22 +46,17 @@ frontend:
       memory: "128Mi"
       cpu: "100m"
 
-ingress:
-  # -- Enable Ingress
-  enabled: true
-  # -- Hostname to expose castlist on
-  host: castlist.local
-  # -- Ingress class name (e.g. `nginx`)
-  className: ""
-  # -- TLS configuration
-  tls: []
-  # tls:
-  #   - secretName: castlist-tls
-  #     hosts:
-  #       - castlist.local
+# -- Gateway API HTTPRoute settings
+gateway:
+  # -- Gateway name
+  name: internal-shared
+  # -- Gateway namespace
+  namespace: kube-system
+  # -- Hostname for castlist
+  hostname: castlist.prod.threshold.se
 
 config:
-  # -- Keycloak base URL (e.g. `https://auth.example.com`)
+  # -- Keycloak base URL
   keycloakUrl: ""
   # -- Keycloak realm name
   keycloakRealm: ""
