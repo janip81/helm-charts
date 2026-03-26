@@ -79,7 +79,6 @@ helm upgrade --install castlist janip81/castlist \
 | ingress.enabled | bool | `true` | Enable Ingress |
 | ingress.host | string | `"castlist.local"` | Hostname to expose castlist on |
 | ingress.tls | list | `[]` | TLS configuration |
-| namespace | string | `"castlist"` | Kubernetes namespace to deploy into |
 | registry.create | bool | `false` | Create a ghcr.io image pull secret automatically |
 | registry.password | string | `""` | GitHub personal access token with read:packages scope |
 | registry.username | string | `""` | GitHub username |
