@@ -1,0 +1,87 @@
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+# @default -- `[]`
+# imagePullSecrets:
+#   - name: ghcr-credentials
+imagePullSecrets: []
+
+api:
+  image:
+    # -- API container image repository
+    repository: ""
+    # -- Image tag
+    tag: "latest"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Number of API replicas
+  replicas: 1
+  # -- API container port
+  port: 8000
+  # -- Resource requests and limits for the API container
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+frontend:
+  image:
+    # -- Frontend container image repository
+    repository: ""
+    # -- Image tag
+    tag: "latest"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Number of frontend replicas
+  replicas: 1
+  # -- Frontend container port
+  port: 80
+  # -- Resource requests and limits for the frontend container
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+ingress:
+  # -- Enable Ingress
+  enabled: true
+  # -- Hostname to expose castlist on
+  host: castlist.local
+  # -- Ingress class name (e.g. `nginx`)
+  className: ""
+  # -- TLS configuration
+  tls: []
+  # tls:
+  #   - secretName: castlist-tls
+  #     hosts:
+  #       - castlist.local
+
+config:
+  # -- Keycloak base URL (e.g. `https://auth.example.com`)
+  keycloakUrl: ""
+  # -- Keycloak realm name
+  keycloakRealm: ""
+  # -- Keycloak client ID
+  keycloakClientId: "castlist"
+  # -- Chromecast device friendly name (display only)
+  chromecastFriendlyName: "Bedroom TV"
+  # -- Queue backend (`memory` or `redis`)
+  queueBackend: "memory"
+
+secrets:
+  # -- Keycloak client secret — set via `--set` or a values override file, never commit
+  keycloakClientSecret: ""
+  # -- Static LAN IP of the Chromecast device (set via DHCP reservation on router)
+  chromecastIp: ""
+
+registry:
+  # -- Create a ghcr.io image pull secret automatically
+  create: false
+  # -- GitHub username
+  username: ""
+  # -- GitHub personal access token with read:packages scope
+  password: ""

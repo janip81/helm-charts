@@ -5,3 +5,4 @@ upgrade: true
 install: true
 excluded-charts:
   - worklog
+  - castlist
