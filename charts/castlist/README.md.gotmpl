@@ -1,0 +1,53 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Overview
+
+castlist is a self-hosted Chromecast queue manager. Paste video URLs (YouTube, Vimeo, and 1000+ other sites via yt-dlp) into named playlists, cast them to your Chromecast one after another, and control playback from any mobile browser. Protected by Keycloak OIDC.
+
+## Prerequisites
+
+- A Keycloak instance with a `castlist` client configured
+- A Chromecast device with a static LAN IP (DHCP reservation on your router)
+- Container images built and pushed to a registry
+
+## Install
+
+Add the repo:
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm repo update
+```
+
+Install with a values override (never commit secrets):
+```bash
+helm upgrade --install castlist janip81/castlist \
+  --set config.keycloakUrl=https://auth.example.com \
+  --set config.keycloakRealm=my-realm \
+  --set secrets.keycloakClientSecret=your-secret \
+  --set secrets.chromecastIp=192.168.1.x \
+  --set api.image.repository=ghcr.io/janip81/castlist-api \
+  --set frontend.image.repository=ghcr.io/janip81/castlist-frontend \
+  --set ingress.host=castlist.example.com
+```
+
+## Keycloak setup
+
+1. Create a client named `castlist` (or matching `config.keycloakClientId`)
+2. Set **Access Type** to `confidential`
+3. Add your castlist URL to **Valid Redirect URIs** (e.g. `https://castlist.example.com/*`)
+4. Copy the client secret → `secrets.keycloakClientSecret`
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

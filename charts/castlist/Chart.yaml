@@ -1,0 +1,16 @@
+apiVersion: v2
+name: castlist
+description: Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - chromecast
+  - media
+  - queue
+  - yt-dlp
+home: https://github.com/janip81/castlist
+sources:
+  - https://github.com/janip81/castlist
+maintainers:
+  - name: janip81
