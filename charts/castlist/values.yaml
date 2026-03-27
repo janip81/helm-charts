@@ -70,6 +70,15 @@ config:
   #   - name: "Living Room"
   #     ip: "192.168.x.y"
 
+# -- Persistence for playlists and devices
+persistence:
+  # -- Enable persistent storage (requires a PVC-capable storage class)
+  enabled: false
+  # -- Storage size
+  size: 100Mi
+  # -- Storage class (leave empty to use cluster default)
+  storageClass: ""
+
 # -- Extra secrets to inject (arbitrary key/value, mounted as env vars)
 secrets: {}
 

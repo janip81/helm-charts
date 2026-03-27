@@ -1,6 +1,6 @@
 # castlist
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
 
@@ -79,6 +79,10 @@ helm upgrade --install castlist janip81/castlist \
 | gateway.name | string | `"internal-shared"` | Gateway name |
 | gateway.namespace | string | `"kube-system"` | Gateway namespace |
 | imagePullSecret | string | `""` | Image pull secret name for GHCR (kubernetes.io/dockerconfigjson) |
+| persistence | object | `{"enabled":false,"size":"100Mi","storageClass":""}` | Persistence for playlists and devices |
+| persistence.enabled | bool | `false` | Enable persistent storage (requires a PVC-capable storage class) |
+| persistence.size | string | `"100Mi"` | Storage size |
+| persistence.storageClass | string | `""` | Storage class (leave empty to use cluster default) |
 | registry.create | bool | `false` | Create a ghcr.io image pull secret automatically |
 | registry.password | string | `""` | GitHub personal access token with read:packages scope |
 | registry.username | string | `""` | GitHub username |
