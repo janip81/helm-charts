@@ -7,6 +7,10 @@ metadata:
     app: castlist-api
 spec:
   replicas: {{ .Values.api.replicas }}
+  {{- if .Values.persistence.enabled }}
+  strategy:
+    type: Recreate
+  {{- end }}
   selector:
     matchLabels:
       app: castlist-api
