@@ -5,3 +5,4 @@ release-dir: .cr-release-packages
 index-path: index.yaml
 pages-branch: gh-pages
 pages-index-path: index.yaml
+skip-existing: true
