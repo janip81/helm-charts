@@ -41,6 +41,10 @@ metadata:
     {{- include "n8n.labels" . | nindent 4 }}
 spec:
   replicas: {{ default 1 .Values.replicaCount }}
+  {{- if .Values.persistence.enabled }}
+  strategy:
+    type: Recreate
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "n8n.name" . }}
