@@ -1,6 +1,6 @@
 # n8n
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.123.27](https://img.shields.io/badge/AppVersion-1.123.27-informational?style=flat-square)
 
 n8n workflow automation
 
@@ -111,7 +111,7 @@ To uninstall the chart:
 | gatewayApi.tls.secretName | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"n8nio/n8n"` |  |
-| image.tag | string | `"1.86.0"` |  |
+| image.tag | string | `"1.123.27"` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
 | ingress.enabled | bool | `false` |  |

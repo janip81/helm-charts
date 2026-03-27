@@ -1,7 +1,7 @@
 # Chart-testing values — SQLite mode, no secrets, no gateway, no persistence
 # Used by ct lint and ct install (kind cluster)
 image:
-  tag: "1.86.0"
+  tag: "1.123.27"
 
 env:
   N8N_HOST: "n8n.example.com"
