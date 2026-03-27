@@ -133,5 +133,7 @@ secrets:
   #       GOOGLE_CLIENT_SECRET: "<path:kv/data/n8n/google#client_secret>"
 
 
-podSecurityContext: {}
+podSecurityContext:
+  fsGroup: 1000
+
 securityContext: {}

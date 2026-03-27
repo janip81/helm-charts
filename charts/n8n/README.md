@@ -1,6 +1,6 @@
 # n8n
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
 
 n8n workflow automation
 
@@ -136,7 +136,7 @@ To uninstall the chart:
 | persistence.size | string | `"5Gi"` |  |
 | persistence.storageClass | string | `""` |  |
 | podAnnotations | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
+| podSecurityContext.fsGroup | int | `1000` |  |
 | postgres.bootstrap.admin.host | string | `""` |  |
 | postgres.bootstrap.admin.port | int | `5432` |  |
 | postgres.bootstrap.admin.userSecret.keyPassword | string | `"password"` |  |
