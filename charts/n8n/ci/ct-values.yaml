@@ -1,0 +1,36 @@
+# Chart-testing values — SQLite mode, no secrets, no gateway, no persistence
+# Used by ct lint and ct install (kind cluster)
+image:
+  tag: "1.86.0"
+
+env:
+  N8N_HOST: "n8n.example.com"
+  N8N_PROTOCOL: "https"
+
+# Use SQLite for ct install (no postgres available)
+database:
+  type: sqlite
+
+persistence:
+  enabled: false
+
+secrets:
+  create: false
+  # Clear secret names so deployment falls back to inline dev values (no secret needed in kind)
+  encryption:
+    name: ""
+    key: ""
+  database:
+    name: ""
+    key: ""
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+
+gatewayApi:
+  enabled: false
+
+ingress:
+  enabled: false
