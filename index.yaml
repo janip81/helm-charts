@@ -1637,6 +1637,26 @@ entries:
   castlist:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-03-27T11:15:43.354081526Z"
+    description: Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
+    digest: 29d9ffa878d851a2a52ae0eb7e6d88e6a6196cde6998462818a85745af9d1088
+    home: https://github.com/janip81/castlist
+    keywords:
+    - chromecast
+    - media
+    - queue
+    - yt-dlp
+    maintainers:
+    - name: janip81
+    name: castlist
+    sources:
+    - https://github.com/janip81/castlist
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/castlist-0.5.0/castlist-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-03-27T09:55:46.802159765Z"
     description: Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
     digest: 756160a47118e3725f50d153ce46ac989fc0918528d67ad7a16f9d5d7e1e4943
@@ -2648,4 +2668,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-27T09:55:46.802522144Z"
+generated: "2026-03-27T11:15:43.354304327Z"
