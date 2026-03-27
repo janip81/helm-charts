@@ -47,3 +47,14 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: castlist-data
+      {{- end }}

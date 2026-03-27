@@ -9,5 +9,6 @@ data:
   KEYCLOAK_CLIENT_ID: {{ .Values.config.keycloakClientId | quote }}
   QUEUE_BACKEND: {{ .Values.config.queueBackend | quote }}
   CHROMECAST_DEVICES: {{ .Values.config.chromecasts | toJson | quote }}
+  DATA_DIR: {{ if .Values.persistence.enabled }}"/data"{{ else }}""{{ end }}
   # Used by the frontend nginx entrypoint to proxy to the correct API service
   API_BACKEND_URL: {{ printf "http://castlist-api:%d" (.Values.api.port | int) | quote }}
