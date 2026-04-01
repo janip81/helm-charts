@@ -7,6 +7,10 @@ spec:
   selector:
     matchLabels:
       app: mosquitto
+  {{- if .Values.persistence.enabled }}
+  strategy:
+    type: Recreate
+  {{- end }}
   template:
     metadata:
       labels:
@@ -28,8 +32,17 @@ spec:
               mountPath: /mosquitto/data
       volumes:
         - name: config
+          {{- if .Values.auth.enabled }}
+          projected:
+            sources:
+              - configMap:
+                  name: mosquitto-config
+              - secret:
+                  name: {{ .Values.auth.existingSecret | default "mqtt-auth" }}
+          {{- else }}
           configMap:
             name: mosquitto-config
+          {{- end }}
         - name: data
           persistentVolumeClaim:
             claimName: mosquitto-data
