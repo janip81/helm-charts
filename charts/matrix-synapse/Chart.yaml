@@ -3,7 +3,7 @@ name: matrix-synapse
 description: Matrix Synapse homeserver Helm chart
 type: application
 
-version: 0.1.1
+version: 0.1.2
 appVersion: "1.116.0"
 
 home: "https://github.com/matrix-org/synapse"
