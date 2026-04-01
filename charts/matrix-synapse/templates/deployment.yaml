@@ -73,7 +73,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "matrix-synapse.fullname" . }}-config
+            name: {{ default (printf "%s-config" (include "matrix-synapse.fullname" .)) .Values.existingConfigMap }}
         - name: media
           persistentVolumeClaim:
             claimName: {{ default (printf "%s-media" (include "matrix-synapse.fullname" .)) .Values.persistence.existingClaim }}

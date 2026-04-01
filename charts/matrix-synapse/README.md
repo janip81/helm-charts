@@ -1,6 +1,6 @@
 # matrix-synapse
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.116.0](https://img.shields.io/badge/AppVersion-1.116.0-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.116.0](https://img.shields.io/badge/AppVersion-1.116.0-informational?style=flat-square)
 
 Matrix Synapse homeserver Helm chart
 
@@ -24,6 +24,7 @@ Matrix Synapse homeserver Helm chart
 | affinity | object | `{}` |  |
 | bridges.appserviceConfigMap | string | `""` |  |
 | bridges.mountPath | string | `"/data/appservices"` |  |
+| existingConfigMap | string | `""` | Use an existing ConfigMap for homeserver.yaml instead of the chart default. The ConfigMap must contain a key named homeserver.yaml. |
 | gateway.enabled | bool | `true` |  |
 | gateway.hostname | string | `"matrix.example.com"` |  |
 | gateway.parentGatewayName | string | `"public-gateway"` |  |
