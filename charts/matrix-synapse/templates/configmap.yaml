@@ -44,6 +44,7 @@ data:
 
     log_config: "/config/log.yaml"
     media_store_path: "/data/media"
+    signing_key_path: "/data/media/signing.key"
 
     registration_shared_secret: "{{`{{`}} synapse_registration_shared_secret {{`}}`}}"
     macaroon_secret_key: "{{`{{`}} synapse_macaroon_secret_key {{`}}`}}"
