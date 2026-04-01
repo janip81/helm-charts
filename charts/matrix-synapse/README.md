@@ -24,6 +24,7 @@ Matrix Synapse homeserver Helm chart
 | affinity | object | `{}` |  |
 | bridges.appserviceConfigMap | string | `""` |  |
 | bridges.mountPath | string | `"/data/appservices"` |  |
+| existingConfigMap | string | `""` | Use an existing ConfigMap for homeserver.yaml instead of the chart default. The ConfigMap must contain a key named homeserver.yaml. |
 | gateway.enabled | bool | `true` |  |
 | gateway.hostname | string | `"matrix.example.com"` |  |
 | gateway.parentGatewayName | string | `"public-gateway"` |  |

@@ -2,7 +2,7 @@
 # CHANGE ME: this is your Matrix homeserver name
 serverName: "matrix.example.com"
 
-# Use an existing ConfigMap for homeserver.yaml instead of the chart default.
+# -- Use an existing ConfigMap for homeserver.yaml instead of the chart default.
 # The ConfigMap must contain a key named homeserver.yaml.
 existingConfigMap: ""
 
