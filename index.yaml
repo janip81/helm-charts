@@ -2445,6 +2445,29 @@ entries:
   matrix-synapse:
   - apiVersion: v2
     appVersion: 1.116.0
+    created: "2026-04-01T11:19:34.551568747Z"
+    description: Matrix Synapse homeserver Helm chart
+    digest: c32df6d87c7728d562899294e5e7640650e58a553ff66ffca2bd291be15cad7f
+    home: https://github.com/matrix-org/synapse
+    keywords:
+    - matrix
+    - synapse
+    - chat
+    - homeserver
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: jani
+      url: https://techmonkeys.se
+    name: matrix-synapse
+    sources:
+    - https://github.com/matrix-org/synapse
+    - https://github.com/janip81/helm-charts
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/matrix-synapse-0.1.2/matrix-synapse-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.116.0
     created: "2026-04-01T11:01:43.747083528Z"
     description: Matrix Synapse homeserver Helm chart
     digest: d7335006c946aceeb322e08f4c8d783e7564761ece0cf709699d788307bf52ef
@@ -2770,4 +2793,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-01T11:01:43.747341939Z"
+generated: "2026-04-01T11:19:34.551756155Z"
