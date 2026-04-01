@@ -1,0 +1,19 @@
+# Chart-testing values — no gateway CRDs, no postgres, no persistence
+# Used by ct install (kind cluster)
+serverName: "matrix.example.com"
+
+postgres:
+  host: "postgres.default.svc.cluster.local"
+  existingSecret: "synapse-postgres"
+  passwordKey: "password"
+
+persistence:
+  enabled: false
+
+gateway:
+  enabled: false
+
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
