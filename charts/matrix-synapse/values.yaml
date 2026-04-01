@@ -1,4 +1,6 @@
-serverName: "matrix.example.com"   # <- CHANGE ME, this is your Matrix homeserver name
+---
+# CHANGE ME: this is your Matrix homeserver name
+serverName: "matrix.example.com"
 
 image:
   repository: matrixdotorg/synapse
@@ -16,12 +18,12 @@ postgres:
   port: 5432
   database: "synapse"
   user: "synapse"
-  existingSecret: "synapse-postgres"   # secret with DB password
+  existingSecret: "synapse-postgres"  # secret with DB password
   passwordKey: "password"
 
 persistence:
   enabled: true
-  storageClass: ""                    # e.g. "vsphere-csi"
+  storageClass: ""  # e.g. "vsphere-csi"
   accessModes:
     - ReadWriteOnce
   size: 20Gi
@@ -29,46 +31,48 @@ persistence:
 
 service:
   type: ClusterIP
-  port: 8008           # client + federation (if using reverse proxy)
-  federationPort: 8448 # optional, if you expose federation separately
+  port: 8008  # client + federation (if using reverse proxy)
+  federationPort: 8448  # optional, if you expose federation separately
   annotations: {}
 
 gateway:
   enabled: true
-  parentGatewayName: "public-gateway"        # Cilium Gateway name
+  parentGatewayName: "public-gateway"  # Cilium Gateway name
   parentGatewayNamespace: "default"
-  hostname: "matrix.example.com"             # external hostname
+  hostname: "matrix.example.com"  # external hostname
 
 metrics:
   enabled: true
   serviceMonitor:
     enabled: true
-    namespace: ""        # empty = same namespace
+    namespace: ""  # empty = same namespace
     interval: 30s
     labels: {}
 
 turn:
   enabled: false
   # if enabled, either provide uris+credentials OR sharedSecret
-  uris: []               # e.g. ["turn:turn.example.com?transport=udp"]
-  sharedSecret: ""       # for TURN secret auth (coturn static-auth-secret)
-  username: ""           # for username/password auth
-  password: ""           # for username/password auth
+  uris: []  # e.g. ["turn:turn.example.com?transport=udp"]
+  sharedSecret: ""  # for TURN secret auth (coturn static-auth-secret)
+  username: ""  # for username/password auth
+  password: ""  # for username/password auth
   userLifetime: "24h"
 
 bridges:
-  # Name of a ConfigMap that contains one or more appservice registration YAML files.
-  # Those files will be mounted into Synapse and referenced from homeserver.yaml
-  appserviceConfigMap: ""        # e.g. "synapse-appservices"
-  mountPath: "/data/appservices" # where registration files appear in the container
+  # Name of a ConfigMap containing appservice registration YAML files.
+  # Those files will be mounted into Synapse and referenced from
+  # homeserver.yaml
+  appserviceConfigMap: ""  # e.g. "synapse-appservices"
+  # where registration files appear in the container
+  mountPath: "/data/appservices"
 
 resources: {}
-  # limits:
-  #   cpu: 500m
-  #   memory: 1Gi
-  # requests:
-  #   cpu: 100m
-  #   memory: 512Mi
+# limits:
+#   cpu: 500m
+#   memory: 1Gi
+# requests:
+#   cpu: 100m
+#   memory: 512Mi
 
 nodeSelector: {}
 tolerations: []
