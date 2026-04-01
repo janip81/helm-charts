@@ -1,3 +1,4 @@
+{{- if not .Values.existingConfigMap }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -54,3 +55,4 @@ data:
     report_stats: false
 
     enable_metrics: {{ ternary "true" "false" .Values.metrics.enabled }}
+{{- end }}
