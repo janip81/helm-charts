@@ -22,6 +22,8 @@ spec:
         - name: synapse
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python"]
+          command: ["python"]
           args:
             - "-m"
             - "synapse.app.homeserver"
