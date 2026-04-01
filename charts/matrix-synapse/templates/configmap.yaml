@@ -4,6 +4,22 @@ kind: ConfigMap
 metadata:
   name: {{ include "matrix-synapse.fullname" . }}-config
 data:
+  log.yaml: |
+    version: 1
+    formatters:
+      precise:
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s - %(message)s'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+    loggers:
+      synapse.storage.SQL:
+        level: WARNING
+    root:
+      level: WARNING
+      handlers: [console]
+    disable_existing_loggers: false
   homeserver.yaml: |
     server_name: "{{ .Values.serverName }}"
     public_baseurl: "https://{{ .Values.gateway.hostname }}/"
@@ -28,6 +44,7 @@ data:
 
     log_config: "/config/log.yaml"
     media_store_path: "/data/media"
+    signing_key_path: "/data/media/signing.key"
 
     registration_shared_secret: "{{`{{`}} synapse_registration_shared_secret {{`}}`}}"
     macaroon_secret_key: "{{`{{`}} synapse_macaroon_secret_key {{`}}`}}"
