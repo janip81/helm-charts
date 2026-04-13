@@ -7,18 +7,18 @@ metadata:
   namespace: {{ $.Values.cluster.name }}
 spec:
   clusterName: {{ $.Values.cluster.name }}
-  maxUnhealthy: {{ $.Values.healthChecks.workernodes.maxUnhealthy }}
-  nodeStartupTimeout: "{{ $.Values.healthChecks.workernodes.nodeStartupTimeoutSeconds }}s"
   selector:
     matchLabels:
       cluster.x-k8s.io/deployment-name: {{ $.Values.cluster.name }}-{{ .name }}
-  unhealthyConditions:
-    - type: Ready
-      status: Unknown
-      timeout: "{{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}s"
-    - type: Ready
-      status: "False"
-      timeout: "{{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}s"
+  checks:
+    nodeStartupTimeoutSeconds: {{ $.Values.healthChecks.workernodes.nodeStartupTimeoutSeconds }}
+    unhealthyNodeConditions:
+      - type: Ready
+        status: Unknown
+        timeoutSeconds: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutUnknown }}
+      - type: Ready
+        status: "False"
+        timeoutSeconds: {{ $.Values.healthChecks.workernodes.unhealthyTimeoutFalse }}
 {{- end }}
 ---
 apiVersion: cluster.x-k8s.io/v1beta2
@@ -28,15 +28,15 @@ metadata:
   namespace: {{ .Values.cluster.name }}
 spec:
   clusterName: {{ .Values.cluster.name }}
-  maxUnhealthy: {{ .Values.healthChecks.controlplane.maxUnhealthy }}
-  nodeStartupTimeout: "{{ .Values.healthChecks.controlplane.nodeStartupTimeoutSeconds }}s"
   selector:
     matchLabels:
       cluster.x-k8s.io/control-plane: ""
-  unhealthyConditions:
-    - type: Ready
-      status: Unknown
-      timeout: "{{ .Values.healthChecks.controlplane.unhealthyTimeoutUnknown }}s"
-    - type: Ready
-      status: "False"
-      timeout: "{{ .Values.healthChecks.controlplane.unhealthyTimeoutFalse }}s"
+  checks:
+    nodeStartupTimeoutSeconds: {{ .Values.healthChecks.controlplane.nodeStartupTimeoutSeconds }}
+    unhealthyNodeConditions:
+      - type: Ready
+        status: Unknown
+        timeoutSeconds: {{ .Values.healthChecks.controlplane.unhealthyTimeoutUnknown }}
+      - type: Ready
+        status: "False"
+        timeoutSeconds: {{ .Values.healthChecks.controlplane.unhealthyTimeoutFalse }}
