@@ -50,8 +50,6 @@ spec:
         kubeletExtraArgs:
           - name: cloud-provider
             value: external
-          - name: pod-infra-container-image
-            value: registry.k8s.io/pause:3.10
         name: {{ printf "'{{ local_hostname }}'" }}
     joinConfiguration:
       nodeRegistration:

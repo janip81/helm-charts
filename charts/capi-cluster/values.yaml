@@ -39,7 +39,7 @@ gatewayapi:
 
 node:
   datastore: SSD01
-  template: ubuntu-2404-kube-v1.33.0
+  template: ubuntu-2404-kube-v1.35.0
   sshAuthorizedKeys: PublicKey
 
 vsphere:
@@ -56,14 +56,14 @@ vsphere:
     zone: zone
 
 controlPlaneNodes:
-  k8sVersion: 1.33.0
-  vspehereMachineTemplate: ubnt2204-2cpu-4g-128
+  k8sVersion: 1.35.0
+  vspehereMachineTemplate: ubnt2204-2cpu-4g-135
   replicas: 3
 
 machineDeployments:
   - name: md-0
-    vspehereMachineTemplate: ubnt2204-4cpu-8g-128
-    k8sVersion: 1.33.0
+    vspehereMachineTemplate: ubnt2204-4cpu-8g-135
+    k8sVersion: 1.35.0
     replicas: 2
     # Add additonal labels to nodes
     nodeLabels:
@@ -79,13 +79,13 @@ machineDeployments:
       autoscaler: enabled
 
     # Add annotations to your machine deployments for example if you have autoscaler
-    machideDeploymentAnnotations:
+    machineDeploymentAnnotations:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
   - name: md-1
-    vspehereMachineTemplate: ubnt2204-4cpu-8g-133
-    k8sVersion: 1.33.0
+    vspehereMachineTemplate: ubnt2204-4cpu-8g-135
+    k8sVersion: 1.35.0
     replicas: 3
     # Add additonal labels to nodes
     nodeLabels:
@@ -96,7 +96,7 @@ machineDeployments:
       # cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
 
     # Add annotations to your nodes for example if you have autoscaler
-    machideDeploymentAnnotations:
+    machineDeploymentAnnotations:
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
     taints:
@@ -112,7 +112,7 @@ machineTemplates:
     # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
     cloneMode: FullClone
     diskSize: 25
-    isoTemplate: ubuntu-2404-kube-v1.33.0
+    isoTemplate: ubuntu-2404-kube-v1.35.0
     vcenterDatastore: SSD01
     vcenterFolder:
     network: vcenterNetwork
@@ -123,7 +123,7 @@ machineTemplates:
     # linkedClone or fullClone , linkedClone is faster but but cant extend disk beyound template size
     cloneMode: FullClone
     diskSize: 35
-    isoTemplate: ubuntu-2404-kube-v1.33.0
+    isoTemplate: ubuntu-2404-kube-v1.35.0
     vcenterDatastore: SSD01
     vcenterFolder:
     network: vcenterNetwork

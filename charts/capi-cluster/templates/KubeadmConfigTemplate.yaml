@@ -1,9 +1,10 @@
+{{- range .Values.machineDeployments }}
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta2
 kind: KubeadmConfigTemplate
 metadata:
-  name: "{{ .Values.cluster.name }}-kubeadmconfig"
-  namespace: {{ .Values.cluster.name }}
+  name: "{{ $.Values.cluster.name }}-{{ .name }}-kubeadmconfig"
+  namespace: {{ $.Values.cluster.name }}
 spec:
   template:
     spec:
@@ -13,19 +14,19 @@ spec:
           kubeletExtraArgs:
             - name: cloud-provider
               value: external
-            {{- if .Values.cluster.bgpPolicyVlan }}
+            {{- if $.Values.cluster.bgpPolicyVlan }}
             - name: node-labels
-              value: "bgp-policy={{ .Values.cluster.bgpPolicyVlan }}"
+              value: "bgp-policy={{ $.Values.cluster.bgpPolicyVlan }}"
             {{- end }}
           name: {{ printf "'{{ local_hostname }}'" }}
-{{- if .taints }}
+          {{- if .taints }}
           taints:
-{{- range .taints }}
+          {{- range .taints }}
             - key: "{{ .key }}"
               value: "{{ .value }}"
               effect: "{{ .effect }}"
-{{- end }}
-{{- end }}
+          {{- end }}
+          {{- end }}
       preKubeadmCommands:
       - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
       - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6"
@@ -38,5 +39,6 @@ spec:
       users:
       - name: capv
         sshAuthorizedKeys:
-        - {{ .Values.node.sshAuthorizedKeys }}
+        - {{ $.Values.node.sshAuthorizedKeys }}
         sudo: ALL=(ALL) NOPASSWD:ALL
+{{- end }}
