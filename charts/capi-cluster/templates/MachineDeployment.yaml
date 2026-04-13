@@ -41,7 +41,7 @@ spec:
         configRef:
           apiGroup: bootstrap.cluster.x-k8s.io
           kind: KubeadmConfigTemplate
-          name: {{ $.Values.cluster.name }}-kubeadmconfig
+          name: {{ $.Values.cluster.name }}-{{ .name }}-kubeadmconfig
       clusterName: {{ $.Values.cluster.name }}
       infrastructureRef:
         apiGroup: infrastructure.cluster.x-k8s.io
