@@ -137,6 +137,11 @@ machineTemplates:
       pciPassthru2.msiEnabled: "TRUE"
       pciPassthru3.msiEnabled: "TRUE"
 
+kubelet:
+  imageGCHighThresholdPercent: 70
+  imageGCLowThresholdPercent: 65
+  imageMaximumGCAge: 168h0m0s
+
 kubeVIP:
   image:
     repository: ghcr.io/kube-vip/kube-vip

@@ -58,6 +58,10 @@ spec:
           - name: cloud-provider
             value: external
         name: {{ printf "'{{ local_hostname }}'" }}
+    kubeletConfiguration:
+      imageGCHighThresholdPercent: {{ .Values.kubelet.imageGCHighThresholdPercent }}
+      imageGCLowThresholdPercent: {{ .Values.kubelet.imageGCLowThresholdPercent }}
+      imageMaximumGCAge: {{ .Values.kubelet.imageMaximumGCAge }}
     preKubeadmCommands:
       - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
       - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6" > /etc/hosts
