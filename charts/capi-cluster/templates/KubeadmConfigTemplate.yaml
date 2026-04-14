@@ -14,12 +14,8 @@ spec:
           kubeletExtraArgs:
             - name: cloud-provider
               value: external
-            - name: image-gc-high-threshold
-              value: {{ $.Values.kubelet.imageGCHighThresholdPercent | quote }}
-            - name: image-gc-low-threshold
-              value: {{ $.Values.kubelet.imageGCLowThresholdPercent | quote }}
-            - name: image-maximum-gc-age
-              value: {{ $.Values.kubelet.imageMaximumGCAge | quote }}
+            - name: config-dir
+              value: /etc/kubernetes/kubelet.conf.d
             {{- if $.Values.cluster.bgpPolicyVlan }}
             - name: node-labels
               value: "bgp-policy={{ $.Values.cluster.bgpPolicyVlan }}"
@@ -40,8 +36,19 @@ spec:
       - echo "127.0.0.1   {{ printf "{{ ds.meta_data.hostname }} {{ local_hostname }}" }} localhost
         localhost.localdomain localhost4 localhost4.localdomain4" >>/etc/hosts
       - mkdir -p /etc/pre-kubeadm-commands
+      - mkdir -p /etc/kubernetes/kubelet.conf.d
       - for script in $(find /etc/pre-kubeadm-commands/ -name '*.sh' -type f | sort);
         do echo "Running script $script"; "$script"; done
+      files:
+      - content: |
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          kind: KubeletConfiguration
+          imageGCHighThresholdPercent: {{ $.Values.kubelet.imageGCHighThresholdPercent }}
+          imageGCLowThresholdPercent: {{ $.Values.kubelet.imageGCLowThresholdPercent }}
+          imageMaximumGCAge: "{{ $.Values.kubelet.imageMaximumGCAge }}"
+        owner: root:root
+        path: /etc/kubernetes/kubelet.conf.d/10-gc.conf
+        permissions: "0644"
       users:
       - name: capv
         sshAuthorizedKeys:

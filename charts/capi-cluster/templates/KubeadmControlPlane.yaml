@@ -50,12 +50,8 @@ spec:
         kubeletExtraArgs:
           - name: cloud-provider
             value: external
-          - name: image-gc-high-threshold
-            value: {{ .Values.kubelet.imageGCHighThresholdPercent | quote }}
-          - name: image-gc-low-threshold
-            value: {{ .Values.kubelet.imageGCLowThresholdPercent | quote }}
-          - name: image-maximum-gc-age
-            value: {{ .Values.kubelet.imageMaximumGCAge | quote }}
+          - name: config-dir
+            value: /etc/kubernetes/kubelet.conf.d
         name: {{ printf "'{{ local_hostname }}'" }}
     joinConfiguration:
       nodeRegistration:
@@ -63,18 +59,15 @@ spec:
         kubeletExtraArgs:
           - name: cloud-provider
             value: external
-          - name: image-gc-high-threshold
-            value: {{ .Values.kubelet.imageGCHighThresholdPercent | quote }}
-          - name: image-gc-low-threshold
-            value: {{ .Values.kubelet.imageGCLowThresholdPercent | quote }}
-          - name: image-maximum-gc-age
-            value: {{ .Values.kubelet.imageMaximumGCAge | quote }}
+          - name: config-dir
+            value: /etc/kubernetes/kubelet.conf.d
         name: {{ printf "'{{ local_hostname }}'" }}
     preKubeadmCommands:
       - hostnamectl set-hostname {{ printf "'{{ ds.meta_data.hostname }}'" }}
       - echo "::1         ipv6-localhost ipv6-loopback localhost6 localhost6.localdomain6" > /etc/hosts
       - echo "127.0.0.1   {{ printf "{{ ds.meta_data.hostname }} {{ local_hostname }}" }} localhost localhost.localdomain localhost4 localhost4.localdomain4" >> /etc/hosts
       - mkdir -p /etc/pre-kubeadm-commands
+      - mkdir -p /etc/kubernetes/kubelet.conf.d
       - for script in $(find /etc/pre-kubeadm-commands/ -name '*.sh' -type f | sort); do echo "Running script $script"; "$script"; done
     files:
       - content: |
@@ -152,6 +145,15 @@ spec:
       - content: 127.0.0.1 localhost kubernetes
         owner: root:root
         path: /etc/kube-vip.hosts
+        permissions: "0644"
+      - content: |
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          kind: KubeletConfiguration
+          imageGCHighThresholdPercent: {{ .Values.kubelet.imageGCHighThresholdPercent }}
+          imageGCLowThresholdPercent: {{ .Values.kubelet.imageGCLowThresholdPercent }}
+          imageMaximumGCAge: "{{ .Values.kubelet.imageMaximumGCAge }}"
+        owner: root:root
+        path: /etc/kubernetes/kubelet.conf.d/10-gc.conf
         permissions: "0644"
       - content: |
           #!/bin/bash
