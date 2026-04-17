@@ -22,12 +22,15 @@ spec:
         spec:
           serviceAccountName: etcd-defrag
           hostNetwork: true
+          hostPID: true             # needed to find etcd process via /proc
           restartPolicy: OnFailure
           nodeSelector:
             node-role.kubernetes.io/control-plane: ""
           tolerations:
             - key: node-role.kubernetes.io/control-plane
               effect: NoSchedule
+          securityContext:
+            runAsUser: 0            # root required to read /proc/<pid>/root/
           volumes:
             - name: etcd-certs
               hostPath:
@@ -35,21 +38,44 @@ spec:
                 type: Directory
           containers:
             - name: etcd-defrag
-              image: {{ .Values.etcdDefrag.image | default (include "etcd.image" .) | quote }}
+              # alpine: small base image with shell. etcdctl sourced from the running
+              # etcd container via /proc/<pid>/root so the binary always matches the
+              # server version — works for etcd 3.5.x (debian) and 3.6.x (distroless).
+              image: {{ .Values.etcdDefrag.image | default "alpine:3.21" | quote }}
               command:
                 - /bin/sh
                 - -c
                 - |
                   set -e
+
+                  # Find etcd binary via the running process — version-independent
+                  echo "=== Locating etcd process ==="
+                  ETCD_PID=""
+                  for exe in /proc/[0-9]*/exe; do
+                    target=$(readlink "$exe" 2>/dev/null) || continue
+                    case "$target" in
+                      */etcd) ETCD_PID=${exe%/exe}; ETCD_PID=${ETCD_PID#/proc/}; break ;;
+                    esac
+                  done
+
+                  if [ -z "$ETCD_PID" ]; then
+                    echo "ERROR: etcd process not found" >&2
+                    exit 1
+                  fi
+
+                  ETCDCTL="/proc/$ETCD_PID/root/usr/local/bin/etcdctl"
+                  echo "etcd PID: $ETCD_PID"
+                  echo "etcdctl version: $($ETCDCTL version 2>&1 | head -1)"
+
                   CACERT=/etc/kubernetes/pki/etcd/ca.crt
                   CERT=/etc/kubernetes/pki/etcd/server.crt
                   KEY=/etc/kubernetes/pki/etcd/server.key
                   LOCAL=https://127.0.0.1:2379
-                  E="etcdctl --cacert=$CACERT --cert=$CERT --key=$KEY --command-timeout=120s"
+                  E="$ETCDCTL --cacert=$CACERT --cert=$CERT --key=$KEY --command-timeout=120s"
 
-                  # Discover all member client URLs from local etcd
+                  # Discover all member endpoints — strip quotes added by etcd 3.6.x
                   ENDPOINTS=$($E --endpoints=$LOCAL member list --write-out=fields \
-                    | awk '/ClientURL/{print $3}' | paste -sd,)
+                    | awk '/ClientURL/{print $3}' | tr -d '"' | paste -sd,)
                   echo "Members: $ENDPOINTS"
 
                   echo "=== Pre-defrag status ==="
@@ -63,9 +89,10 @@ spec:
 
                   echo "=== Defragging followers first ==="
                   for EP in $(echo "$ENDPOINTS" | tr ',' ' '); do
-                    IS_LEADER=$($E --endpoints=$EP endpoint status --write-out=fields \
-                      | grep IsLeader | awk '{print $3}')
-                    if [ "$IS_LEADER" = "false" ]; then
+                    EP_STATUS=$($E --endpoints=$EP endpoint status --write-out=fields 2>/dev/null)
+                    LEADER_ID=$(echo "$EP_STATUS" | awk -F' : ' '/"Leader"/{print $2}' | tr -d ' "')
+                    MEMBER_ID=$(echo "$EP_STATUS" | awk -F' : ' '/"MemberID"/{print $2}' | tr -d ' "')
+                    if [ -n "$LEADER_ID" ] && [ "$LEADER_ID" != "$MEMBER_ID" ]; then
                       echo "Defragging follower: $EP"
                       $E --endpoints=$EP defrag
                     fi
@@ -73,9 +100,10 @@ spec:
 
                   echo "=== Defragging leader ==="
                   for EP in $(echo "$ENDPOINTS" | tr ',' ' '); do
-                    IS_LEADER=$($E --endpoints=$EP endpoint status --write-out=fields \
-                      | grep IsLeader | awk '{print $3}')
-                    if [ "$IS_LEADER" = "true" ]; then
+                    EP_STATUS=$($E --endpoints=$EP endpoint status --write-out=fields 2>/dev/null)
+                    LEADER_ID=$(echo "$EP_STATUS" | awk -F' : ' '/"Leader"/{print $2}' | tr -d ' "')
+                    MEMBER_ID=$(echo "$EP_STATUS" | awk -F' : ' '/"MemberID"/{print $2}' | tr -d ' "')
+                    if [ -n "$LEADER_ID" ] && [ "$LEADER_ID" = "$MEMBER_ID" ]; then
                       echo "Defragging leader: $EP"
                       $E --endpoints=$EP defrag
                     fi
