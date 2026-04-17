@@ -1,0 +1,120 @@
+{{- define "etcd-defrag.manifest" -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: etcd-defrag
+  namespace: kube-system
+automountServiceAccountToken: false
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag
+  namespace: kube-system
+spec:
+  schedule: {{ .Values.etcdDefrag.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.etcdDefrag.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.etcdDefrag.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: etcd-defrag
+          hostNetwork: true
+          restartPolicy: OnFailure
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              effect: NoSchedule
+          volumes:
+            - name: etcd-certs
+              hostPath:
+                path: /etc/kubernetes/pki/etcd
+                type: Directory
+          containers:
+            - name: etcd-defrag
+              image: {{ .Values.etcdDefrag.image | default (include "etcd.image" .) | quote }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  CACERT=/etc/kubernetes/pki/etcd/ca.crt
+                  CERT=/etc/kubernetes/pki/etcd/server.crt
+                  KEY=/etc/kubernetes/pki/etcd/server.key
+                  LOCAL=https://127.0.0.1:2379
+                  E="etcdctl --cacert=$CACERT --cert=$CERT --key=$KEY --command-timeout=120s"
+
+                  # Discover all member client URLs from local etcd
+                  ENDPOINTS=$($E --endpoints=$LOCAL member list --write-out=fields \
+                    | awk '/ClientURL/{print $3}' | paste -sd,)
+                  echo "Members: $ENDPOINTS"
+
+                  echo "=== Pre-defrag status ==="
+                  $E --endpoints=$ENDPOINTS endpoint status --write-out=table
+
+                  echo "=== Compacting ==="
+                  REV=$($E --endpoints=$LOCAL endpoint status --write-out=json \
+                    | tr ',' '\n' | grep '"revision"' | head -1 | tr -cd '0-9')
+                  echo "Compact revision: $REV"
+                  $E --endpoints=$LOCAL compact "$REV"
+
+                  echo "=== Defragging followers first ==="
+                  for EP in $(echo "$ENDPOINTS" | tr ',' ' '); do
+                    IS_LEADER=$($E --endpoints=$EP endpoint status --write-out=fields \
+                      | grep IsLeader | awk '{print $3}')
+                    if [ "$IS_LEADER" = "false" ]; then
+                      echo "Defragging follower: $EP"
+                      $E --endpoints=$EP defrag
+                    fi
+                  done
+
+                  echo "=== Defragging leader ==="
+                  for EP in $(echo "$ENDPOINTS" | tr ',' ' '); do
+                    IS_LEADER=$($E --endpoints=$EP endpoint status --write-out=fields \
+                      | grep IsLeader | awk '{print $3}')
+                    if [ "$IS_LEADER" = "true" ]; then
+                      echo "Defragging leader: $EP"
+                      $E --endpoints=$EP defrag
+                    fi
+                  done
+
+                  echo "=== Post-defrag status ==="
+                  $E --endpoints=$ENDPOINTS endpoint status --write-out=table
+                  $E --endpoints=$ENDPOINTS endpoint health
+              volumeMounts:
+                - name: etcd-certs
+                  mountPath: /etc/kubernetes/pki/etcd
+                  readOnly: true
+{{- end }}
+{{- if .Values.etcdDefrag.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.cluster.name }}-etcd-defrag
+  namespace: {{ .Values.cluster.name }}
+  annotations:
+    argocd.argoproj.io/sync-options: "ControllerReferencesOnly=true"
+data:
+  resources.yaml: |
+{{ include "etcd-defrag.manifest" . | indent 4 }}
+---
+apiVersion: addons.cluster.x-k8s.io/v1beta2
+kind: ClusterResourceSet
+metadata:
+  name: {{ .Values.cluster.name }}-etcd-defrag
+  namespace: {{ .Values.cluster.name }}
+  annotations:
+    argocd.argoproj.io/sync-options: "ControllerReferencesOnly=true"
+spec:
+  clusterSelector:
+    matchLabels:
+      etcd-defrag: enabled
+  strategy: Reconcile
+  resources:
+    - name: {{ .Values.cluster.name }}-etcd-defrag
+      kind: ConfigMap
+{{- end }}

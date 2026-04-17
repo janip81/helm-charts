@@ -11,6 +11,9 @@ metadata:
     {{ $addonConfig.name }}: enabled
     {{- end }}
     {{- end }}
+    {{- if .Values.etcdDefrag.enabled }}
+    etcd-defrag: enabled
+    {{- end }}
 spec:
   clusterNetwork:
     pods:
