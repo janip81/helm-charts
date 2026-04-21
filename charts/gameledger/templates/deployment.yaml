@@ -1,45 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "gameledger.name" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "gameledger.labels" . | nindent 4 }}
-    {{- include "gameledger.selectorLabels" . | nindent 4 }}
+  name: {{ include "gameledger.fullname" . }}
+  labels: {{- include "gameledger.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
-    matchLabels:
-      {{- include "gameledger.selectorLabels" . | nindent 6 }}
+    matchLabels: {{- include "gameledger.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
         {{- include "gameledger.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}{{ toYaml . | nindent 8 }}{{ end }}
+      annotations:
+        {{- with .Values.podAnnotations }}{{ toYaml . | nindent 8 }}{{ end }}
     spec:
-      {{- if .Values.imagePullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.imagePullSecret }}
-      {{- end }}
       containers:
-        - name: gameledger
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        - name: web
+          image: "{{ .Values.image.repository }}{{- if .Values.image.tag }}:{{ .Values.image.tag }}{{- end }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.port }}
+            - containerPort: {{ .Values.service.targetPort }}
+              name: http
           envFrom:
+            - configMapRef:
+                name: {{ include "gameledger.fullname" . }}-config
             - secretRef:
-                name: {{ .Values.secretName }}
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.healthPath }}
-              port: {{ .Values.port }}
-            initialDelaySeconds: 15
-            periodSeconds: 30
+                name: {{ include "gameledger.fullname" . }}-secret
           readinessProbe:
             httpGet:
-              path: {{ .Values.healthPath }}
-              port: {{ .Values.port }}
-            initialDelaySeconds: 10
-            periodSeconds: 15
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

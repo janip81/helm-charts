@@ -1,10 +1,28 @@
-GameLedger deployed!
+{{- if .Values.gateway.enabled -}}
+GameLedger (Gateway API)
+------------------------
+Hostnames:
+{{- range .Values.gateway.hostnames }}
+  - {{ . }}
+{{- end }}
+ParentRefs:
+{{- range .Values.gateway.parentRefs }}
+  - {{ .name }} (ns: {{ .namespace | default "default" }})
+{{- end }}
 
-Access: https://{{ .Values.gateway.hostname }}
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
+{{- else if .Values.ingress.enabled -}}
+GameLedger (Ingress)
+--------------------
+{{- range .Values.ingress.hosts }}
+  - http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
 
-The app expects a Secret named {{ .Values.secretName }} in namespace {{ .Release.Namespace }} with:
-  DATABASE_URL    - Postgres connection string
-  SESSION_SECRET  - iron-session encryption key (min 32 chars)
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
+{{- else -}}
+GameLedger (ClusterIP only)
+--------------------------
+Service: {{ include "gameledger.fullname" . }} (port {{ .Values.service.port }})
 
-Prisma migrations must be run once before first use:
-  kubectl exec -n {{ .Release.Namespace }} deploy/gameledger -- npx prisma migrate deploy
+Tip: enable .ingress.enabled or .gateway.enabled to expose it.
+{{- end }}
