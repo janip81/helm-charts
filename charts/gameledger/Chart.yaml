@@ -2,7 +2,7 @@ apiVersion: v2
 name: gameledger
 description: App to keep track of card and board game wins losses
 type: application
-version: "0.1.1"
+version: "0.1.2"
 appVersion: "0.1.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/gameledger
 # icon: https://www.home-assistant.io/images/favicon-192x192.png
