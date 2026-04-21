@@ -1985,6 +1985,30 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/frigate-7.8.0/frigate-7.8.0.tgz
     version: 7.8.0
+  gameledger:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/gameledger/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-04-21T13:29:17.708987583Z"
+    description: App to keep track of card and board game wins losses
+    digest: 56cd7c5f183571e52ea42e856b00c5a96627e946ad07946b479316fbc5981424
+    home: https://github.com/janip81/helm-charts/tree/main/charts/gameledger
+    keywords:
+    - gameledger
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: gameledger
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/gameledger/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/gameledger-0.1.0/gameledger-0.1.0.tgz
+    version: 0.1.0
   home-assistant:
   - annotations:
       artifacthub.io/links: |
@@ -3081,4 +3105,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-17T13:08:50.194231565Z"
+generated: "2026-04-21T13:29:17.710661693Z"
