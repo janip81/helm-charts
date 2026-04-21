@@ -1,0 +1,36 @@
+image:
+  # -- Container image repository
+  repository: ghcr.io/janip81/gameledger
+  # -- Image tag
+  tag: "latest"
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Image pull secret name for GHCR (kubernetes.io/dockerconfigjson)
+imagePullSecret: ""
+
+# -- Number of replicas (keep at 1 — iron-session cookies are node-local)
+replicaCount: 1
+
+# -- Container port (Next.js listens on 3000)
+port: 3000
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# -- Name of the Secret containing DATABASE_URL and SESSION_SECRET
+secretName: gameledger-secret
+
+# -- Gateway API HTTPRoute settings
+gateway:
+  name: internal-shared
+  namespace: kube-system
+  hostname: gameledger.prod.threshold.se
+
+# -- Liveness / readiness probe path
+healthPath: /metrics

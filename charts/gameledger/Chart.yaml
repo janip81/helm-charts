@@ -1,0 +1,10 @@
+apiVersion: v2
+name: gameledger
+description: Board game session tracker — self-hosted, Next.js + Prisma + PostgreSQL
+type: application
+version: "0.1.0"
+appVersion: "0.1.0"
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81

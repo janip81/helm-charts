@@ -1,0 +1,10 @@
+GameLedger deployed!
+
+Access: https://{{ .Values.gateway.hostname }}
+
+The app expects a Secret named {{ .Values.secretName }} in namespace {{ .Release.Namespace }} with:
+  DATABASE_URL    - Postgres connection string
+  SESSION_SECRET  - iron-session encryption key (min 32 chars)
+
+Prisma migrations must be run once before first use:
+  kubectl exec -n {{ .Release.Namespace }} deploy/gameledger -- npx prisma migrate deploy

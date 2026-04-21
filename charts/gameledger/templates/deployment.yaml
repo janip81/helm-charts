@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gameledger.name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "gameledger.labels" . | nindent 4 }}
+    {{- include "gameledger.selectorLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "gameledger.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gameledger.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
+      {{- end }}
+      containers:
+        - name: gameledger
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secretName }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthPath }}
+              port: {{ .Values.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthPath }}
+              port: {{ .Values.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
