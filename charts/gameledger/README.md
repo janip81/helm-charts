@@ -1,6 +1,6 @@
 # gameledger
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 App to keep track of card and board game wins losses
 
@@ -91,7 +91,8 @@ To uninstall the chart:
 | resources.limits.memory | string | `"512Mi"` |  |
 | resources.requests.cpu | string | `"50m"` |  |
 | resources.requests.memory | string | `"256Mi"` |  |
-| secretEnv | object | `{"DATABASE_URL":"changeme","SESSION_SECRET":"changeme"}` | Secret environment variables rendered via ArgoCD Vault Plugin Override in ArgoCD values with correct AVP paths |
+| secret | object | `{"create":true}` | Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config) |
+| secretEnv | object | `{"DATABASE_URL":"changeme","SESSION_SECRET":"changeme"}` | Secret environment variables rendered via ArgoCD Vault Plugin (only used when secret.create: true) |
 | service.annotations | object | `{}` |  |
 | service.port | int | `80` |  |
 | service.targetPort | int | `3000` |  |

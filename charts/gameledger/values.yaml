@@ -22,8 +22,11 @@ migrations:
 env:
   NODE_ENV: "production"
 
-# -- Secret environment variables rendered via ArgoCD Vault Plugin
-# Override in ArgoCD values with correct AVP paths
+# -- Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config)
+secret:
+  create: true
+
+# -- Secret environment variables rendered via ArgoCD Vault Plugin (only used when secret.create: true)
 secretEnv:
   DATABASE_URL: "changeme"
   SESSION_SECRET: "changeme"
