@@ -1,0 +1,77 @@
+image:
+  # -- Container image repository
+  repository: ghcr.io/janip81/gameledger
+  # -- Image tag (pin to a sha in GitOps)
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# -- Keep at 1 — iron-session cookies are node-local (no shared session store)
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+  annotations: {}
+
+# -- Prisma migrate Job (pre-install/pre-upgrade hook)
+migrations:
+  enabled: false
+
+# -- Non-secret environment variables
+env:
+  NODE_ENV: "production"
+
+# -- Secret environment variables rendered via ArgoCD Vault Plugin
+# Override in ArgoCD values with correct AVP paths
+secretEnv:
+  DATABASE_URL: "changeme"
+  SESSION_SECRET: "changeme"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: gameledger.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# -- Gateway API HTTPRoute (Cilium / internal-shared)
+gateway:
+  enabled: false
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+      kind: Gateway
+      group: gateway.networking.k8s.io
+  hostnames:
+    - gameledger.example.com
+  annotations: {}
+  httpRouteLabels: {}
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: 30s
+    scrapeTimeout: 10s
+    path: /metrics
+    scheme: http
+
+podAnnotations: {}
+podLabels: {}
