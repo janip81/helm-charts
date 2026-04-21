@@ -6,4 +6,5 @@ install: true
 excluded-charts:
   - worklog
   - castlist
+  - gameledger
 helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
