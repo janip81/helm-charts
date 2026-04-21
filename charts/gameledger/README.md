@@ -64,20 +64,13 @@ To uninstall the chart:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| env.NODE_ENV | string | `"production"` |  |
-| gateway.annotations | object | `{}` |  |
-| gateway.enabled | bool | `false` |  |
-| gateway.hostnames[0] | string | `"gameledger.example.com"` |  |
-| gateway.httpRouteLabels | object | `{}` |  |
-| gateway.parentRefs[0].group | string | `"gateway.networking.k8s.io"` |  |
-| gateway.parentRefs[0].kind | string | `"Gateway"` |  |
-| gateway.parentRefs[0].name | string | `"my-gateway"` |  |
-| gateway.parentRefs[0].namespace | string | `"gateway-system"` |  |
+| env | object | `{"NODE_ENV":"production"}` | Non-secret environment variables |
+| gateway | object | `{"annotations":{},"enabled":false,"hostnames":["gameledger.example.com"],"httpRouteLabels":{},"parentRefs":[{"group":"gateway.networking.k8s.io","kind":"Gateway","name":"internal-shared","namespace":"kube-system"}]}` | Gateway API HTTPRoute (Cilium / internal-shared) |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/YOUR_ORG/YOUR_REPO"` |  |
-| image.tag | string | `""` |  |
+| image.repository | string | `"ghcr.io/janip81/gameledger"` | Container image repository |
+| image.tag | string | `"latest"` | Image tag (pin to a sha in GitOps) |
 | ingress.annotations | object | `{}` |  |
-| ingress.className | string | `"nginx"` |  |
+| ingress.className | string | `""` |  |
 | ingress.enabled | bool | `false` |  |
 | ingress.hosts[0].host | string | `"gameledger.example.com"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -89,17 +82,16 @@ To uninstall the chart:
 | metrics.serviceMonitor.path | string | `"/metrics"` |  |
 | metrics.serviceMonitor.scheme | string | `"http"` |  |
 | metrics.serviceMonitor.scrapeTimeout | string | `"10s"` |  |
-| migrations.enabled | bool | `false` |  |
+| migrations | object | `{"enabled":false}` | Prisma migrate Job (pre-install/pre-upgrade hook) |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
-| replicaCount | int | `2` |  |
+| replicaCount | int | `1` | Keep at 1 — iron-session cookies are node-local (no shared session store) |
 | resources.limits.cpu | string | `"500m"` |  |
 | resources.limits.memory | string | `"512Mi"` |  |
-| resources.requests.cpu | string | `"100m"` |  |
+| resources.requests.cpu | string | `"50m"` |  |
 | resources.requests.memory | string | `"256Mi"` |  |
-| secretEnv.DATABASE_URL | string | `"<path:kv/kubernetes/k8s-prod/postgres#gameledger-prod-url>"` |  |
-| secretEnv.SESSION_SECRET | string | `"<path:kv/kubernetes/k8s-prod/app-secrets#session-secret>"` |  |
+| secretEnv | object | `{"DATABASE_URL":"changeme","SESSION_SECRET":"changeme"}` | Secret environment variables rendered via ArgoCD Vault Plugin Override in ArgoCD values with correct AVP paths |
 | service.annotations | object | `{}` |  |
 | service.port | int | `80` |  |
 | service.targetPort | int | `3000` |  |
