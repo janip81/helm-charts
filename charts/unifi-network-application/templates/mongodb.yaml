@@ -1,3 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "unifi-network-application.fullname" . }}-mongodb-init
+  labels:
+    {{- include "unifi-network-application.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+data:
+  init-unifi-db.js: |
+    db = db.getSiblingDB({{ .Values.mongodb.auth.dbName | default "unifi" | quote }});
+    db.createUser({
+      user: {{ .Values.mongodb.auth.username | quote }},
+      pwd: {{ .Values.mongodb.auth.password | quote }},
+      roles: [{ role: "dbOwner", db: {{ .Values.mongodb.auth.dbName | default "unifi" | quote }} }]
+    });
+    db = db.getSiblingDB({{ printf "%s_stat" (.Values.mongodb.auth.dbName | default "unifi") | quote }});
+    db.createUser({
+      user: {{ .Values.mongodb.auth.username | quote }},
+      pwd: {{ .Values.mongodb.auth.password | quote }},
+      roles: [{ role: "dbOwner", db: {{ printf "%s_stat" (.Values.mongodb.auth.dbName | default "unifi") | quote }} }]
+    });
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,6 +59,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data/db
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
           livenessProbe:
             tcpSocket:
               port: 27017
@@ -54,6 +78,9 @@ spec:
           resources:
             {{- toYaml .Values.mongodb.resources | nindent 12 }}
       volumes:
+        - name: init-script
+          configMap:
+            name: {{ include "unifi-network-application.fullname" . }}-mongodb-init
         - name: data
           {{- if .Values.mongodb.persistence.enabled }}
           persistentVolumeClaim:

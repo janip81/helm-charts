@@ -2,7 +2,7 @@ apiVersion: v2
 name: unifi-network-application
 description: Helm chart for the UniFi Network Application (WiFi controller)
 type: application
-version: "0.2.5"
+version: "0.2.6"
 appVersion: "10.3.55"
 home: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application
 icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
