@@ -18,6 +18,10 @@ spec:
     spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-for-mongodb
+          image: busybox
+          command: ['sh', '-c', 'until nc -z {{ include "unifi-network-application.fullname" . }}-mongodb 27017; do echo "waiting for mongodb..."; sleep 2; done']
       containers:
         - name: unifi-network-application
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -37,20 +41,33 @@ spec:
             - name: discovery
               containerPort: 10001
               protocol: UDP
+            - name: speedtest
+              containerPort: 6789
+              protocol: TCP
           env:
             - name: TZ
               value: {{ .Values.env.TZ | quote }}
-            - name: RUNAS_UID0
-              value: {{ .Values.env.RUNAS_UID0 | quote }}
-            - name: UNIFI_UID
-              value: {{ .Values.env.UNIFI_UID | quote }}
-            - name: UNIFI_GID
-              value: {{ .Values.env.UNIFI_GID | quote }}
-            - name: JVM_MAX_HEAP_SIZE
-              value: {{ .Values.env.JVM_MAX_HEAP_SIZE | quote }}
+            - name: PUID
+              value: {{ .Values.env.PUID | quote }}
+            - name: PGID
+              value: {{ .Values.env.PGID | quote }}
+            - name: MONGO_HOST
+              value: {{ include "unifi-network-application.fullname" . }}-mongodb
+            - name: MONGO_PORT
+              value: "27017"
+            - name: MONGO_DBNAME
+              value: "unifi"
+            {{- if .Values.mongodb.auth.enabled }}
+            - name: MONGO_USER
+              value: {{ .Values.mongodb.auth.username | quote }}
+            - name: MONGO_PASS
+              value: {{ .Values.mongodb.auth.password | quote }}
+            - name: MONGO_AUTHSOURCE
+              value: "admin"
+            {{- end }}
           volumeMounts:
-            - name: data
-              mountPath: /unifi
+            - name: config
+              mountPath: /config
           livenessProbe:
             httpGet:
               scheme: HTTPS
@@ -70,7 +87,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: data
+        - name: config
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "unifi-network-application.fullname" . }}

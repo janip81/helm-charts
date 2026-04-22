@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "unifi-network-application.fullname" . }}-mongodb
+  labels:
+    {{- include "unifi-network-application.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "unifi-network-application.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mongodb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "unifi-network-application.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          {{- if .Values.mongodb.auth.enabled }}
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.mongodb.auth.username | quote }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.mongodb.auth.password | quote }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+          livenessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command: ["mongosh", "--eval", "db.adminCommand('ping')"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+      volumes:
+        - name: data
+          {{- if .Values.mongodb.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "unifi-network-application.fullname" . }}-mongodb
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "unifi-network-application.fullname" . }}-mongodb
+  labels:
+    {{- include "unifi-network-application.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  type: ClusterIP
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: mongodb
+      protocol: TCP
+  selector:
+    {{- include "unifi-network-application.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+{{- if .Values.mongodb.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "unifi-network-application.fullname" . }}-mongodb
+  labels:
+    {{- include "unifi-network-application.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mongodb
+spec:
+  accessModes:
+    - {{ .Values.mongodb.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.mongodb.persistence.size }}
+  {{- if .Values.mongodb.persistence.storageClass }}
+  storageClassName: {{ .Values.mongodb.persistence.storageClass }}
+  {{- end }}
+{{- end }}
