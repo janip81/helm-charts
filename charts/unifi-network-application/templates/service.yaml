@@ -16,6 +16,9 @@ spec:
       port: {{ .port }}
       targetPort: {{ .targetPort | default .name }}
       protocol: {{ .protocol }}
+      {{- if .appProtocol }}
+      appProtocol: {{ .appProtocol }}
+      {{- end }}
     {{- end }}
   selector:
     {{- include "unifi-network-application.selectorLabels" . | nindent 4 }}
