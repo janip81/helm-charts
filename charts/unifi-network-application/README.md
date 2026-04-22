@@ -63,6 +63,7 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 | env.TZ | string | `"Europe/Stockholm"` | Timezone for the controller |
 | env.UNIFI_GID | string | `"999"` | GID the application runs as |
 | env.UNIFI_UID | string | `"999"` | UID the application runs as |
+| fullnameOverride | string | `""` | Override the full name of all resources (service, deployment, pvc). Recommended: set to a short name like "unifi" |
 | httproute.annotations | object | `{"argocd.argoproj.io/sync-options":"SkipDryRunOnMissingResource=true"}` | Annotations for the HTTPRoute |
 | httproute.enabled | bool | `false` | Enable HTTPRoute for the web UI |
 | httproute.gatewayName | string | `"internal-shared"` | Gateway name to attach the HTTPRoute to |

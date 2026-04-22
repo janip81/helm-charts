@@ -1,5 +1,8 @@
 # Default values for unifi-network-application.
 
+# -- Override the full name of all resources (service, deployment, pvc). Recommended: set to a short name like "unifi"
+fullnameOverride: ""
+
 image:
   # -- Docker registry/repository to pull the image from
   repository: jacobalberty/unifi
