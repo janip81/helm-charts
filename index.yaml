@@ -3044,6 +3044,33 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application/
     apiVersion: v2
     appVersion: 10.3.55
+    created: "2026-04-22T11:57:20.347665856Z"
+    description: Helm chart for the UniFi Network Application (WiFi controller)
+    digest: 8912792ee3adcc4653c0de479ecbc8f39322464f6935dadda825a9b1351e7a5e
+    home: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application
+    icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
+    keywords:
+    - unifi
+    - ubiquiti
+    - wifi
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: unifi-network-application
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application/
+    - https://github.com/jacobalberty/unifi-docker
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/unifi-network-application-0.2.3/unifi-network-application-0.2.3.tgz
+    version: 0.2.3
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application/
+    apiVersion: v2
+    appVersion: 10.3.55
     created: "2026-04-22T11:40:40.209610621Z"
     description: Helm chart for the UniFi Network Application (WiFi controller)
     digest: 42491b60382943a1dceff8cc71a8c392e12387907398b29fd17b219e7e71a596
@@ -3260,4 +3287,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-22T11:40:40.209885732Z"
+generated: "2026-04-22T11:57:20.347906215Z"
