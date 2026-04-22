@@ -1,0 +1,55 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+Helm chart for the UniFi Network Application (WiFi controller) using the `jacobalberty/unifi` image,
+which bundles MongoDB and the controller in a single container.
+
+Includes:
+- A **ClusterIP** service for the HTTPS web UI (port 8443)
+- A **LoadBalancer** service for UniFi device communication (8080/TCP, 3478/UDP, 10001/UDP)
+- Optional **HTTPRoute** for Cilium Gateway API (disabled by default — requires BackendTLSPolicy for HTTPS backend)
+
+## Adding this helm repository
+
+To add the helm repository, run the following commands:
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo unifi-network-application
+```
+
+`values.yaml` files for the charts can be found in the `charts/[chartname]` directories.
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install my-unifi janip81/unifi-network-application -f YOUR-OWN-VALUES.yaml
+```
+
+[Helm](https://helm.sh) must be installed to use the charts. Please refer to
+Helm's [documentation](https://helm.sh/docs) to get started.
+
+## Prerequisites
+
+- [Kubernetes](https://kubernetes.io/)
+- [Helm 3.1.0](https://helm.sh)
+- PV provisioner support in the underlying infrastructure (for persistent storage)
+- LoadBalancer support in the underlying infrastructure (for device communication)
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

@@ -1,0 +1,11 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+The UniFi Network Application is accessible on the LoadBalancer service for device management.
+Web UI: https://<LOADBALANCER-IP>:8443
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
