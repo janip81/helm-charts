@@ -7,4 +7,5 @@ excluded-charts:
   - worklog
   - castlist
   - gameledger
+  - unifi-network-application
 helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
