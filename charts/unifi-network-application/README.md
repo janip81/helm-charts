@@ -22,8 +22,7 @@ Helm chart for the UniFi Network Application (WiFi controller) using the `jacoba
 which bundles MongoDB and the controller in a single container.
 
 Includes:
-- A **ClusterIP** service for the HTTPS web UI (port 8443)
-- A **LoadBalancer** service for UniFi device communication (8080/TCP, 3478/UDP, 10001/UDP)
+- A single **LoadBalancer** service exposing all required ports: HTTPS web UI (8443/TCP), AP device communication (8080/TCP), STUN (3478/UDP), L2 discovery (10001/UDP), speed test (6789/TCP)
 - Optional **HTTPRoute** for Cilium Gateway API (disabled by default — requires BackendTLSPolicy for HTTPS backend)
 
 ## Adding this helm repository
@@ -59,17 +58,13 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
-| deviceService.annotations | object | `{}` | Annotations for the device service (e.g. for MetalLB/Cilium IP pool selection) |
-| deviceService.enabled | bool | `true` | Enable the LoadBalancer service for UniFi device communication |
-| deviceService.ports | list | `[{"name":"controller","port":8080,"protocol":"TCP"},{"name":"stun","port":3478,"protocol":"UDP"},{"name":"discovery","port":10001,"protocol":"UDP"}]` | Ports exposed for device communication |
-| deviceService.type | string | `"LoadBalancer"` | Service type for device communication |
 | env.JVM_MAX_HEAP_SIZE | string | `"1024M"` | JVM maximum heap size. Increase for larger installations |
 | env.RUNAS_UID0 | string | `"false"` | Run as root (set to "true" only if required) |
 | env.TZ | string | `"Europe/Stockholm"` | Timezone for the controller |
 | env.UNIFI_GID | string | `"999"` | GID the application runs as |
 | env.UNIFI_UID | string | `"999"` | UID the application runs as |
 | httproute.annotations | object | `{"argocd.argoproj.io/sync-options":"SkipDryRunOnMissingResource=true"}` | Annotations for the HTTPRoute |
-| httproute.enabled | bool | `false` | Enable HTTPRoute via Cilium Gateway API. Note: UniFi serves HTTPS only (port 8443). Requires a BackendTLSPolicy to connect to the backend over TLS. Enable only after creating a ConfigMap 'unifi-ca' with key 'ca.crt' containing the controller's CA certificate. |
+| httproute.enabled | bool | `false` | Enable HTTPRoute for the web UI |
 | httproute.gatewayName | string | `"internal-shared"` | Gateway name to attach the HTTPRoute to |
 | httproute.gatewayNamespace | string | `"kube-system"` | Namespace of the gateway |
 | httproute.hostname | string | `"unifi.mgmt.threshold.se"` | Hostname for the HTTPRoute |
@@ -84,8 +79,9 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 | podSecurityContext | object | `{"fsGroup":999}` | Pod security context |
 | resources | object | `{"limits":{"cpu":"1000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | Resource requests and limits |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":false,"runAsGroup":999,"runAsNonRoot":true,"runAsUser":999}` | Container security context |
-| service.port | int | `8443` | Service port |
-| service.type | string | `"ClusterIP"` | Service type for the web UI (HTTPS port 8443) |
+| service.annotations | object | `{}` | Annotations for the service (e.g. for Cilium IP pool selection) |
+| service.ports | list | `[{"name":"http","port":8443,"protocol":"TCP"},{"name":"controller","port":8080,"protocol":"TCP"},{"name":"stun","port":3478,"protocol":"UDP"},{"name":"discovery","port":10001,"protocol":"UDP"},{"name":"speedtest","port":6789,"protocol":"TCP"}]` | Ports exposed by the service. All ports required for full UniFi AP management are included by default. 8443/TCP: HTTPS web UI 8080/TCP: AP device communication (inform) 3478/UDP: STUN (required for AP tunnelling and provisioning) 10001/UDP: L2 device discovery (works only on same broadcast domain) 6789/TCP: UniFi mobile speed test (optional) |
+| service.type | string | `"LoadBalancer"` | Service type. LoadBalancer is required so both the web UI and AP device communication ports are reachable from outside the cluster. |
 | tolerations | list | `[]` | Tolerations for pod scheduling |
 
 ----------------------------------------------

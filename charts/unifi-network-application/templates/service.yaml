@@ -4,31 +4,14 @@ metadata:
   name: {{ include "unifi-network-application.fullname" . }}
   labels:
     {{- include "unifi-network-application.labels" . | nindent 4 }}
-spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - name: http
-      port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-  selector:
-    {{- include "unifi-network-application.selectorLabels" . | nindent 4 }}
-{{- if .Values.deviceService.enabled }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "unifi-network-application.fullname" . }}-devices
-  labels:
-    {{- include "unifi-network-application.labels" . | nindent 4 }}
-  {{- with .Values.deviceService.annotations }}
+  {{- with .Values.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: {{ .Values.deviceService.type }}
+  type: {{ .Values.service.type }}
   ports:
-    {{- range .Values.deviceService.ports }}
+    {{- range .Values.service.ports }}
     - name: {{ .name }}
       port: {{ .port }}
       targetPort: {{ .name }}
@@ -36,4 +19,3 @@ spec:
     {{- end }}
   selector:
     {{- include "unifi-network-application.selectorLabels" . | nindent 4 }}
-{{- end }}

@@ -43,20 +43,22 @@ persistence:
   size: 5Gi
 
 service:
-  # -- Service type for the web UI (HTTPS port 8443)
-  type: ClusterIP
-  # -- Service port
-  port: 8443
-
-deviceService:
-  # -- Enable the LoadBalancer service for UniFi device communication
-  enabled: true
-  # -- Service type for device communication
+  # -- Service type. LoadBalancer is required so both the web UI and AP device
+  # communication ports are reachable from outside the cluster.
   type: LoadBalancer
-  # -- Annotations for the device service (e.g. for MetalLB/Cilium IP pool selection)
+  # -- Annotations for the service (e.g. for Cilium IP pool selection)
   annotations: {}
-  # -- Ports exposed for device communication
+  # -- Ports exposed by the service.
+  # All ports required for full UniFi AP management are included by default.
+  # 8443/TCP: HTTPS web UI
+  # 8080/TCP: AP device communication (inform)
+  # 3478/UDP: STUN (required for AP tunnelling and provisioning)
+  # 10001/UDP: L2 device discovery (works only on same broadcast domain)
+  # 6789/TCP: UniFi mobile speed test (optional)
   ports:
+    - name: http
+      port: 8443
+      protocol: TCP
     - name: controller
       port: 8080
       protocol: TCP
@@ -66,12 +68,17 @@ deviceService:
     - name: discovery
       port: 10001
       protocol: UDP
+    - name: speedtest
+      port: 6789
+      protocol: TCP
 
+# HTTPRoute via Cilium Gateway API for the web UI.
+# Note: UniFi serves HTTPS only (port 8443). The gateway needs a BackendTLSPolicy
+# to connect to the HTTPS backend. Enable only after extracting the controller CA
+# cert and creating a ConfigMap 'unifi-ca' with key 'ca.crt' in this namespace.
+# Until then, access the UI directly at https://<LoadBalancer-IP>:8443
 httproute:
-  # -- Enable HTTPRoute via Cilium Gateway API.
-  # Note: UniFi serves HTTPS only (port 8443). Requires a BackendTLSPolicy to connect
-  # to the backend over TLS. Enable only after creating a ConfigMap 'unifi-ca' with
-  # key 'ca.crt' containing the controller's CA certificate.
+  # -- Enable HTTPRoute for the web UI
   enabled: false
   # -- Gateway name to attach the HTTPRoute to
   gatewayName: internal-shared
