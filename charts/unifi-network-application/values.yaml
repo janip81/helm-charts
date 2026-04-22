@@ -1,42 +1,35 @@
 # Default values for unifi-network-application.
 
-# -- Override the full name of all resources (service, deployment, pvc). Recommended: set to a short name like "unifi"
+# -- Override the full name of all resources. Recommended: set to a short name like "unifi"
 fullnameOverride: ""
 
 image:
   # -- Docker registry/repository to pull the image from
-  repository: jacobalberty/unifi
-  # -- Image tag. Uses `stable` by default; pin to a specific version (e.g. `v9.0.108`) for production
-  tag: "stable"
+  repository: lscr.io/linuxserver/unifi-network-application
+  # -- Image tag
+  tag: "10.3.55"
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
 env:
-  # -- Timezone for the controller
+  # -- Timezone
   TZ: "Europe/Stockholm"
-  # -- Run as root (set to "true" only if required)
-  RUNAS_UID0: "false"
-  # -- UID the application runs as
-  UNIFI_UID: "999"
-  # -- GID the application runs as
-  UNIFI_GID: "999"
-  # -- JVM maximum heap size. Increase for larger installations
-  JVM_MAX_HEAP_SIZE: "1024M"
+  # -- User ID the application runs as
+  PUID: "1000"
+  # -- Group ID the application runs as
+  PGID: "1000"
 
 # -- Pod security context
-podSecurityContext:
-  fsGroup: 999
+podSecurityContext: {}
 
 # -- Container security context
 securityContext:
-  runAsUser: 999
-  runAsGroup: 999
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: false
-  runAsNonRoot: true
+  runAsNonRoot: false
 
 persistence:
-  # -- Enable persistent storage for UniFi data
+  # -- Enable persistent storage for UniFi config/data
   enabled: true
   # -- Storage class name. Leave empty to use the cluster default
   storageClass: ""
@@ -45,14 +38,46 @@ persistence:
   # -- Size of the PVC
   size: 5Gi
 
+mongodb:
+  image:
+    # -- MongoDB image repository
+    repository: mongo
+    # -- MongoDB image tag. Must be 6.x or 7.x for UniFi 9+
+    tag: "7.0"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- MongoDB authentication. Disabled by default (internal cluster service only)
+  auth:
+    # -- Enable MongoDB authentication
+    enabled: false
+    # -- MongoDB username (only used when auth.enabled is true)
+    username: "unifi"
+    # -- MongoDB password (only used when auth.enabled is true)
+    password: "unifipass"
+  persistence:
+    # -- Enable persistent storage for MongoDB data
+    enabled: true
+    # -- Storage class name. Leave empty to use the cluster default
+    storageClass: ""
+    # -- Access mode for the PVC
+    accessMode: ReadWriteOnce
+    # -- Size of the MongoDB PVC
+    size: 2Gi
+  # -- MongoDB resource requests and limits
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 50m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
 service:
-  # -- Service type. LoadBalancer is required so both the web UI and AP device
-  # communication ports are reachable from outside the cluster.
+  # -- Service type. LoadBalancer exposes all ports (UI + AP device communication)
   type: LoadBalancer
   # -- Annotations for the service (e.g. for Cilium IP pool selection)
   annotations: {}
   # -- Ports exposed by the service.
-  # All ports required for full UniFi AP management are included by default.
   # 8443/TCP: HTTPS web UI
   # 8080/TCP: AP device communication (inform)
   # 3478/UDP: STUN (required for AP tunnelling and provisioning)
@@ -76,16 +101,14 @@ service:
       protocol: TCP
 
 # HTTPRoute via Cilium Gateway API for the web UI.
-# Note: UniFi serves HTTPS only (port 8443). The gateway needs a BackendTLSPolicy
-# to connect to the HTTPS backend. Enable only after extracting the controller CA
-# cert and creating a ConfigMap 'unifi-ca' with key 'ca.crt' in this namespace.
-# Until then, access the UI directly at https://<LoadBalancer-IP>:8443
+# Note: UniFi serves HTTPS only (port 8443). Requires a BackendTLSPolicy.
+# Access the UI directly at https://<LoadBalancer-IP>:8443 until configured.
 httproute:
   # -- Enable HTTPRoute for the web UI
   enabled: false
-  # -- Gateway name to attach the HTTPRoute to
+  # -- Gateway name
   gatewayName: internal-shared
-  # -- Namespace of the gateway
+  # -- Gateway namespace
   gatewayNamespace: kube-system
   # -- Hostname for the HTTPRoute
   hostname: unifi.mgmt.threshold.se
@@ -93,7 +116,7 @@ httproute:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
-# -- Resource requests and limits
+# -- Resource requests and limits for the UniFi container
 resources:
   requests:
     memory: 512Mi

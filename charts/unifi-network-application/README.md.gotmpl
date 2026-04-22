@@ -16,7 +16,10 @@ Helm chart for the UniFi Network Application (WiFi controller) using the `jacoba
 which bundles MongoDB and the controller in a single container.
 
 Includes:
+- **linuxserver/unifi-network-application** container (actively maintained, tracks latest UniFi releases)
+- **Bundled MongoDB 7.0** deployment (no external database required)
 - A single **LoadBalancer** service exposing all required ports: HTTPS web UI (8443/TCP), AP device communication (8080/TCP), STUN (3478/UDP), L2 discovery (10001/UDP), speed test (6789/TCP)
+- Init container that waits for MongoDB before starting the controller
 - Optional **HTTPRoute** for Cilium Gateway API (disabled by default — requires BackendTLSPolicy for HTTPS backend)
 
 ## Adding this helm repository
