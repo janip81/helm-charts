@@ -57,14 +57,12 @@ spec:
               value: "27017"
             - name: MONGO_DBNAME
               value: "unifi"
-            {{- if .Values.mongodb.auth.enabled }}
             - name: MONGO_USER
               value: {{ .Values.mongodb.auth.username | quote }}
             - name: MONGO_PASS
               value: {{ .Values.mongodb.auth.password | quote }}
             - name: MONGO_AUTHSOURCE
               value: "admin"
-            {{- end }}
             {{- if .Values.tls.secretName }}
             - name: CERTFILE
               value: /certs/tls.crt
