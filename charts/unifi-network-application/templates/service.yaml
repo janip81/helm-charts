@@ -14,7 +14,7 @@ spec:
     {{- range .Values.service.ports }}
     - name: {{ .name }}
       port: {{ .port }}
-      targetPort: {{ .name }}
+      targetPort: {{ .targetPort | default .name }}
       protocol: {{ .protocol }}
     {{- end }}
   selector:
