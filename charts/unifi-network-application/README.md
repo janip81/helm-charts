@@ -1,6 +1,6 @@
 # unifi-network-application
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.3.55](https://img.shields.io/badge/AppVersion-10.3.55-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.3.55](https://img.shields.io/badge/AppVersion-10.3.55-informational?style=flat-square)
 
 Helm chart for the UniFi Network Application (WiFi controller)
 
@@ -96,6 +96,7 @@ Helm's [documentation](https://helm.sh/docs) to get started.
 | service.annotations | object | `{}` | Annotations for the service (e.g. for Cilium IP pool selection) |
 | service.ports | list | `[{"name":"http","port":8443,"protocol":"TCP"},{"name":"controller","port":8080,"protocol":"TCP"},{"name":"stun","port":3478,"protocol":"UDP"},{"name":"discovery","port":10001,"protocol":"UDP"},{"name":"speedtest","port":6789,"protocol":"TCP"}]` | Ports exposed by the service. 8443/TCP: HTTPS web UI 8080/TCP: AP device communication (inform) 3478/UDP: STUN (required for AP tunnelling and provisioning) 10001/UDP: L2 device discovery (works only on same broadcast domain) 6789/TCP: UniFi mobile speed test (optional) |
 | service.type | string | `"LoadBalancer"` | Service type. LoadBalancer exposes all ports (UI + AP device communication) |
+| tls.secretName | string | `""` | Name of the Secret containing the TLS cert for the controller's HTTPS interface. When set, mounts the cert/key into /certs/ and sets CERTFILE/KEYFILE env vars so linuxserver uses your cert instead of the self-signed one. Create the Secret via a cert-manager Certificate resource pointing to letsencrypt-prod. |
 | tolerations | list | `[]` | Tolerations for pod scheduling |
 
 ----------------------------------------------

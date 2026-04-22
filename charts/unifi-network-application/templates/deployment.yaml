@@ -65,9 +65,20 @@ spec:
             - name: MONGO_AUTHSOURCE
               value: "admin"
             {{- end }}
+            {{- if .Values.tls.secretName }}
+            - name: CERTFILE
+              value: /certs/tls.crt
+            - name: KEYFILE
+              value: /certs/tls.key
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /config
+            {{- if .Values.tls.secretName }}
+            - name: tls-cert
+              mountPath: /certs
+              readOnly: true
+            {{- end }}
           livenessProbe:
             httpGet:
               scheme: HTTPS
@@ -94,6 +105,11 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.tls.secretName }}
+        - name: tls-cert
+          secret:
+            secretName: {{ .Values.tls.secretName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
