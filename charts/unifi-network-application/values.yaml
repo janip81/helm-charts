@@ -1,0 +1,73 @@
+image:
+  repository: jacobalberty/unifi
+  tag: "stable"
+  pullPolicy: IfNotPresent
+
+env:
+  TZ: "Europe/Stockholm"
+  RUNAS_UID0: "false"
+  UNIFI_UID: "999"
+  UNIFI_GID: "999"
+  JVM_MAX_HEAP_SIZE: "1024M"
+
+podSecurityContext:
+  fsGroup: 999
+
+securityContext:
+  runAsUser: 999
+  runAsGroup: 999
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+# ClusterIP service for the web UI (HTTPS port 8443)
+service:
+  type: ClusterIP
+  port: 8443
+
+# LoadBalancer service for UniFi device communication.
+# UniFi APs need to reach the controller on these ports.
+deviceService:
+  enabled: true
+  type: LoadBalancer
+  annotations: {}
+  ports:
+    - name: controller
+      port: 8080
+      protocol: TCP
+    - name: stun
+      port: 3478
+      protocol: UDP
+    - name: discovery
+      port: 10001
+      protocol: UDP
+
+# HTTPRoute via Cilium Gateway API.
+# Note: UniFi serves HTTPS only (port 8443). The gateway needs a BackendTLSPolicy
+# to connect to the backend over TLS. Enable only after extracting the controller's
+# CA cert and creating a ConfigMap 'unifi-ca' with key 'ca.crt' in this namespace.
+httproute:
+  enabled: false
+  gatewayName: internal-shared
+  gatewayNamespace: kube-system
+  hostname: unifi.mgmt.threshold.se
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 100m
+  limits:
+    memory: 1024Mi
+    cpu: 1000m
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,24 @@
+apiVersion: v2
+name: unifi-network-application
+description: Helm chart for the UniFi Network Application (WiFi controller)
+type: application
+version: "0.1.0"
+appVersion: "stable"
+home: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application
+icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+keywords:
+  - unifi
+  - ubiquiti
+  - wifi
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application/
+  - https://github.com/jacobalberty/unifi-docker
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/unifi-network-application/
