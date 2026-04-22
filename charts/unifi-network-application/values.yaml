@@ -72,6 +72,13 @@ mongodb:
       memory: 512Mi
       cpu: 500m
 
+tls:
+  # -- Name of the Secret containing the TLS cert for the controller's HTTPS interface.
+  # When set, mounts the cert/key into /certs/ and sets CERTFILE/KEYFILE env vars so
+  # linuxserver uses your cert instead of the self-signed one.
+  # Create the Secret via a cert-manager Certificate resource pointing to letsencrypt-prod.
+  secretName: ""
+
 service:
   # -- Service type. LoadBalancer exposes all ports (UI + AP device communication)
   type: LoadBalancer
