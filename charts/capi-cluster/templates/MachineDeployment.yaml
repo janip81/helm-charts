@@ -18,6 +18,15 @@ metadata:
 spec:
   clusterName: {{ $.Values.cluster.name }}
   replicas: {{ template "worker.replicas" . }}
+{{- if .strategy }}
+  strategy:
+    type: {{ .strategy.type }}
+{{- if and (eq .strategy.type "RollingUpdate") .strategy.rollingUpdate }}
+    rollingUpdate:
+      maxSurge: {{ .strategy.rollingUpdate.maxSurge | default 1 }}
+      maxUnavailable: {{ .strategy.rollingUpdate.maxUnavailable | default 0 }}
+{{- end }}
+{{- end }}
   selector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: {{ $.Values.cluster.name }}

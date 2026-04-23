@@ -99,6 +99,11 @@ machineDeployments:
     machineDeploymentAnnotations:
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "5"
       cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "0"
+    # Use OnDelete for nodes with PCI passthrough — CAPI cannot provision a replacement
+    # while PCI devices are still bound to the old VM. With OnDelete, rolling is manual:
+    # delete the Machine object and CAPI provisions a fresh node with the new template.
+    # strategy:
+    #   type: OnDelete
     taints:
       - key: "dedicated"
         value: "pci"
