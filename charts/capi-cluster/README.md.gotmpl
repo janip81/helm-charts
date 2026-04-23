@@ -1,12 +1,13 @@
-# capi-cluster
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
 
-![Version: 0.0.95](https://img.shields.io/badge/Version-0.0.95-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.35](https://img.shields.io/badge/AppVersion-1.35-informational?style=flat-square)
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 
-An unofficial Helm chart to deploy workload cluster with Cluster API
+{{ template "chart.description" . }}
 
 This chart provisions a full Kubernetes workload cluster on vSphere using [Cluster API](https://cluster-api.sigs.k8s.io/) and [CAPV](https://github.com/kubernetes-sigs/cluster-api-provider-vsphere). It is designed to be managed by ArgoCD running on a management cluster where CAPI controllers are installed.
 
-**Homepage:** <https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster>
+{{ template "chart.homepageLine" . }}
 
 ## Prerequisites
 
@@ -342,138 +343,10 @@ gatewayapi:
   applyStrategy: ApplyOnce
 ```
 
-## Maintainers
+{{ template "chart.maintainersSection" . }}
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| janip81 | <jani@techmonkeys.se> | <https://github.com/janip81> |
+{{ template "chart.sourcesSection" . }}
 
-## Source Code
+{{ template "chart.requirementsSection" . }}
 
-* <https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster>
-* <https://github.com/kubernetes-sigs/cluster-api-provider-vsphere>
-* <https://github.com/kubernetes-sigs/cluster-api>
-
-## Values
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| addons.metricsServer.chart.name | string | `"metrics-server"` |  |
-| addons.metricsServer.chart.repo | string | `"https://kubernetes-sigs.github.io/metrics-server"` |  |
-| addons.metricsServer.chart.version | string | `"3.8.3"` |  |
-| addons.metricsServer.enabled | bool | `false` |  |
-| addons.metricsServer.name | string | `"metrics-server"` |  |
-| addons.metricsServer.release.namespace | string | `"kube-system"` |  |
-| addons.metricsServer.release.values.image.pullPolicy | string | `"IfNotPresent"` |  |
-| addons.metricsServer.release.values.image.repository | string | `"registry.k8s.io/metrics-server/metrics-server"` |  |
-| addons.metricsServer.release.values.image.tag | string | `""` |  |
-| addons.vsphereCPI.chart.name | string | `nil` |  |
-| addons.vsphereCPI.chart.repo | string | `nil` |  |
-| addons.vsphereCPI.chart.version | string | `nil` |  |
-| addons.vsphereCPI.enabled | bool | `false` |  |
-| addons.vsphereCPI.name | string | `"vsphere-cpi"` |  |
-| addons.vsphereCPI.release.namespace | string | `nil` |  |
-| addons.vsphereCPI.release.values | object | `{}` |  |
-| cluster.bgpPolicyVlan | string | `"vlan201"` |  |
-| cluster.cidrBlocks | string | `"10.245.0.0/16"` |  |
-| cluster.controlPlaneEndpoint | string | `"host.domain.com"` |  |
-| cluster.controlPlaneEndpointIP | string | `"192.168.1.11"` |  |
-| cluster.name | string | `"clustername"` |  |
-| cluster.skipKubeProxy | bool | `true` |  |
-| controlPlaneNodes.k8sVersion | string | `"1.35.0"` |  |
-| controlPlaneNodes.replicas | int | `3` |  |
-| controlPlaneNodes.vspehereMachineTemplate | string | `"ubnt2204-2cpu-4g-135"` |  |
-| etcdDefrag.enabled | bool | `false` |  |
-| etcdDefrag.failedJobsHistoryLimit | int | `3` |  |
-| etcdDefrag.image | string | `""` |  |
-| etcdDefrag.schedule | string | `"0 3 * * 0"` |  |
-| etcdDefrag.successfulJobsHistoryLimit | int | `3` |  |
-| gatewayapi.applyStrategy | string | `"ApplyOnce"` |  |
-| gatewayapi.channel | string | `"standard"` |  |
-| gatewayapi.enabled | bool | `true` |  |
-| gatewayapi.version | string | `"v1.3.0"` |  |
-| healthChecks.controlplane.maxUnhealthy | string | `"100%"` |  |
-| healthChecks.controlplane.name | string | `"cp-unhealthy-5m"` |  |
-| healthChecks.controlplane.nodeStartupTimeoutSeconds | int | `900` |  |
-| healthChecks.controlplane.unhealthyTimeoutFalse | int | `300` |  |
-| healthChecks.controlplane.unhealthyTimeoutUnknown | int | `300` |  |
-| healthChecks.workernodes.maxUnhealthy | string | `"40%"` |  |
-| healthChecks.workernodes.name | string | `"worker-unhealthy-5m"` |  |
-| healthChecks.workernodes.nodeStartupTimeoutSeconds | int | `900` |  |
-| healthChecks.workernodes.unhealthyTimeoutFalse | int | `300` |  |
-| healthChecks.workernodes.unhealthyTimeoutUnknown | int | `300` |  |
-| kubeVIP.image.pullPolicy | string | `"IfNotPresent"` |  |
-| kubeVIP.image.repository | string | `"ghcr.io/kube-vip/kube-vip"` |  |
-| kubeVIP.image.tag | string | `"v0.8.9"` |  |
-| kubelet.imageGCHighThresholdPercent | int | `70` |  |
-| kubelet.imageGCLowThresholdPercent | int | `65` |  |
-| kubelet.imageMaximumGCAge | string | `"168h0m0s"` |  |
-| machineDeployments[0].k8sVersion | string | `"1.35.0"` |  |
-| machineDeployments[0].machineDeploymentAnnotations | string | `nil` |  |
-| machineDeployments[0].machineDeploymentLabels | string | `nil` |  |
-| machineDeployments[0].machineSetLabels.autoscaler | string | `"enabled"` |  |
-| machineDeployments[0].name | string | `"md-0"` |  |
-| machineDeployments[0].nodeAnnotations | string | `nil` |  |
-| machineDeployments[0].nodeLabels."node-role.kubernetes.io/worker" | string | `"true"` |  |
-| machineDeployments[0].replicas | int | `2` |  |
-| machineDeployments[0].vspehereMachineTemplate | string | `"ubnt2204-4cpu-8g-135"` |  |
-| machineDeployments[1].k8sVersion | string | `"1.35.0"` |  |
-| machineDeployments[1].machineDeploymentAnnotations."cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size" | string | `"5"` |  |
-| machineDeployments[1].machineDeploymentAnnotations."cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size" | string | `"0"` |  |
-| machineDeployments[1].name | string | `"md-1"` |  |
-| machineDeployments[1].nodeAnnotations | string | `nil` |  |
-| machineDeployments[1].nodeLabels."node-role.kubernetes.io/worker" | string | `"true"` |  |
-| machineDeployments[1].replicas | int | `3` |  |
-| machineDeployments[1].taints[0].effect | string | `"NoSchedule"` |  |
-| machineDeployments[1].taints[0].key | string | `"dedicated"` |  |
-| machineDeployments[1].taints[0].value | string | `"pci"` |  |
-| machineDeployments[1].vspehereMachineTemplate | string | `"ubnt2204-4cpu-8g-135"` |  |
-| machineTemplates[0].cloneMode | string | `"FullClone"` |  |
-| machineTemplates[0].cpu | int | `2` |  |
-| machineTemplates[0].diskSize | int | `25` |  |
-| machineTemplates[0].isoTemplate | string | `"ubuntu-2404-kube-v1.35.0"` |  |
-| machineTemplates[0].memory | int | `4096` |  |
-| machineTemplates[0].name | string | `"ubnt2204-2cpu-4g-133"` |  |
-| machineTemplates[0].network | string | `"vcenterNetwork"` |  |
-| machineTemplates[0].storagePolicyName | string | `""` |  |
-| machineTemplates[0].vcenterDatastore | string | `"SSD01"` |  |
-| machineTemplates[0].vcenterFolder | string | `nil` |  |
-| machineTemplates[1].cloneMode | string | `"FullClone"` |  |
-| machineTemplates[1].cpu | int | `4` |  |
-| machineTemplates[1].customVMXKeys."pciPassthru0.msiEnabled" | string | `"TRUE"` |  |
-| machineTemplates[1].customVMXKeys."pciPassthru1.msiEnabled" | string | `"TRUE"` |  |
-| machineTemplates[1].customVMXKeys."pciPassthru2.msiEnabled" | string | `"TRUE"` |  |
-| machineTemplates[1].customVMXKeys."pciPassthru3.msiEnabled" | string | `"TRUE"` |  |
-| machineTemplates[1].diskSize | int | `35` |  |
-| machineTemplates[1].isoTemplate | string | `"ubuntu-2404-kube-v1.35.0"` |  |
-| machineTemplates[1].memory | int | `8192` |  |
-| machineTemplates[1].name | string | `"ubnt2204-4cpu-8g-133"` |  |
-| machineTemplates[1].network | string | `"vcenterNetwork"` |  |
-| machineTemplates[1].pciDevices[0].deviceId | int | `21` |  |
-| machineTemplates[1].pciDevices[0].vendorId | int | `6418` |  |
-| machineTemplates[1].storagePolicyName | string | `""` |  |
-| machineTemplates[1].vcenterDatastore | string | `"SSD01"` |  |
-| machineTemplates[1].vcenterFolder | string | `nil` |  |
-| network.gateway | string | `"192.168.1.1"` |  |
-| network.nameserver | string | `"192.168.1.1"` |  |
-| network.poolEnd | string | `"192.168.1.254"` |  |
-| network.poolStart | string | `"192.168.1.2"` |  |
-| network.prefix | string | `"24"` |  |
-| node.datastore | string | `"SSD01"` |  |
-| node.sshAuthorizedKeys | string | `"PublicKey"` |  |
-| node.template | string | `"ubuntu-2404-kube-v1.35.0"` |  |
-| podSecurityStandard.audit | string | `"restricted"` |  |
-| podSecurityStandard.enabled | bool | `false` |  |
-| podSecurityStandard.enforce | string | `"baseline"` |  |
-| podSecurityStandard.exemptions.namespaces[0] | string | `"kube-system"` |  |
-| podSecurityStandard.warn | string | `"restricted"` |  |
-| vsphere.datacenter | string | `"Datacenter"` |  |
-| vsphere.insecureFlag | bool | `true` |  |
-| vsphere.labels.region | string | `"region"` |  |
-| vsphere.labels.zone | string | `"zone"` |  |
-| vsphere.password | string | `"password"` |  |
-| vsphere.resourcePool | string | `"kubernetes"` |  |
-| vsphere.server | string | `"vcenter.domain.com"` |  |
-| vsphere.serverIP | string | `"1.2.3.4"` |  |
-| vsphere.thumbprint | string | `"thumbprint"` |  |
-| vsphere.username | string | `"username"` |  |
+{{ template "chart.valuesSection" . }}
