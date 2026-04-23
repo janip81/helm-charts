@@ -137,3 +137,13 @@ podSecurityContext:
   fsGroup: 1000
 
 securityContext: {}
+
+livenessProbe:
+  initialDelaySeconds: 120
+  periodSeconds: 20
+  failureThreshold: 3
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 3
