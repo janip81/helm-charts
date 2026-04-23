@@ -3034,6 +3034,32 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
     apiVersion: v2
     appVersion: 1.86.0
+    created: "2026-04-23T14:34:45.384370914Z"
+    description: n8n workflow automation
+    digest: 7889fc0b18c7d3ecb626124a20edb54a3c73dd5019d474cdec05e52111cfb719
+    home: https://github.com/janip81/helm-charts/tree/main/charts/n8n
+    icon: https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png
+    keywords:
+    - n8n
+    - automation
+    - workflows
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: n8n
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.3/n8n-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    apiVersion: v2
+    appVersion: 1.86.0
     created: "2026-03-27T14:20:20.696483957Z"
     description: n8n workflow automation
     digest: 4b991fa32d75d198bc708d6fa491f037951edf3f809f62e74415929d58f9f635
@@ -3491,4 +3517,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-23T10:45:42.522010817Z"
+generated: "2026-04-23T14:34:45.384645739Z"
