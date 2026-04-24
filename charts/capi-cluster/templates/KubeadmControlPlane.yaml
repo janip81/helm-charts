@@ -36,6 +36,10 @@ spec:
           extraArgs:
             - name: listen-metrics-urls
               value: http://0.0.0.0:2381
+            {{- range .Values.etcd.extraArgs }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
       scheduler:
         extraArgs:
           - name: bind-address
