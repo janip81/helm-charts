@@ -6,6 +6,10 @@ cluster:
   # bgpPolicyVlan node label is used in Cilium CNI BGP, if not used leave empty and it will not be set.
   bgpPolicyVlan: "vlan201"
   skipKubeProxy: true
+  # paused stops CAPI from reconciling the cluster. Set to true, then power off
+  # the VMs in vCenter to free resources. To bring back: power on VMs first,
+  # then set paused: false so CAPI resumes and the cluster recovers.
+  paused: false
 
 # Read about different levels
 # https://kubernetes.io/docs/concepts/security/pod-security-standards/
