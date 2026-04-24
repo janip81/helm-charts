@@ -205,6 +205,15 @@ addons:
           tag: ""
           pullPolicy: IfNotPresent
 
+# Additional etcd arguments appended to the hardcoded must-haves.
+# Must-haves (always set): listen-metrics-urls=http://0.0.0.0:2381
+etcd:
+  extraArgs: []
+  # - name: auto-compaction-mode
+  #   value: periodic
+  # - name: auto-compaction-retention
+  #   value: "8h"
+
 # Periodic etcd compact + defrag job. Runs as a CronJob on a control-plane node.
 # Discovers etcd members dynamically — no IP configuration needed.
 # image is auto-selected from controlPlaneNodes.k8sVersion (supported: 1.30–1.35).
