@@ -15,6 +15,7 @@ metadata:
     etcd-defrag: enabled
     {{- end }}
 spec:
+  paused: {{ default false .Values.cluster.paused }}
   clusterNetwork:
     pods:
       cidrBlocks:
