@@ -1,0 +1,88 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Helm chart for deploying [Ghost](https://ghost.org/) — an open-source blogging and publishing platform.
+
+This chart deploys Ghost against an **external MySQL/MariaDB** database. It does not bundle a database; pair it with a MariaDB deployment (e.g. `groundhog2k/mariadb`) or any MySQL-compatible instance.
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo ghost
+```
+
+## Pre-requisites
+
+- A running MySQL 8.x or MariaDB 10.3+ instance reachable from the cluster
+- A Kubernetes Secret containing the database password, e.g.:
+
+```bash
+kubectl -n ghost create secret generic ghost-db \
+  --from-literal=MARIADB_PASSWORD='<db-password>'
+```
+
+Or via ArgoCD Vault Plugin (AVP):
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ghost-db
+  namespace: ghost
+  annotations:
+    avp.kubernetes.io/path: "kubernetes/data/prod-k8s/ghost"
+type: Opaque
+stringData:
+  MARIADB_ROOT_PASSWORD: <path:kubernetes/data/prod-k8s/ghost#mariadb-root-password>
+  MARIADB_DATABASE: ghost
+  MARIADB_USER: ghost
+  MARIADB_PASSWORD: <path:kubernetes/data/prod-k8s/ghost#mariadb-password>
+```
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install ghost janip81/ghost \
+  --set settings.url=https://blog.example.com \
+  --set database.host=my-mariadb.ghost.svc.cluster.local \
+  --set database.passwordSecret.name=ghost-db \
+  --set persistence.enabled=true \
+  --set persistence.storageClass=my-storage-class
+```
+
+## First-run setup
+
+After Ghost starts, visit `<settings.url>/ghost` to complete the admin account wizard.
+
+## Gateway API (HTTPRoute)
+
+Enable the built-in HTTPRoute for Gateway API:
+
+```yaml
+gatewayApi:
+  enabled: true
+  host: blog.example.com
+  parentRefs:
+    - name: my-gateway
+      namespace: kube-system
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
