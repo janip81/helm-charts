@@ -2170,6 +2170,37 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/gameledger-0.1.0/gameledger-0.1.0.tgz
     version: 0.1.0
+  ghost:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: Initial release
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    apiVersion: v2
+    appVersion: 6.32.0
+    created: "2026-04-27T13:14:45.537122881Z"
+    description: Ghost blogging platform with external MySQL/MariaDB
+    digest: 0547207435429e6237c29ff416a857bf4f43d5c5b85b6d6dcd5aedcff25212a4
+    home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
+    icon: https://ghost.org/favicon.ico
+    keywords:
+    - ghost
+    - blog
+    - cms
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: ghost
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    - https://hub.docker.com/_/ghost
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/ghost-0.1.0/ghost-0.1.0.tgz
+    version: 0.1.0
   home-assistant:
   - annotations:
       artifacthub.io/links: |
@@ -3080,6 +3111,32 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
     apiVersion: v2
     appVersion: 1.86.0
+    created: "2026-04-27T13:14:45.731189525Z"
+    description: n8n workflow automation
+    digest: b5cb27ee99ec5a6695e614641617676928d72f09ae00cfcd923f8a1fd4e8d4da
+    home: https://github.com/janip81/helm-charts/tree/main/charts/n8n
+    icon: https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png
+    keywords:
+    - n8n
+    - automation
+    - workflows
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: n8n
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.4/n8n-0.1.4.tgz
+    version: 0.1.4
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    apiVersion: v2
+    appVersion: 1.86.0
     created: "2026-04-23T14:34:45.384370914Z"
     description: n8n workflow automation
     digest: 7889fc0b18c7d3ecb626124a20edb54a3c73dd5019d474cdec05e52111cfb719
@@ -3563,4 +3620,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-24T12:41:28.880180717Z"
+generated: "2026-04-27T13:14:45.731418805Z"
