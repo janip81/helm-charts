@@ -2,7 +2,7 @@ apiVersion: v2
 name: n8n
 description: n8n workflow automation
 type: application
-version: 0.1.3
+version: 0.1.4
 appVersion: "1.86.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/n8n
 icon: https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png
