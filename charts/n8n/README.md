@@ -1,6 +1,6 @@
 # n8n
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
 
 n8n workflow automation
 
@@ -119,6 +119,9 @@ To uninstall the chart:
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
 | ingress.tls | list | `[]` |  |
+| livenessProbe.failureThreshold | int | `3` |  |
+| livenessProbe.initialDelaySeconds | int | `120` |  |
+| livenessProbe.periodSeconds | int | `20` |  |
 | metrics.enabled | bool | `false` |  |
 | metrics.serviceMonitor.enabled | bool | `false` |  |
 | metrics.serviceMonitor.interval | string | `"30s"` |  |
@@ -157,6 +160,9 @@ To uninstall the chart:
 | postgres.ssl.rejectUnauthorized | string | `"true"` |  |
 | postgres.type | string | `"postgresdb"` |  |
 | postgres.user | string | `"n8n"` |  |
+| readinessProbe.failureThreshold | int | `3` |  |
+| readinessProbe.initialDelaySeconds | int | `30` |  |
+| readinessProbe.periodSeconds | int | `10` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | secrets.create | bool | `true` |  |
