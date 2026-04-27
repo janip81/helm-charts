@@ -9,4 +9,5 @@ excluded-charts:
   - gameledger
   - unifi-network-application
   - ghost
+  - n8n
 helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
