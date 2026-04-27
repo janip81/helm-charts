@@ -21,4 +21,3 @@ annotations:
   artifacthub.io/links: |
     - name: Chart source
       url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
-
