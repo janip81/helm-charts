@@ -1,0 +1,27 @@
+apiVersion: v2
+name: ghost
+description: Ghost blogging platform with external MySQL/MariaDB
+type: application
+version: 0.1.0
+appVersion: "6.32.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
+icon: https://ghost.org/favicon.ico
+keywords:
+  - ghost
+  - blog
+  - cms
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+  - https://hub.docker.com/_/ghost
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial release
