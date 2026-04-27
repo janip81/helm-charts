@@ -1,0 +1,16 @@
+settings:
+  url: "http://localhost"
+
+database:
+  host: "ghost-mariadb"
+  name: ghost
+  user: ghost
+  passwordSecret:
+    name: ghost-db
+    key: MARIADB_PASSWORD
+
+persistence:
+  enabled: false
+
+gatewayApi:
+  enabled: false

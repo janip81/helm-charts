@@ -1,0 +1,73 @@
+image:
+  repository: ghost
+  tag: ""
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+settings:
+  # Public URL for the blog — used by Ghost to generate links. Must match what users browse to.
+  url: "http://localhost"
+
+database:
+  client: mysql
+  host: ""
+  port: 3306
+  name: ghost
+  user: ghost
+  passwordSecret:
+    name: ""
+    key: MARIADB_PASSWORD
+
+persistence:
+  enabled: false
+  size: 5Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+
+gatewayApi:
+  enabled: false
+  host: ""
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+startupProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 30
+  timeoutSeconds: 5
+
+livenessProbe:
+  periodSeconds: 30
+  failureThreshold: 3
+  timeoutSeconds: 5
+
+readinessProbe:
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 5

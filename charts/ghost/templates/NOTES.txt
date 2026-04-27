@@ -1,0 +1,10 @@
+Ghost has been deployed.
+
+Blog URL: {{ .Values.settings.url }}
+{{- if .Values.gatewayApi.enabled }}
+HTTPRoute: {{ .Values.gatewayApi.host }}
+{{- end }}
+
+First-run: visit {{ .Values.settings.url }}/ghost to set up your admin account.
+
+Database: {{ .Values.database.client }} @ {{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.name }}
