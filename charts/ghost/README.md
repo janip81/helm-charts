@@ -1,6 +1,6 @@
 # ghost
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.32.0](https://img.shields.io/badge/AppVersion-6.32.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.32.0](https://img.shields.io/badge/AppVersion-6.32.0-informational?style=flat-square)
 
 Ghost blogging platform with external MySQL/MariaDB
 
@@ -110,6 +110,15 @@ gatewayApi:
 | livenessProbe.failureThreshold | int | `3` |  |
 | livenessProbe.periodSeconds | int | `30` |  |
 | livenessProbe.timeoutSeconds | int | `5` |  |
+| mail.enabled | bool | `false` |  |
+| mail.from | string | `""` |  |
+| mail.host | string | `""` |  |
+| mail.passwordSecret.key | string | `""` |  |
+| mail.passwordSecret.name | string | `""` |  |
+| mail.port | int | `587` |  |
+| mail.secure | bool | `false` |  |
+| mail.transport | string | `"SMTP"` |  |
+| mail.user | string | `""` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistence.accessModes[0] | string | `"ReadWriteOnce"` |  |

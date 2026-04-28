@@ -2,7 +2,7 @@ apiVersion: v2
 name: ghost
 description: Ghost blogging platform with external MySQL/MariaDB
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "6.32.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
 icon: https://ghost.org/favicon.ico
@@ -24,4 +24,4 @@ annotations:
       url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
   artifacthub.io/changes: |
     - kind: added
-      description: Initial release
+      description: Optional SMTP mail configuration
