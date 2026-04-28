@@ -2174,6 +2174,36 @@ entries:
   - annotations:
       artifacthub.io/changes: |
         - kind: added
+          description: Optional SMTP mail configuration
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    apiVersion: v2
+    appVersion: 6.32.0
+    created: "2026-04-28T10:22:22.986952454Z"
+    description: Ghost blogging platform with external MySQL/MariaDB
+    digest: 70b4022905fd47af802904643652c26b7773ea594435f73080a29ec34da1d37e
+    home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
+    icon: https://ghost.org/favicon.ico
+    keywords:
+    - ghost
+    - blog
+    - cms
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: ghost
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    - https://hub.docker.com/_/ghost
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/ghost-0.1.1/ghost-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
           description: Initial release
       artifacthub.io/links: |
         - name: Chart source
@@ -3620,4 +3650,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-27T13:14:45.731418805Z"
+generated: "2026-04-28T10:22:22.987243176Z"
