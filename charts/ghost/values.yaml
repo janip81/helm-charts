@@ -40,6 +40,18 @@ gatewayApi:
     - name: internal-shared
       namespace: kube-system
 
+mail:
+  enabled: false
+  from: ""
+  transport: SMTP
+  host: ""
+  port: 587
+  secure: false
+  user: ""
+  passwordSecret:
+    name: ""
+    key: ""
+
 resources: {}
 nodeSelector: {}
 tolerations: []

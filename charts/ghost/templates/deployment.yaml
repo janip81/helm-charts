@@ -62,6 +62,25 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.database.passwordSecret.name }}
                   key: {{ .Values.database.passwordSecret.key }}
+            {{- if .Values.mail.enabled }}
+            - name: mail__transport
+              value: {{ .Values.mail.transport | quote }}
+            - name: mail__from
+              value: {{ .Values.mail.from | quote }}
+            - name: mail__options__host
+              value: {{ .Values.mail.host | quote }}
+            - name: mail__options__port
+              value: {{ .Values.mail.port | quote }}
+            - name: mail__options__secure
+              value: {{ .Values.mail.secure | quote }}
+            - name: mail__options__auth__user
+              value: {{ .Values.mail.user | quote }}
+            - name: mail__options__auth__pass
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mail.passwordSecret.name }}
+                  key: {{ .Values.mail.passwordSecret.key }}
+            {{- end }}
           startupProbe:
             httpGet:
               path: /
