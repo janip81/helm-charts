@@ -1,6 +1,6 @@
 # claude-memory
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 MCP memory server — mem0 + pgvector + Ollama embeddings
 
@@ -110,6 +110,7 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"ghcr.io/janip81/claude-memory"` | Image repository |
 | image.tag | string | `"latest"` | Image tag |
+| imagePullSecrets | list | `[]` | Image pull secrets for private registries (e.g. ghcr.io) |
 | mem0.userId | string | `"default"` | User ID namespace for stored memories |
 | ollama.baseUrl | string | `"http://ollama:11434"` | Ollama server URL |
 | ollama.embedModel | string | `"nomic-embed-text"` | Embedding model (must be pulled in Ollama) |
