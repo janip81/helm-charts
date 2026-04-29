@@ -18,10 +18,25 @@ service:
   # -- Service port
   port: 8080
 
+ui:
+  # -- Enable the memory browser UI (separate pod, same image)
+  enabled: true
+  # -- Port the UI listens on inside the container
+  port: 8081
+  # -- Hostname for the UI HTTPRoute (leave empty to share MCP hostname with path routing)
+  host: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
 gatewayApi:
   # -- Enable Gateway API HTTPRoute
   enabled: true
-  # -- Hostname for the HTTPRoute
+  # -- Hostname for the MCP HTTPRoute
   host: mem0-mcp.prod.example.com
   # -- Gateway parentRefs
   parentRefs:
