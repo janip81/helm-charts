@@ -14,3 +14,4 @@ spec:
       name: http
   selector:
     {{- include "claude-memory.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp
