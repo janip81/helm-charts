@@ -1991,6 +1991,35 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/castlist-0.1.0/castlist-0.1.0.tgz
     version: 0.1.0
+  claude-memory:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/claude-memory/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-04-29T12:00:08.986552988Z"
+    description: MCP memory server — mem0 + pgvector + Ollama embeddings
+    digest: eac5a0b7ed2b06ab0e938ca027c16d5150e406532ac4d482a6fc4cbd4688a532
+    home: https://github.com/janip81/helm-charts/tree/main/charts/claude-memory
+    keywords:
+    - mcp
+    - memory
+    - mem0
+    - pgvector
+    - ollama
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: claude-memory
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/claude-memory/
+    - https://github.com/janip81/claude-memory
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/claude-memory-0.1.0/claude-memory-0.1.0.tgz
+    version: 0.1.0
   cluster-autoscaler:
   - apiVersion: v2
     appVersion: 1.27.2
@@ -3650,4 +3679,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-28T10:22:22.987243176Z"
+generated: "2026-04-29T12:00:08.986905638Z"
