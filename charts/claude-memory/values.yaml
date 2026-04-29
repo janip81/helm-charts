@@ -1,0 +1,76 @@
+# -- Number of replicas
+replicaCount: 1
+
+image:
+  # -- Image repository
+  repository: ghcr.io/janip81/claude-memory
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag
+  tag: "latest"
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 8080
+
+gatewayApi:
+  # -- Enable Gateway API HTTPRoute
+  enabled: true
+  # -- Hostname for the HTTPRoute
+  host: mem0-mcp.prod.example.com
+  # -- Gateway parentRefs
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+
+resources:
+  requests:
+    # -- CPU request
+    cpu: 100m
+    # -- Memory request
+    memory: 256Mi
+  limits:
+    # -- CPU limit
+    cpu: 500m
+    # -- Memory limit
+    memory: 512Mi
+
+auth:
+  # -- Name of the Secret containing BEARER_TOKEN (pre-created or rendered by AVP)
+  secretName: claude-memory-auth
+
+ollama:
+  # -- Ollama server URL
+  baseUrl: "http://ollama:11434"
+  # -- Chat model for LLM operations
+  model: "qwen2.5:7b"
+  # -- Embedding model (must be pulled in Ollama)
+  embedModel: "nomic-embed-text"
+
+mem0:
+  # -- User ID namespace for stored memories
+  userId: "default"
+
+cnpg:
+  # -- Enable CNPG PostgreSQL cluster
+  enabled: true
+  # -- Number of CNPG instances
+  instances: 1
+  storage:
+    # -- Storage size for the CNPG cluster
+    size: 5Gi
+    # -- Storage class for the CNPG cluster
+    storageClass: ""
+  backup:
+    # -- Enable Barman S3 backup
+    enabled: false
+    # -- S3 destination path
+    destinationPath: "s3://my-bucket/claude-memory"
+    # -- S3 endpoint URL
+    endpointURL: "https://s3.example.com"
+    # -- Name of the Secret containing S3 credentials (keys: access-key-id, secret-access-key, region)
+    s3CredentialsSecret: cnpg-barman-s3-creds
+    # -- Backup retention policy
+    retentionPolicy: "30d"

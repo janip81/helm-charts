@@ -1,0 +1,24 @@
+apiVersion: v2
+name: claude-memory
+description: MCP memory server — mem0 + pgvector + Ollama embeddings
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/claude-memory
+keywords:
+  - mcp
+  - memory
+  - mem0
+  - pgvector
+  - ollama
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/claude-memory/
+  - https://github.com/janip81/claude-memory
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/claude-memory/

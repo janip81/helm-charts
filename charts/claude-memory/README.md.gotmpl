@@ -1,0 +1,91 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Helm chart for deploying [claude-memory](https://github.com/janip81/claude-memory) — a self-hosted MCP memory server built on [mem0](https://github.com/mem0ai/mem0), pgvector (via CNPG), and Ollama embeddings.
+
+Gives Claude Code persistent semantic memory across sessions. Facts are stored directly in pgvector and retrieved via semantic search — no LLM API calls required.
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo claude-memory
+```
+
+## Prerequisites
+
+- **Ollama** running and reachable with `nomic-embed-text` pulled:
+  ```bash
+  ollama pull nomic-embed-text
+  ```
+- **CNPG operator** installed in the cluster (for the managed PostgreSQL cluster)
+- A Kubernetes Secret with `BEARER_TOKEN` key (pre-created or via AVP):
+  ```bash
+  kubectl -n claude-memory create secret generic claude-memory-auth \
+    --from-literal=BEARER_TOKEN='your-token'
+  ```
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install claude-memory janip81/claude-memory \
+  --namespace claude-memory \
+  --create-namespace \
+  --set gatewayApi.host=mem0-mcp.your-domain.com \
+  --set ollama.baseUrl=http://your-ollama-host:11434 \
+  --set cnpg.storage.storageClass=your-storage-class
+```
+
+## Connecting Claude Code
+
+After deployment:
+
+```bash
+claude mcp add --transport http --scope user mem0-mcp https://mem0-mcp.your-domain.com/mcp
+```
+
+Enter the bearer token when prompted.
+
+## Gateway API (HTTPRoute)
+
+```yaml
+gatewayApi:
+  enabled: true
+  host: mem0-mcp.your-domain.com
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+```
+
+## CNPG Backup (Barman S3)
+
+```yaml
+cnpg:
+  backup:
+    enabled: true
+    destinationPath: s3://my-bucket/claude-memory
+    endpointURL: https://s3.example.com
+    s3CredentialsSecret: cnpg-barman-s3-creds
+    retentionPolicy: "30d"
+```
+
+The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key`, `region`.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
