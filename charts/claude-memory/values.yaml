@@ -28,10 +28,10 @@ ui:
   resources:
     requests:
       cpu: 50m
-      memory: 128Mi
+      memory: 64Mi
     limits:
       cpu: 200m
-      memory: 256Mi
+      memory: 128Mi
 
 gatewayApi:
   # -- Enable Gateway API HTTPRoute

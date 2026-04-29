@@ -36,21 +36,15 @@ spec:
               containerPort: {{ .Values.ui.port }}
               protocol: TCP
           env:
-            - name: DATABASE_URL
-              value: "postgresql://mem0:$(DB_PASSWORD)@{{ include "claude-memory.fullname" . }}-pg-rw:5432/mem0"
-            - name: DB_PASSWORD
+            - name: MCP_INTERNAL_URL
+              value: "http://{{ include "claude-memory.fullname" . }}:{{ .Values.service.port }}"
+            - name: BEARER_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "claude-memory.fullname" . }}-pg-app
-                  key: password
-            - name: OLLAMA_BASE_URL
-              value: {{ .Values.ollama.baseUrl | quote }}
-            - name: OLLAMA_MODEL
-              value: {{ .Values.ollama.model | quote }}
-            - name: OLLAMA_EMBED_MODEL
-              value: {{ .Values.ollama.embedModel | quote }}
-            - name: MEM0_USER_ID
-              value: {{ .Values.mem0.userId | quote }}
+                  name: {{ .Values.auth.secretName }}
+                  key: BEARER_TOKEN
+            - name: UI_PORT
+              value: {{ .Values.ui.port | quote }}
           livenessProbe:
             httpGet:
               path: /health
