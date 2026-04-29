@@ -39,13 +39,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.auth.secretName }}
                   key: BEARER_TOKEN
-            - name: DATABASE_URL
-              value: "postgresql://mem0:$(DB_PASSWORD)@{{ include "claude-memory.fullname" . }}-pg-rw:5432/mem0"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "claude-memory.fullname" . }}-pg-app
                   key: password
+            - name: DATABASE_URL
+              value: "postgresql://mem0:$(DB_PASSWORD)@{{ include "claude-memory.fullname" . }}-pg-rw:5432/mem0"
             - name: OLLAMA_BASE_URL
               value: {{ .Values.ollama.baseUrl | quote }}
             - name: OLLAMA_MODEL
