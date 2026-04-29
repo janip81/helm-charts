@@ -1,6 +1,9 @@
 # -- Number of replicas
 replicaCount: 1
 
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+imagePullSecrets: []
+
 image:
   # -- Image repository
   repository: ghcr.io/janip81/claude-memory
