@@ -1,0 +1,126 @@
+# -- Number of replicas
+replicaCount: 1
+
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+imagePullSecrets: []
+
+image:
+  # -- Image repository
+  repository: ghcr.io/janip81/remnant
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag
+  tag: "latest"
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 8080
+
+ui:
+  # -- Enable the memory browser UI (separate pod, separate image)
+  enabled: true
+  # -- Port the UI listens on inside the container
+  port: 8081
+  # -- Hostname for the UI HTTPRoute (leave empty to share MCP hostname with path routing)
+  host: ""
+  image:
+    # -- UI image repository (separate from MCP image)
+    repository: ghcr.io/janip81/remnant-ui
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+    # -- Image tag
+    tag: "latest"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+gatewayApi:
+  # -- Enable Gateway API HTTPRoute
+  enabled: true
+  # -- Hostname for the MCP HTTPRoute
+  host: remnant-mcp.prod.example.com
+  # -- Gateway parentRefs
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+
+resources:
+  requests:
+    # -- CPU request
+    cpu: 100m
+    # -- Memory request
+    memory: 256Mi
+  limits:
+    # -- CPU limit
+    cpu: 500m
+    # -- Memory limit
+    memory: 512Mi
+
+auth:
+  # -- Name of the Secret containing BEARER_TOKEN (pre-created or rendered by AVP)
+  secretName: remnant-auth
+
+ollama:
+  # -- Ollama server URL
+  baseUrl: "http://ollama:11434"
+  # -- Chat model for LLM operations
+  model: "qwen2.5:7b"
+  # -- Embedding model (must be pulled in Ollama)
+  embedModel: "nomic-embed-text"
+
+mem0:
+  # -- User ID namespace for stored memories
+  userId: "default"
+  # -- Default agent ID tag (overridden per client via X-Agent-ID header)
+  agentId: "default"
+  # -- Enable LLM extraction and deduplication on add_memory calls
+  infer: "true"
+
+dedup:
+  # -- Enable the deduplication CronJob
+  enabled: true
+  # -- Cron schedule (default: 03:30 daily, after CNPG backup window)
+  schedule: "30 3 * * *"
+  # -- Cosine similarity threshold for semantic near-dedup (0–1, higher = stricter)
+  semanticThreshold: "0.92"
+  # -- Suspend the CronJob without deleting it
+  suspend: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+cnpg:
+  # -- Enable CNPG PostgreSQL cluster
+  enabled: true
+  # -- Number of CNPG instances
+  instances: 1
+  # -- PostgreSQL database name (also used as the owner role name for new clusters)
+  database: remnant
+  # -- PostgreSQL owner role (override to match existing cluster if migrating)
+  owner: remnant
+  storage:
+    # -- Storage size for the CNPG cluster
+    size: 5Gi
+    # -- Storage class for the CNPG cluster
+    storageClass: ""
+  backup:
+    # -- Enable Barman S3 backup
+    enabled: false
+    # -- S3 destination path
+    destinationPath: "s3://my-bucket/remnant"
+    # -- S3 endpoint URL
+    endpointURL: "https://s3.example.com"
+    # -- Name of the Secret containing S3 credentials (keys: access-key-id, secret-access-key, region)
+    s3CredentialsSecret: cnpg-barman-s3-creds
+    # -- Backup retention policy
+    retentionPolicy: "30d"
