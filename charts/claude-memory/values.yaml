@@ -82,6 +82,23 @@ mem0:
   # -- Enable LLM extraction and deduplication on add_memory calls
   infer: "true"
 
+dedup:
+  # -- Enable the deduplication CronJob
+  enabled: true
+  # -- Cron schedule (default: 03:30 daily, after CNPG backup window)
+  schedule: "30 3 * * *"
+  # -- Cosine similarity threshold for semantic near-dedup (0–1, higher = stricter)
+  semanticThreshold: "0.92"
+  # -- Suspend the CronJob without deleting it
+  suspend: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
 cnpg:
   # -- Enable CNPG PostgreSQL cluster
   enabled: true
