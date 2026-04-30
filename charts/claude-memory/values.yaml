@@ -77,6 +77,10 @@ ollama:
 mem0:
   # -- User ID namespace for stored memories
   userId: "default"
+  # -- Default agent ID tag (overridden per client via X-Agent-ID header)
+  agentId: "default"
+  # -- Enable LLM extraction and deduplication on add_memory calls
+  infer: "true"
 
 cnpg:
   # -- Enable CNPG PostgreSQL cluster
