@@ -3546,6 +3546,37 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.0/n8n-0.1.0.tgz
     version: 0.1.0
+  remnant:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-04-30T13:10:08.178490096Z"
+    description: Remnant — a shared local memory layer for stateless AI agents
+    digest: 351ade4de356982131e376026814f87331275a6c2f3cd39e234e478979f380e4
+    home: https://github.com/janip81/helm-charts/tree/main/charts/remnant
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/main/charts/remnant/icon.png
+    keywords:
+    - mcp
+    - memory
+    - remnant
+    - pgvector
+    - ollama
+    - ai
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: remnant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    - https://github.com/janip81/remnant
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/remnant-0.2.0/remnant-0.2.0.tgz
+    version: 0.2.0
   unifi-network-application:
   - annotations:
       artifacthub.io/links: |
@@ -3931,4 +3962,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-30T10:26:38.119783853Z"
+generated: "2026-04-30T13:10:08.178663737Z"
