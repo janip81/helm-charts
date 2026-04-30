@@ -54,6 +54,10 @@ spec:
               value: {{ .Values.ollama.embedModel | quote }}
             - name: MEM0_USER_ID
               value: {{ .Values.mem0.userId | quote }}
+            - name: MEM0_AGENT_ID
+              value: {{ .Values.mem0.agentId | quote }}
+            - name: MEM0_INFER
+              value: {{ .Values.mem0.infer | quote }}
           livenessProbe:
             httpGet:
               path: /health
