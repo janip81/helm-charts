@@ -1,6 +1,6 @@
 # claude-memory
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 MCP memory server — mem0 + pgvector + Ollama embeddings
 
@@ -104,6 +104,14 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | cnpg.instances | int | `1` | Number of CNPG instances |
 | cnpg.storage.size | string | `"5Gi"` | Storage size for the CNPG cluster |
 | cnpg.storage.storageClass | string | `""` | Storage class for the CNPG cluster |
+| dedup.enabled | bool | `true` | Enable the deduplication CronJob |
+| dedup.resources.limits.cpu | string | `"500m"` |  |
+| dedup.resources.limits.memory | string | `"256Mi"` |  |
+| dedup.resources.requests.cpu | string | `"100m"` |  |
+| dedup.resources.requests.memory | string | `"128Mi"` |  |
+| dedup.schedule | string | `"30 3 * * *"` | Cron schedule (default: 03:30 daily, after CNPG backup window) |
+| dedup.semanticThreshold | string | `"0.92"` | Cosine similarity threshold for semantic near-dedup (0–1, higher = stricter) |
+| dedup.suspend | bool | `false` | Suspend the CronJob without deleting it |
 | gatewayApi.enabled | bool | `true` | Enable Gateway API HTTPRoute |
 | gatewayApi.host | string | `"mem0-mcp.prod.example.com"` | Hostname for the MCP HTTPRoute |
 | gatewayApi.parentRefs | list | `[{"name":"internal-shared","namespace":"kube-system"}]` | Gateway parentRefs |
@@ -111,6 +119,8 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | image.repository | string | `"ghcr.io/janip81/claude-memory"` | Image repository |
 | image.tag | string | `"latest"` | Image tag |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries (e.g. ghcr.io) |
+| mem0.agentId | string | `"default"` | Default agent ID tag (overridden per client via X-Agent-ID header) |
+| mem0.infer | string | `"true"` | Enable LLM extraction and deduplication on add_memory calls |
 | mem0.userId | string | `"default"` | User ID namespace for stored memories |
 | ollama.baseUrl | string | `"http://ollama:11434"` | Ollama server URL |
 | ollama.embedModel | string | `"nomic-embed-text"` | Embedding model (must be pulled in Ollama) |
@@ -122,8 +132,11 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | resources.requests.memory | string | `"256Mi"` | Memory request |
 | service.port | int | `8080` | Service port |
 | service.type | string | `"ClusterIP"` | Service type |
-| ui.enabled | bool | `true` | Enable the memory browser UI (separate pod, same image) |
+| ui.enabled | bool | `true` | Enable the memory browser UI (separate pod, separate image) |
 | ui.host | string | `""` | Hostname for the UI HTTPRoute (leave empty to share MCP hostname with path routing) |
+| ui.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| ui.image.repository | string | `"ghcr.io/janip81/claude-memory-ui"` | UI image repository (separate from MCP image) |
+| ui.image.tag | string | `"latest"` | Image tag |
 | ui.port | int | `8081` | Port the UI listens on inside the container |
 | ui.resources.limits.cpu | string | `"200m"` |  |
 | ui.resources.limits.memory | string | `"128Mi"` |  |
