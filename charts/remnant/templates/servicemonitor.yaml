@@ -1,0 +1,29 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "remnant.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "remnant.labels" . | nindent 4 }}
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  selector:
+    matchLabels:
+      {{- include "remnant.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames: ["{{ .Release.Namespace }}"]
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: {{ .Values.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      metricRelabelings:
+        - action: replace
+          replacement: {{ .Values.serviceMonitor.clusterLabel | default .Release.Namespace }}
+          targetLabel: k8s_cluster
+{{- end }}

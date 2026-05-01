@@ -99,6 +99,18 @@ dedup:
       cpu: 500m
       memory: 256Mi
 
+serviceMonitor:
+  # -- Enable Prometheus ServiceMonitor
+  enabled: false
+  # -- Additional labels (e.g. release: my-prometheus) to match your Prometheus operator selector
+  labels: {}
+  # -- Scrape interval
+  interval: 30s
+  # -- Scrape timeout
+  scrapeTimeout: 10s
+  # -- Value for the k8s_cluster relabel (defaults to Release.Namespace if unset)
+  clusterLabel: ""
+
 cnpg:
   # -- Enable CNPG PostgreSQL cluster
   enabled: true
