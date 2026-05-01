@@ -3553,6 +3553,36 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
     apiVersion: v2
     appVersion: 0.2.0
+    created: "2026-05-01T19:03:26.460212665Z"
+    description: Remnant — a shared local memory layer for stateless AI agents
+    digest: fd4ae004d81a4cd408d47e1ae73e2130864a3bc8112f58527ee8fd797ba6d8b8
+    home: https://github.com/janip81/helm-charts/tree/main/charts/remnant
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/main/charts/remnant/icon.png
+    keywords:
+    - mcp
+    - memory
+    - remnant
+    - pgvector
+    - ollama
+    - ai
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: remnant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    - https://github.com/janip81/remnant
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/remnant-0.2.1/remnant-0.2.1.tgz
+    version: 0.2.1
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    apiVersion: v2
+    appVersion: 0.2.0
     created: "2026-04-30T13:10:08.178490096Z"
     description: Remnant — a shared local memory layer for stateless AI agents
     digest: 351ade4de356982131e376026814f87331275a6c2f3cd39e234e478979f380e4
@@ -3962,4 +3992,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-30T13:10:08.178663737Z"
+generated: "2026-05-01T19:03:26.460504161Z"
