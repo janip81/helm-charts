@@ -65,6 +65,9 @@ spec:
                 - src/scripts/dedup_job.py
                 - --threshold
                 - {{ .Values.dedup.semanticThreshold | quote }}
+              envFrom:
+                - configMapRef:
+                    name: {{ include "remnant.fullname" . }}-settings
               env:
                 - name: DB_PASSWORD
                   valueFrom:

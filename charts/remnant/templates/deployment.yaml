@@ -31,6 +31,9 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "remnant.fullname" . }}-settings
           env:
             - name: APP_PORT
               value: "8080"
