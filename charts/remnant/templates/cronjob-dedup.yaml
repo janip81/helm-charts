@@ -55,7 +55,7 @@ spec:
                       name: {{ include "remnant.fullname" . }}-pg-app
                       key: password
                 - name: DATABASE_URL
-                  value: "postgresql://mem0:$(DB_PASSWORD)@{{ include "remnant.fullname" . }}-pg-rw:5432/mem0"
+                  value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "remnant.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
           containers:
             - name: dedup
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -72,7 +72,7 @@ spec:
                       name: {{ include "remnant.fullname" . }}-pg-app
                       key: password
                 - name: DATABASE_URL
-                  value: "postgresql://mem0:$(DB_PASSWORD)@{{ include "remnant.fullname" . }}-pg-rw:5432/mem0"
+                  value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "remnant.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
                 - name: OLLAMA_BASE_URL
                   value: {{ .Values.ollama.baseUrl | quote }}
                 - name: OLLAMA_MODEL

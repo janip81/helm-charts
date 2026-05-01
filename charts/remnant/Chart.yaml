@@ -2,7 +2,7 @@ apiVersion: v2
 name: remnant
 description: Remnant — a shared local memory layer for stateless AI agents
 type: application
-version: 0.2.0
+version: 0.2.1
 appVersion: "0.2.0"
 icon: https://raw.githubusercontent.com/janip81/helm-charts/main/charts/remnant/icon.png
 home: https://github.com/janip81/helm-charts/tree/main/charts/remnant
