@@ -61,6 +61,15 @@ spec:
               value: {{ .Values.mem0.agentId | quote }}
             - name: MEM0_INFER
               value: {{ .Values.mem0.infer | quote }}
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redis.passwordSecret.name }}
+                  key: {{ .Values.redis.passwordSecret.key }}
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /health

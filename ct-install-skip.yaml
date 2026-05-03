@@ -10,4 +10,5 @@ excluded-charts:
   - unifi-network-application
   - ghost
   - n8n
+  - remnant
 helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"

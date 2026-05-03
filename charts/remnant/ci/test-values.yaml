@@ -1,0 +1,20 @@
+cnpg:
+  enabled: false
+
+redis:
+  enabled: false
+
+gatewayApi:
+  enabled: false
+
+ui:
+  enabled: false
+
+serviceMonitor:
+  enabled: false
+
+auth:
+  secretName: remnant-auth-ci
+
+dedup:
+  enabled: false
