@@ -117,6 +117,21 @@ serviceMonitor:
   # -- Value for the k8s_cluster relabel (defaults to Release.Namespace if unset)
   clusterLabel: ""
 
+redis:
+  # -- Enable Redis-backed async queue for add_memory (offloads Ollama LLM extraction to background, returns immediately)
+  enabled: false
+  # -- Redis host (master service)
+  host: redis-replication-master.redis.svc
+  # -- Redis port
+  port: 6379
+  # -- Redis database number
+  db: 0
+  passwordSecret:
+    # -- Name of an existing Secret in the same namespace containing the Redis password
+    name: ""
+    # -- Key within the secret
+    key: password
+
 cnpg:
   # -- Enable CNPG PostgreSQL cluster
   enabled: true
