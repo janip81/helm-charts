@@ -1,6 +1,6 @@
 # remnant
 
-![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Remnant — a shared local memory layer for stateless AI agents
 
@@ -127,6 +127,12 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | ollama.baseUrl | string | `"http://ollama:11434"` | Ollama server URL |
 | ollama.embedModel | string | `"nomic-embed-text"` | Embedding model (must be pulled in Ollama) |
 | ollama.model | string | `"qwen2.5:7b"` | Chat model for LLM operations |
+| redis.db | int | `0` | Redis database number |
+| redis.enabled | bool | `false` | Enable Redis-backed async queue for add_memory (offloads Ollama LLM extraction to background, returns immediately) |
+| redis.host | string | `"redis-replication-master.redis.svc"` | Redis host (master service) |
+| redis.passwordSecret.key | string | `"password"` | Key within the secret |
+| redis.passwordSecret.name | string | `""` | Name of an existing Secret in the same namespace containing the Redis password |
+| redis.port | int | `6379` | Redis port |
 | replicaCount | int | `1` | Number of replicas |
 | resources.limits.cpu | string | `"500m"` | CPU limit |
 | resources.limits.memory | string | `"512Mi"` | Memory limit |
