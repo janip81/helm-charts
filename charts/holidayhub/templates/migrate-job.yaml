@@ -45,7 +45,7 @@ spec:
           args:
             - |
               echo "Running prisma migrate deploy..."
-              node /app/node_modules/.bin/prisma migrate deploy --schema=/app/prisma/schema.prisma
+              node /app/node_modules/prisma/build/index.js migrate deploy --schema=/app/prisma/schema.prisma
           resources:
             {{- toYaml .Values.migrations.resources | nindent 12 }}
 {{- end }}
