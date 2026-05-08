@@ -2540,6 +2540,36 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/ghost-0.1.0/ghost-0.1.0.tgz
     version: 0.1.0
+  holidayhub:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-05-08T12:07:54.441969717Z"
+    description: Private vacation and travel management dashboard
+    digest: 9ab5de57bc856f625d40c809f7bb34c3d7f44d80eb7ab185cde6efbd6af2096a
+    home: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub
+    keywords:
+    - holidayhub
+    - vacation
+    - travel
+    - planner
+    - nextjs
+    - prisma
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: holidayhub
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/
+    - https://github.com/janip81/holidayhub
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/holidayhub-0.1.0/holidayhub-0.1.0.tgz
+    version: 0.1.0
   home-assistant:
   - annotations:
       artifacthub.io/links: |
@@ -4110,4 +4140,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.0/worklog-0.1.0.tgz
     version: 0.1.0
-generated: "2026-05-03T14:10:45.549732029Z"
+generated: "2026-05-08T12:07:54.442344357Z"
