@@ -1,0 +1,22 @@
+HolidayHub has been deployed.
+
+{{- if .Values.gatewayApi.enabled }}
+App URL: https://{{ .Values.gatewayApi.host }}
+{{- end }}
+
+{{- if .Values.cnpg.enabled }}
+
+PostgreSQL: CNPG cluster {{ include "holidayhub.fullname" . }}-pg is being provisioned.
+Wait for it to be ready before enabling migrations:
+  kubectl -n {{ .Release.Namespace }} get cluster {{ include "holidayhub.fullname" . }}-pg
+{{- end }}
+
+{{- if .Values.migrations.enabled }}
+
+Prisma migrations are enabled and will run as a pre-upgrade hook.
+{{- else }}
+
+Migrations are disabled. To run them manually:
+  kubectl -n {{ .Release.Namespace }} exec deploy/{{ include "holidayhub.fullname" . }} -- \
+    node /app/node_modules/.bin/prisma migrate deploy --schema=/app/prisma/schema.prisma
+{{- end }}

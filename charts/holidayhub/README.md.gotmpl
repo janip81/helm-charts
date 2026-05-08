@@ -1,0 +1,113 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Helm chart for deploying [HolidayHub](https://github.com/janip81/holidayhub) — a self-hosted private family travel planning dashboard.
+
+Built with Next.js 14, TypeScript, Material UI, Prisma ORM, and PostgreSQL (via CNPG). Supports multi-user trip sharing with role-based access (OWNER / EDITOR / VIEWER).
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo holidayhub
+```
+
+## Prerequisites
+
+- **CNPG operator** installed in the cluster (for the managed PostgreSQL cluster, if `cnpg.enabled: true`)
+- A Kubernetes Secret with `NEXTAUTH_SECRET` key (pre-created or via AVP):
+  ```bash
+  kubectl -n holidayhub create secret generic holidayhub-secret \
+    --from-literal=NEXTAUTH_SECRET='$(openssl rand -base64 32)'
+  ```
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install holidayhub janip81/holidayhub \
+  --namespace holidayhub \
+  --create-namespace \
+  --set gatewayApi.host=holidayhub.example.com \
+  --set env.NEXTAUTH_URL=https://holidayhub.example.com \
+  --set cnpg.storage.storageClass=your-storage-class
+```
+
+## Gateway API (HTTPRoute)
+
+```yaml
+gatewayApi:
+  enabled: true
+  host: holidayhub.your-domain.com
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+```
+
+## Prisma Migrations
+
+Enable the pre-upgrade migration Job to run `prisma migrate deploy` before each rollout:
+
+```yaml
+migrations:
+  enabled: true
+```
+
+The Job uses the same container image as the app, so it picks up the current schema automatically.
+
+## Secret Management (ArgoCD Vault Plugin)
+
+Set `secret.create: false` to let AVP manage the secret:
+
+```yaml
+secret:
+  create: false
+```
+
+Then provide a secret via your cluster-config path:
+
+```yaml
+# cluster-config/holidayhub/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: holidayhub-secret
+  namespace: holidayhub
+  annotations:
+    avp.kubernetes.io/path: "kubernetes/data/prod-k8s/holidayhub"
+type: Opaque
+stringData:
+  NEXTAUTH_SECRET: <path:kubernetes/data/prod-k8s/holidayhub#nextauth-secret>
+```
+
+## CNPG Backup (Barman S3)
+
+```yaml
+cnpg:
+  backup:
+    enabled: true
+    destinationPath: s3://my-bucket/holidayhub
+    endpointURL: https://s3.example.com
+    s3CredentialsSecret: cnpg-barman-s3-creds
+    retentionPolicy: "30d"
+```
+
+The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key`, `region`.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

@@ -1,0 +1,25 @@
+apiVersion: v2
+name: holidayhub
+description: Private vacation and travel management dashboard
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub
+keywords:
+  - holidayhub
+  - vacation
+  - travel
+  - planner
+  - nextjs
+  - prisma
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/
+  - https://github.com/janip81/holidayhub
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/

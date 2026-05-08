@@ -1,0 +1,130 @@
+# -- Number of replicas (keep at 1 — NextAuth.js sessions are node-local by default)
+replicaCount: 1
+
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+imagePullSecrets: []
+
+image:
+  # -- Image repository
+  repository: ghcr.io/janip81/holidayhub
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag (pin to a SHA in GitOps)
+  tag: "latest"
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port (Next.js listens on 3000)
+  port: 3000
+
+# -- Non-secret environment variables injected via ConfigMap
+env:
+  NODE_ENV: "production"
+  NEXT_TELEMETRY_DISABLED: "1"
+  # -- Public URL of the app — must match the Gateway hostname
+  NEXTAUTH_URL: "https://holidayhub.example.com"
+
+# -- Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config)
+secret:
+  # -- Create the secret from secretEnv values. Set false when AVP manages it.
+  create: true
+
+# -- Secret env vars. Used when secret.create: true. Override with AVP refs via cluster-config when secret.create: false.
+secretEnv:
+  # -- NextAuth.js signing/encryption secret. Generate with: openssl rand -base64 32
+  NEXTAUTH_SECRET: "changeme"
+  # -- Full Prisma DATABASE_URL (used when cnpg.enabled: false)
+  DATABASE_URL: "postgresql://holidayhub:changeme@localhost:5432/holidayhub"
+
+# -- Prisma migrate Job (pre-install/pre-upgrade hook). Runs: prisma migrate deploy
+migrations:
+  # -- Enable the migration Job
+  enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+gatewayApi:
+  # -- Enable Gateway API HTTPRoute
+  enabled: true
+  # -- Hostname for the HTTPRoute
+  host: holidayhub.example.com
+  # -- Gateway parentRefs
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+      kind: Gateway
+      group: gateway.networking.k8s.io
+
+resources:
+  requests:
+    # -- CPU request
+    cpu: 100m
+    # -- Memory request
+    memory: 256Mi
+  limits:
+    # -- CPU limit
+    cpu: 500m
+    # -- Memory limit
+    memory: 512Mi
+
+serviceMonitor:
+  # -- Enable Prometheus ServiceMonitor
+  enabled: false
+  # -- Additional labels to match your Prometheus operator selector
+  labels: {}
+  # -- Scrape interval
+  interval: 30s
+  # -- Scrape timeout
+  scrapeTimeout: 10s
+  # -- Metrics path
+  path: /api/metrics
+  # -- Value for k8s_cluster relabel (defaults to Release.Namespace if empty)
+  clusterLabel: ""
+
+hpa:
+  # -- Enable HorizontalPodAutoscaler
+  enabled: false
+  # -- Minimum replicas
+  minReplicas: 1
+  # -- Maximum replicas
+  maxReplicas: 3
+  # -- CPU utilisation target
+  targetCPUUtilizationPercentage: 80
+
+cnpg:
+  # -- Enable a dedicated CloudNativePG cluster for this app. Leave false to use an external/shared database and provide DATABASE_URL via secret.
+  enabled: false
+  # -- Number of CNPG instances
+  instances: 1
+  # -- PostgreSQL database name
+  database: holidayhub
+  # -- PostgreSQL owner role
+  owner: holidayhub
+  storage:
+    # -- PVC size
+    size: 5Gi
+    # -- StorageClass (leave empty to use cluster default)
+    storageClass: ""
+  backup:
+    # -- Enable Barman S3 backup
+    enabled: false
+    # -- S3 destination path
+    destinationPath: "s3://my-bucket/holidayhub"
+    # -- S3 endpoint URL
+    endpointURL: "https://s3.example.com"
+    # -- Secret with S3 credentials (keys: access-key-id, secret-access-key, region)
+    s3CredentialsSecret: cnpg-barman-s3-creds
+    # -- Backup retention policy
+    retentionPolicy: "30d"
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

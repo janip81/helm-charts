@@ -1,0 +1,51 @@
+{{- if .Values.migrations.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "holidayhub.fullname" . }}-migrate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "holidayhub.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "holidayhub.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "holidayhub.fullname" . }}-config
+            - secretRef:
+                name: {{ include "holidayhub.fullname" . }}-secret
+          {{- if .Values.cnpg.enabled }}
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "holidayhub.fullname" . }}-pg-app
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "holidayhub.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
+          {{- end }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Running prisma migrate deploy..."
+              node /app/node_modules/.bin/prisma migrate deploy --schema=/app/prisma/schema.prisma
+          resources:
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
+{{- end }}
