@@ -123,6 +123,16 @@ cnpg:
     # -- Backup retention policy
     retentionPolicy: "30d"
 
+persistence:
+  # -- Enable a PersistentVolumeClaim for document uploads. Required in production.
+  enabled: false
+  # -- PVC size
+  size: 5Gi
+  # -- StorageClass (leave empty to use cluster default)
+  storageClass: ""
+  # -- Access mode — use ReadWriteOnce for single-replica deployments
+  accessMode: ReadWriteOnce
+
 podAnnotations: {}
 podLabels: {}
 nodeSelector: {}
