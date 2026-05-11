@@ -2,7 +2,7 @@ apiVersion: v2
 name: holidayhub
 description: Private vacation and travel management dashboard
 type: application
-version: 0.1.2
+version: 0.1.3
 appVersion: "0.1.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub
 keywords:

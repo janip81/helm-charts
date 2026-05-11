@@ -30,6 +30,30 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            runAsUser: 0
+          command: ["/bin/sh", "-c"]
+          args:
+            - node /app/node_modules/prisma/build/index.js migrate deploy --schema=/app/prisma/schema.prisma
+          envFrom:
+            - configMapRef:
+                name: {{ include "holidayhub.fullname" . }}-config
+            - secretRef:
+                name: {{ include "holidayhub.fullname" . }}-secret
+          {{- if .Values.cnpg.enabled }}
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "holidayhub.fullname" . }}-pg-app
+                  key: password
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "holidayhub.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
+          {{- end }}
       containers:
         - name: holidayhub
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
