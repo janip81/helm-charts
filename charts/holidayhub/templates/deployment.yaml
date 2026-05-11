@@ -34,8 +34,6 @@ spec:
         - name: migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            runAsUser: 0
           command: ["/bin/sh", "-c"]
           args:
             - node /app/node_modules/prisma/build/index.js migrate deploy --schema=/app/prisma/schema.prisma
