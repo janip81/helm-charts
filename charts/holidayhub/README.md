@@ -1,6 +1,6 @@
 # holidayhub
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Private vacation and travel management dashboard
 
@@ -144,6 +144,10 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | migrations | object | `{"enabled":false,"resources":{"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}}` | Prisma migrate Job (pre-install/pre-upgrade hook). Runs: prisma migrate deploy |
 | migrations.enabled | bool | `false` | Enable the migration Job |
 | nodeSelector | object | `{}` |  |
+| persistence.accessMode | string | `"ReadWriteOnce"` | Access mode — use ReadWriteOnce for single-replica deployments |
+| persistence.enabled | bool | `false` | Enable a PersistentVolumeClaim for document uploads. Required in production. |
+| persistence.size | string | `"5Gi"` | PVC size |
+| persistence.storageClass | string | `""` | StorageClass (leave empty to use cluster default) |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | replicaCount | int | `1` | Number of replicas (keep at 1 — NextAuth.js sessions are node-local by default) |
@@ -151,13 +155,18 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | resources.limits.memory | string | `"512Mi"` | Memory limit |
 | resources.requests.cpu | string | `"100m"` | CPU request |
 | resources.requests.memory | string | `"256Mi"` | Memory request |
+| s3.bucket | string | `""` |  |
+| s3.endpoint | string | `""` | Leave endpoint empty to use local disk (persistence.enabled must be true in that case). |
+| s3.region | string | `"garage"` |  |
 | secret | object | `{"create":true}` | Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config) |
 | secret.create | bool | `true` | Create the secret from secretEnv values. Set false when AVP manages it. |
-| secretEnv | object | `{"DATABASE_URL":"postgresql://holidayhub:changeme@localhost:5432/holidayhub","NEXTAUTH_SECRET":"changeme"}` | Secret env vars. Used when secret.create: true. Override with AVP refs via cluster-config when secret.create: false. |
+| secretEnv | object | `{"DATABASE_URL":"postgresql://holidayhub:changeme@localhost:5432/holidayhub","NEXTAUTH_SECRET":"changeme","SPOTIFY_CLIENT_ID":"","SPOTIFY_CLIENT_SECRET":""}` | Secret env vars. Used when secret.create: true. Override with AVP refs via cluster-config when secret.create: false. |
 | secretEnv.DATABASE_URL | string | `"postgresql://holidayhub:changeme@localhost:5432/holidayhub"` | Full Prisma DATABASE_URL (used when cnpg.enabled: false) |
 | secretEnv.NEXTAUTH_SECRET | string | `"changeme"` | NextAuth.js signing/encryption secret. Generate with: openssl rand -base64 32 |
+| secretEnv.SPOTIFY_CLIENT_ID | string | `""` | Register at https://developer.spotify.com/dashboard |
 | service.port | int | `3000` | Service port (Next.js listens on 3000) |
 | service.type | string | `"ClusterIP"` | Service type |
+| serviceMonitor.bearerTokenSecret | object | `{"key":"","name":""}` | Secret containing METRICS_BEARER_TOKEN for Prometheus scraping |
 | serviceMonitor.clusterLabel | string | `""` | Value for k8s_cluster relabel (defaults to Release.Namespace if empty) |
 | serviceMonitor.enabled | bool | `false` | Enable Prometheus ServiceMonitor |
 | serviceMonitor.interval | string | `"30s"` | Scrape interval |

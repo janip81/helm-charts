@@ -22,6 +22,12 @@ spec:
       path: {{ .Values.serviceMonitor.path }}
       interval: {{ .Values.serviceMonitor.interval }}
       scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
+      {{- if .Values.serviceMonitor.bearerTokenSecret.name }}
+      authorization:
+        credentials:
+          name: {{ .Values.serviceMonitor.bearerTokenSecret.name }}
+          key:  {{ .Values.serviceMonitor.bearerTokenSecret.key }}
+      {{- end }}
       metricRelabelings:
         - action: replace
           replacement: {{ .Values.serviceMonitor.clusterLabel | default .Release.Namespace }}

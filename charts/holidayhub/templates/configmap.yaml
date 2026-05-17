@@ -9,3 +9,8 @@ data:
   {{- range $k, $v := .Values.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
+  {{- if .Values.s3.endpoint }}
+  S3_ENDPOINT: {{ .Values.s3.endpoint | quote }}
+  S3_BUCKET:   {{ .Values.s3.bucket | quote }}
+  S3_REGION:   {{ .Values.s3.region | default "garage" | quote }}
+  {{- end }}
