@@ -36,6 +36,10 @@ secretEnv:
   NEXTAUTH_SECRET: "changeme"
   # -- Full Prisma DATABASE_URL (used when cnpg.enabled: false)
   DATABASE_URL: "postgresql://holidayhub:changeme@localhost:5432/holidayhub"
+  # -- Spotify OAuth app credentials (optional — leave empty to disable Spotify integration)
+  # -- Register at https://developer.spotify.com/dashboard
+  SPOTIFY_CLIENT_ID: ""
+  SPOTIFY_CLIENT_SECRET: ""
 
 # -- Prisma migrate Job (pre-install/pre-upgrade hook). Runs: prisma migrate deploy
 migrations:
@@ -86,6 +90,10 @@ serviceMonitor:
   path: /api/metrics
   # -- Value for k8s_cluster relabel (defaults to Release.Namespace if empty)
   clusterLabel: ""
+  # -- Secret containing METRICS_BEARER_TOKEN for Prometheus scraping
+  bearerTokenSecret:
+    name: ""   # e.g. holidayhub-secret
+    key: ""    # e.g. METRICS_BEARER_TOKEN
 
 hpa:
   # -- Enable HorizontalPodAutoscaler
@@ -122,6 +130,14 @@ cnpg:
     s3CredentialsSecret: cnpg-barman-s3-creds
     # -- Backup retention policy
     retentionPolicy: "30d"
+
+s3:
+  # -- S3-compatible endpoint for document uploads (e.g. Garage, MinIO, AWS S3).
+  # -- Leave endpoint empty to use local disk (persistence.enabled must be true in that case).
+  endpoint: ""
+  bucket: ""
+  region: "garage"
+  # -- Credentials go in secretEnv.S3_ACCESS_KEY / S3_SECRET_KEY (never in values.yaml)
 
 persistence:
   # -- Enable a PersistentVolumeClaim for document uploads. Required in production.
