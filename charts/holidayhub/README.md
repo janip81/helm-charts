@@ -1,6 +1,6 @@
 # holidayhub
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Private vacation and travel management dashboard
 
@@ -128,11 +128,11 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | cnpg.owner | string | `"holidayhub"` | PostgreSQL owner role |
 | cnpg.storage.size | string | `"5Gi"` | PVC size |
 | cnpg.storage.storageClass | string | `""` | StorageClass (leave empty to use cluster default) |
-| env | object | `{"NEXTAUTH_URL":"https://holidayhub.example.com","NEXT_TELEMETRY_DISABLED":"1","NODE_ENV":"production"}` | Non-secret environment variables injected via ConfigMap |
-| env.NEXTAUTH_URL | string | `"https://holidayhub.example.com"` | Public URL of the app — must match the Gateway hostname |
+| env | object | `{"NEXTAUTH_URL":"https://holidayhub.threshold.se","NEXT_TELEMETRY_DISABLED":"1","NODE_ENV":"production"}` | Non-secret environment variables injected via ConfigMap |
+| env.NEXTAUTH_URL | string | `"https://holidayhub.threshold.se"` | Public URL of the app — must match the Gateway hostname |
 | gatewayApi.enabled | bool | `true` | Enable Gateway API HTTPRoute |
-| gatewayApi.host | string | `"holidayhub.example.com"` | Hostname for the HTTPRoute |
-| gatewayApi.parentRefs | list | `[{"group":"gateway.networking.k8s.io","kind":"Gateway","name":"internal-shared","namespace":"kube-system"}]` | Gateway parentRefs |
+| gatewayApi.host | string | `"holidayhub.threshold.se"` | Hostname for the HTTPRoute |
+| gatewayApi.parentRefs | list | `[{"group":"gateway.networking.k8s.io","kind":"Gateway","name":"external-shared","namespace":"kube-system"}]` | Gateway parentRefs |
 | hpa.enabled | bool | `false` | Enable HorizontalPodAutoscaler |
 | hpa.maxReplicas | int | `3` | Maximum replicas |
 | hpa.minReplicas | int | `1` | Minimum replicas |
@@ -160,9 +160,10 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | s3.region | string | `"garage"` |  |
 | secret | object | `{"create":true}` | Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config) |
 | secret.create | bool | `true` | Create the secret from secretEnv values. Set false when AVP manages it. |
-| secretEnv | object | `{"DATABASE_URL":"postgresql://holidayhub:changeme@localhost:5432/holidayhub","NEXTAUTH_SECRET":"changeme","SPOTIFY_CLIENT_ID":"","SPOTIFY_CLIENT_SECRET":""}` | Secret env vars. Used when secret.create: true. Override with AVP refs via cluster-config when secret.create: false. |
+| secretEnv | object | `{"DATABASE_URL":"postgresql://holidayhub:changeme@localhost:5432/holidayhub","NEXTAUTH_SECRET":"changeme","REDIS_URL":"","SPOTIFY_CLIENT_ID":"","SPOTIFY_CLIENT_SECRET":""}` | Secret env vars. Used when secret.create: true. Override with AVP refs via cluster-config when secret.create: false. |
 | secretEnv.DATABASE_URL | string | `"postgresql://holidayhub:changeme@localhost:5432/holidayhub"` | Full Prisma DATABASE_URL (used when cnpg.enabled: false) |
 | secretEnv.NEXTAUTH_SECRET | string | `"changeme"` | NextAuth.js signing/encryption secret. Generate with: openssl rand -base64 32 |
+| secretEnv.REDIS_URL | string | `""` | Redis URL for multi-replica-safe rate limiting. Leave empty to use in-memory fallback. |
 | secretEnv.SPOTIFY_CLIENT_ID | string | `""` | Register at https://developer.spotify.com/dashboard |
 | service.port | int | `3000` | Service port (Next.js listens on 3000) |
 | service.type | string | `"ClusterIP"` | Service type |
