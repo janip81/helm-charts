@@ -11,4 +11,4 @@ excluded-charts:
   - ghost
   - n8n
   - remnant
-helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
+helm-extra-args: "--timeout 15m --wait"
