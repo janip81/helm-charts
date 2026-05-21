@@ -1,0 +1,19 @@
+replicaCount: 0
+
+migrations:
+  enabled: false
+
+gatewayApi:
+  enabled: false
+
+persistence:
+  enabled: false
+
+redis:
+  enabled: false
+
+secret:
+  create: true
+
+serviceMonitor:
+  enabled: false

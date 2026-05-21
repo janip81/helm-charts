@@ -1,7 +1,7 @@
 chart-dirs:
   - charts
 check-version-increment: false
-upgrade: true
+upgrade: false
 install: true
 excluded-charts:
   - worklog
@@ -11,4 +11,3 @@ excluded-charts:
   - ghost
   - n8n
   - remnant
-helm-extra-args: "--values ci/common-ct-values.yaml --timeout 15m --wait"
