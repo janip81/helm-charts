@@ -77,8 +77,9 @@ spec:
                 name: {{ include "holidayhub.fullname" . }}-config
             - secretRef:
                 name: {{ include "holidayhub.fullname" . }}-secret
-          {{- if .Values.cnpg.enabled }}
+          {{- if or .Values.cnpg.enabled .Values.redis.enabled }}
           env:
+            {{- if .Values.cnpg.enabled }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -86,6 +87,16 @@ spec:
                   key: password
             - name: DATABASE_URL
               value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "holidayhub.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
+            {{- end }}
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redis.passwordSecret.name }}
+                  key: {{ .Values.redis.passwordSecret.key }}
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+            {{- end }}
           {{- end }}
           readinessProbe:
             httpGet:

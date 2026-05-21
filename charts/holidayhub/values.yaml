@@ -40,7 +40,8 @@ secretEnv:
   # -- Register at https://developer.spotify.com/dashboard
   SPOTIFY_CLIENT_ID: ""
   SPOTIFY_CLIENT_SECRET: ""
-  # -- Redis URL for multi-replica-safe rate limiting. Leave empty to use in-memory fallback.
+  # -- Redis URL for multi-replica-safe rate limiting (local dev / secret.create: true).
+  # -- In production use redis.enabled: true to build the URL from the cluster Redis password secret.
   REDIS_URL: ""
 
 # -- Prisma migrate Job (pre-install/pre-upgrade hook). Runs: prisma migrate deploy
@@ -140,6 +141,23 @@ s3:
   bucket: ""
   region: "garage"
   # -- Credentials go in secretEnv.S3_ACCESS_KEY / S3_SECRET_KEY (never in values.yaml)
+
+redis:
+  # -- Enable Redis-backed rate limiting. Builds REDIS_URL from passwordSecret + host.
+  # -- Set false to use in-memory fallback (single-replica only).
+  enabled: false
+  # -- Redis host (without scheme)
+  host: redis-replication-master.redis.svc
+  # -- Redis port
+  port: 6379
+  # -- Redis DB index
+  db: 0
+  # -- Existing secret containing the Redis password
+  passwordSecret:
+    # -- Secret name
+    name: ""
+    # -- Key inside the secret
+    key: password
 
 persistence:
   # -- Enable a PersistentVolumeClaim for document uploads. Required in production.
