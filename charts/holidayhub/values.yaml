@@ -23,7 +23,7 @@ env:
   NODE_ENV: "production"
   NEXT_TELEMETRY_DISABLED: "1"
   # -- Public URL of the app — must match the Gateway hostname
-  NEXTAUTH_URL: "https://holidayhub.example.com"
+  NEXTAUTH_URL: "https://holidayhub.threshold.se"
 
 # -- Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config)
 secret:
@@ -40,6 +40,8 @@ secretEnv:
   # -- Register at https://developer.spotify.com/dashboard
   SPOTIFY_CLIENT_ID: ""
   SPOTIFY_CLIENT_SECRET: ""
+  # -- Redis URL for multi-replica-safe rate limiting. Leave empty to use in-memory fallback.
+  REDIS_URL: ""
 
 # -- Prisma migrate Job (pre-install/pre-upgrade hook). Runs: prisma migrate deploy
 migrations:
@@ -57,10 +59,10 @@ gatewayApi:
   # -- Enable Gateway API HTTPRoute
   enabled: true
   # -- Hostname for the HTTPRoute
-  host: holidayhub.example.com
+  host: holidayhub.threshold.se
   # -- Gateway parentRefs
   parentRefs:
-    - name: internal-shared
+    - name: external-shared
       namespace: kube-system
       kind: Gateway
       group: gateway.networking.k8s.io
