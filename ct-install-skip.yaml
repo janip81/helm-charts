@@ -11,3 +11,4 @@ excluded-charts:
   - ghost
   - n8n
   - remnant
+  - zomboid-server

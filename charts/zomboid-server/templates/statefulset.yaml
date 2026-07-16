@@ -1,0 +1,329 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "zomboid-server.selectorLabels" . | nindent 6 }}
+  # OnDelete: StatefulSet template changes do NOT automatically replace the running pod.
+  # The pod WILL be automatically recreated by Kubernetes on crash, node loss, or eviction.
+  # To apply a chart upgrade, delete the pod manually:
+  #   kubectl delete pod -n <namespace> <release-name>-0
+  # The StatefulSet will then immediately recreate it using the updated template.
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+        {{- include "zomboid-server.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        # ── Game server ──────────────────────────────────────────────────────────
+        - name: server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext.server | nindent 12 }}
+          env:
+            - name: SERVERNAME
+              value: {{ .Values.zomboid.serverName | quote }}
+            - name: ADMINUSERNAME
+              value: {{ .Values.zomboid.adminUsername | quote }}
+            {{- if .Values.zomboid.adminPasswordBootstrap.enabled }}
+            # ADMINPASSWORD is required for first-run account creation.
+            # The image passes it as a command-line argument; it will appear in server logs.
+            # After the admin account is created, set adminPasswordBootstrap.enabled: false.
+            - name: ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zomboid-server.secretName" . }}
+                  key: {{ .Values.zomboid.secretKeys.adminPassword }}
+            {{- end }}
+            - name: RCONPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zomboid-server.secretName" . }}
+                  key: {{ .Values.zomboid.secretKeys.rconPassword }}
+            {{- if .Values.zomboid.serverPassword }}
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zomboid-server.secretName" . }}
+                  key: {{ .Values.zomboid.secretKeys.serverPassword }}
+            {{- end }}
+            - name: PUBLIC
+              value: {{ .Values.zomboid.public | quote }}
+            {{- if .Values.zomboid.displayName }}
+            - name: DISPLAYNAME
+              value: {{ .Values.zomboid.displayName | quote }}
+            {{- end }}
+            - name: MIN_MEMORY
+              value: {{ .Values.zomboid.minMemory | quote }}
+            - name: MAX_MEMORY
+              value: {{ .Values.zomboid.maxMemory | quote }}
+            - name: SERVERPRESET
+              value: {{ .Values.zomboid.serverPreset | quote }}
+            - name: SERVERPRESETREPLACE
+              value: {{ .Values.zomboid.serverPresetReplace | quote }}
+            - name: PORT
+              value: {{ .Values.service.game.ports.game | quote }}
+            - name: UDPPORT
+              value: {{ .Values.service.game.ports.direct | quote }}
+            {{- if .Values.service.game.steamPorts.enabled }}
+            - name: STEAMPORT1
+              value: {{ .Values.service.game.steamPorts.port1 | quote }}
+            - name: STEAMPORT2
+              value: {{ .Values.service.game.steamPorts.port2 | quote }}
+            {{- end }}
+            - name: MODFOLDERS
+              value: {{ .Values.zomboid.mods.modFolders | quote }}
+            {{- if .Values.zomboid.noSteam }}
+            - name: NOSTEAM
+              value: "true"
+            {{- end }}
+            {{- if or .Values.zomboid.selfManagedMods (and (empty .Values.zomboid.mods.workshopIds) (empty .Values.zomboid.mods.modIds)) }}
+            # Protect existing INI mod config when no mods are specified in values,
+            # or when selfManagedMods is explicitly enabled.
+            - name: SELF_MANAGED_MODS
+              value: "true"
+            {{- else }}
+            - name: WORKSHOP_IDS
+              value: {{ join ";" .Values.zomboid.mods.workshopIds | quote }}
+            - name: MOD_IDS
+              value: {{ join ";" .Values.zomboid.mods.modIds | quote }}
+            {{- end }}
+            # CACHEDIR controls where the server writes all persistent data.
+            # Must match the mountPath of the data volume below.
+            - name: CACHEDIR
+              value: /home/steam/Zomboid
+            {{- with .Values.zomboid.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: game
+              containerPort: {{ .Values.service.game.ports.game }}
+              protocol: UDP
+            - name: direct
+              containerPort: {{ .Values.service.game.ports.direct }}
+              protocol: UDP
+            {{- if .Values.service.game.steamPorts.enabled }}
+            - name: steam1
+              containerPort: {{ .Values.service.game.steamPorts.port1 }}
+              protocol: UDP
+            - name: steam2
+              containerPort: {{ .Values.service.game.steamPorts.port2 }}
+              protocol: UDP
+            {{- end }}
+            # RCON is never exposed as a Service — panel connects via 127.0.0.1 within the pod
+            - name: rcon
+              containerPort: {{ .Values.zomboid.rcon.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /home/steam/Zomboid
+            - name: server-files
+              mountPath: /home/steam/pz-dedicated
+            - name: backups
+              mountPath: /backups
+          resources:
+            {{- toYaml .Values.resources.server | nindent 12 }}
+          # Startup probe — generous budget for first-start Steam and Workshop downloads
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - ProjectZomboid
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - ProjectZomboid
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - pgrep
+                - -f
+                - ProjectZomboid
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          {{- end }}
+
+        {{- if .Values.panel.enabled }}
+        # ── Zomboid Control Panel ────────────────────────────────────────────────
+        # ghcr.io/fpsacha/zomboid-panel — https://github.com/fpsacha/zomboid-control-panel
+        # No Docker socket. No privileged mode. Connects to PZ via RCON + shared volumes.
+        - name: panel
+          image: "{{ .Values.panel.image.repository }}:{{ .Values.panel.image.tag }}"
+          imagePullPolicy: {{ .Values.panel.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext.panel | nindent 12 }}
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: {{ .Values.panel.port | quote }}
+            - name: PZ_SERVER_PATH
+              value: "/pz-server"
+            - name: PZ_SAVE_PATH
+              value: "/zomboid"
+            - name: PZ_SERVER_BAT
+              value: "start-server.sh"
+            # RCON — connects to the game server at localhost within the shared pod network namespace.
+            # RCON is never exposed as a Kubernetes Service (containerPort rcon is internal only).
+            - name: RCON_HOST
+              value: {{ .Values.panel.rcon.host | quote }}
+            - name: RCON_PORT
+              value: {{ .Values.panel.rcon.port | quote }}
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "zomboid-server.secretName" . }}
+                  key: {{ .Values.zomboid.secretKeys.rconPassword }}
+            # The panel sidecar cannot inspect the PZ server process (separate container
+            # namespace). Without skipServerCheck=true the panel would refuse RCON commands
+            # because it can never detect the process as running. RCON still works fine.
+            - name: RCON_SKIP_SERVER_CHECK
+              value: {{ .Values.panel.rcon.skipServerCheck | quote }}
+            - name: HTTPS
+              value: {{ .Values.panel.https | quote }}
+            {{- if .Values.panel.corsOrigins }}
+            - name: CORS_ORIGINS
+              value: {{ .Values.panel.corsOrigins | quote }}
+            {{- end }}
+            - name: LOG_LEVEL
+              value: {{ .Values.panel.logLevel | quote }}
+            {{- if .Values.panel.steamApiKey }}
+            - name: STEAM_API_KEY
+              value: {{ .Values.panel.steamApiKey | quote }}
+            {{- end }}
+            {{- with .Values.panel.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: panel-http
+              containerPort: {{ .Values.panel.port }}
+              protocol: TCP
+          volumeMounts:
+            # Panel state — DB, JWT secret, panel configuration
+            - name: panel-data
+              mountPath: /app/data
+            # Panel logs
+            - name: panel-logs
+              mountPath: /app/logs
+            # PZ server install (same PVC as server's /home/steam/pz-dedicated)
+            # Read-only by default. Set panel.serverFilesReadOnly: false for PanelBridge.
+            - name: server-files
+              mountPath: /pz-server
+              readOnly: {{ .Values.panel.serverFilesReadOnly }}
+            # PZ user data (same PVC as server's /home/steam/Zomboid)
+            # Must be writable for PanelBridge IPC (writes JSON under Lua/panelbridge/).
+            - name: data
+              mountPath: /zomboid
+          resources:
+            {{- toYaml .Values.resources.panel | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: panel-http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: panel-http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+        {{- end }}
+
+      volumes:
+        - name: data
+          {{- if and .Values.persistence.data.enabled .Values.persistence.data.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.data.existingClaim }}
+          {{- else if .Values.persistence.data.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "zomboid-server.fullname" . }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: server-files
+          {{- if and .Values.persistence.serverFiles.enabled .Values.persistence.serverFiles.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.serverFiles.existingClaim }}
+          {{- else if .Values.persistence.serverFiles.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "zomboid-server.fullname" . }}-server-files
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: panel-data
+          {{- if and .Values.persistence.panelData.enabled .Values.persistence.panelData.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.panelData.existingClaim }}
+          {{- else if .Values.persistence.panelData.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "zomboid-server.fullname" . }}-panel-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: panel-logs
+          {{- if and .Values.persistence.panelLogs.enabled .Values.persistence.panelLogs.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.panelLogs.existingClaim }}
+          {{- else if .Values.persistence.panelLogs.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "zomboid-server.fullname" . }}-panel-logs
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: backups
+          {{- if and .Values.persistence.backups.enabled .Values.persistence.backups.existingClaim }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backups.existingClaim }}
+          {{- else if .Values.persistence.backups.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "zomboid-server.fullname" . }}-backups
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

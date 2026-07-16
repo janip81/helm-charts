@@ -1,0 +1,185 @@
+# Production values example for zomboid-server
+# Namespace: games (prod-k8s)
+#
+# Required pre-existing Secret (create before deploying):
+#   kubectl create secret generic zomboid-secrets -n games \
+#     --from-literal=admin-password='<strong-password>' \
+#     --from-literal=rcon-password='<strong-rcon-password>' \
+#     --from-literal=server-password=''
+#
+# After first deployment, once the admin account is created:
+#   Set zomboid.adminPasswordBootstrap.enabled: false and upgrade + delete pod.
+
+image:
+  repository: danixu86/project-zomboid-dedicated-server
+  # Build 41 stable. Switch to 42.x.x-unstable for Build 42 early access.
+  tag: "41.78.19-release"
+  pullPolicy: IfNotPresent
+
+zomboid:
+  serverName: "my-server"
+  adminUsername: "admin"
+
+  # Use a pre-existing Secret — never put passwords in Git
+  existingSecret: "zomboid-secrets"
+  secretKeys:
+    adminPassword: "admin-password"
+    rconPassword: "rcon-password"
+    serverPassword: "server-password"
+
+  adminPasswordBootstrap:
+    enabled: true   # set false after first successful startup
+
+  public: false
+  displayName: "My Zomboid Server"
+  maxPlayers: 16
+
+  minMemory: "3072m"
+  maxMemory: "6144m"
+
+  serverPreset: "Survival"
+  serverPresetReplace: false
+
+  selfManagedMods: false
+
+  mods:
+    workshopIds: []
+    modIds: []
+    modFolders: "workshop,steam,mods"
+
+panel:
+  enabled: true
+  image:
+    repository: ghcr.io/fpsacha/zomboid-panel
+    tag: "v1.0.66"
+    pullPolicy: IfNotPresent
+  port: 3001
+  corsOrigins: "https://zomboid.example.com"
+  https: true
+  rcon:
+    host: "127.0.0.1"
+    port: 27015
+    skipServerCheck: true
+  logLevel: "info"
+  steamApiKey: ""
+  serverFilesReadOnly: true
+  panelBridge:
+    enabled: false
+
+service:
+  game:
+    type: LoadBalancer
+    loadBalancerIP: "192.168.101.50"
+    externalTrafficPolicy: Local
+    annotations: {}
+    ports:
+      game: 16261
+      direct: 16262
+    steamPorts:
+      enabled: false
+  panel:
+    type: ClusterIP
+    port: 3001
+
+gateway:
+  enabled: true
+  parentRefs:
+    - name: main-gateway
+      namespace: gateway
+  hostname: "zomboid.example.com"
+
+persistence:
+  storageClass: ""
+  data:
+    enabled: true
+    size: 20Gi
+    accessModes:
+      - ReadWriteOnce
+  serverFiles:
+    enabled: true
+    size: 30Gi
+    accessModes:
+      - ReadWriteOnce
+  panelData:
+    enabled: true
+    size: 2Gi
+    accessModes:
+      - ReadWriteOnce
+  panelLogs:
+    enabled: false
+  backups:
+    enabled: true
+    size: 30Gi
+    accessModes:
+      - ReadWriteOnce
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  # Server container runs as root initially (entrypoint chowns PVCs then su - steam).
+  # Do not set runAsUser/runAsNonRoot/capabilities.drop here without testing.
+  server: {}
+  panel:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+resources:
+  server:
+    requests:
+      cpu: "1000m"
+      memory: 4Gi
+    limits:
+      cpu: "4000m"
+      memory: 8Gi
+  panel:
+    requests:
+      cpu: "100m"
+      memory: 256Mi
+    limits:
+      cpu: "500m"
+      memory: 512Mi
+
+startupProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  failureThreshold: 40
+  timeoutSeconds: 5
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  failureThreshold: 10
+  timeoutSeconds: 5
+
+livenessProbe:
+  enabled: false
+
+terminationGracePeriodSeconds: 90
+
+backup:
+  enabled: true
+  schedule: "0 4 * * *"
+  retentionDays: 7
+  image:
+    repository: alpine
+    tag: "3.19"
+    pullPolicy: IfNotPresent
+
+volumeSnapshot:
+  enabled: false
+  snapshotClassName: ""
+  data:
+    enabled: true
+  serverFiles:
+    enabled: true
+
+migration:
+  enabled: false

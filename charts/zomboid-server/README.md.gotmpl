@@ -1,0 +1,603 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+## Overview
+
+This Helm chart deploys a [Project Zomboid](https://projectzomboid.com) dedicated server on Kubernetes as a single-replica StatefulSet.
+
+**Server image:** [`danixu86/project-zomboid-dedicated-server`](https://hub.docker.com/r/danixu86/project-zomboid-dedicated-server) — full RCON, Workshop, Build 41/42 multi-branch support.
+
+**Web panel:** [`ghcr.io/fpsacha/zomboid-panel`](https://github.com/fpsacha/zomboid-control-panel) (Zomboid Control Panel v1.0.66) — a purpose-built PZ admin dashboard with RCON console, live world map, mod manager, player management, backups, and scheduler. Runs as a sidecar with no Docker socket.
+
+## Prerequisites
+
+- Kubernetes 1.29+
+- Helm 3.16+
+- Cilium with Gateway API support (for panel HTTPRoute)
+- Cilium LoadBalancer IP pool (for game traffic)
+- vSphere CSI or another `ReadWriteOnce`-capable StorageClass
+- ArgoCD (optional, for GitOps deployment)
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install zomboid janip81/zomboid-server -n games --create-namespace \
+  --set zomboid.adminPassword=changeme \
+  --set zomboid.rconPassword=changeme-rcon
+```
+
+## Installation
+
+### Required Secrets
+
+**Never put passwords in Git.** Create the Kubernetes Secret before deploying:
+
+```bash
+kubectl create secret generic zomboid-secrets -n games \
+  --from-literal=admin-password='<strong-admin-password>' \
+  --from-literal=rcon-password='<strong-rcon-password>' \
+  --from-literal=server-password=''
+```
+
+Then reference it in values:
+
+```yaml
+zomboid:
+  existingSecret: "zomboid-secrets"
+  secretKeys:
+    adminPassword: "admin-password"
+    rconPassword: "rcon-password"
+    serverPassword: "server-password"
+```
+
+The RCON password is automatically shared with the panel sidecar — no separate panel secret is needed. The panel creates its own admin account on first run via the setup wizard.
+
+### Install with values file
+
+```bash
+helm upgrade --install zomboid janip81/zomboid-server \
+  -n games --create-namespace \
+  -f examples/values-prod.yaml
+```
+
+## Server Container Security Context
+
+The `danixu86` entrypoint requires root at startup. It performs operations roughly equivalent to:
+
+```bash
+chown -R 1000:1000 /home/steam/pz-dedicated/steamapps/workshop /home/steam/Zomboid
+chmod 755 /home/steam/Zomboid
+su - steam -c "... ./start-server.sh ..."
+```
+
+These steps are incompatible with a restricted container security context:
+
+| Restriction | Effect |
+|-------------|--------|
+| `runAsUser: 1000` | Entrypoint runs as steam; cannot chown files owned by root (PVC first-mount) |
+| `runAsNonRoot: true` | Prevents entrypoint from starting as root |
+| `capabilities.drop: [ALL]` | Removes `CAP_CHOWN`, breaking the chown step |
+
+**The server container security context is therefore left empty (`{}`) by default.** The entrypoint drops to the steam user on its own after initialization.
+
+Do not add `runAsUser`, `runAsNonRoot`, or `capabilities.drop` to the server security context unless you have tested the exact danixu86 image and confirmed the entrypoint completes successfully with those restrictions.
+
+The **panel sidecar** does not run an entrypoint that requires root and uses the more restrictive defaults:
+
+```yaml
+securityContext:
+  panel:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+```
+
+## Build 41 vs Build 42
+
+The server image bakes the branch **at image-build time**. Select the build by choosing the image tag — there is no runtime environment variable for this.
+
+| Build | Tag | Status |
+|-------|-----|--------|
+| Build 41 (stable) | `41.78.19-release` | Recommended for production |
+| Build 42 (early access) | `42.19.0-unstable` | May have breaking changes |
+
+```yaml
+# Build 41 stable (default)
+image:
+  tag: "41.78.19-release"
+
+# Build 42 early access
+image:
+  tag: "42.19.0-unstable"
+```
+
+> **Warning:** Never switch branches while a world is running. Take a VolumeSnapshot before any branch change.
+> Local and dedicated server branches must match exactly for clients to connect.
+
+## Admin Password Bootstrap
+
+The `danixu86` image passes `ADMINPASSWORD` as a command-line argument. The server logs the full argument list on every startup, exposing the password in plain text.
+
+The chart uses a bootstrap pattern to limit this exposure:
+
+```yaml
+zomboid:
+  adminPasswordBootstrap:
+    enabled: true  # required for first run; set false afterwards
+```
+
+**Workflow:**
+
+1. Deploy with `adminPasswordBootstrap.enabled: true`. The admin account is created.
+2. Log into the server or panel and verify the admin account works.
+3. Set `adminPasswordBootstrap.enabled: false` in values.
+4. Upgrade the chart and delete the pod to apply:
+   ```bash
+   kubectl delete pod -n games zomboid-0
+   ```
+5. From this point forward, `ADMINPASSWORD` is not injected into the process and will not appear in logs.
+
+The RCON password is always injected from the Secret regardless of this setting.
+
+## Workshop Mod Configuration
+
+```yaml
+zomboid:
+  selfManagedMods: false
+  mods:
+    workshopIds:
+      - "2392709985"
+      - "2458631365"
+    modIds:
+      - "MyMod"
+      - "AnotherMod"
+```
+
+> **Critical:** When `selfManagedMods: false` and both lists are empty, the entrypoint sets `SELF_MANAGED_MODS=true` automatically to protect existing INI mod config. If you explicitly set mods in values, `WORKSHOP_IDS` and `MOD_IDS` are passed to the entrypoint, which writes them into the server INI. Switching between these modes on a live server will override the INI on the next restart.
+
+The environment variable the chart sets is `SELF_MANAGED_MODS` (with underscore). This is the correct spelling accepted by the `danixu86` entrypoint.
+
+### Handing mod management to the panel
+
+After your mod list is stable:
+
+```yaml
+zomboid:
+  selfManagedMods: true
+```
+
+This prevents the entrypoint from overwriting the INI mod entries, so panel-managed changes survive restarts.
+
+## Web Panel
+
+The Zomboid Control Panel (`ghcr.io/fpsacha/zomboid-panel`) runs as a sidecar at port 3001. It connects to the game server via RCON at `127.0.0.1:27015` (internal to the pod). RCON is never exposed as a Kubernetes Service.
+
+### RCON_SKIP_SERVER_CHECK
+
+The panel expects to detect the PZ server process before accepting RCON connections. In a Kubernetes sidecar deployment, the panel cannot see the server container's process list — they run in separate container namespaces despite sharing the pod network. The panel would therefore always report the server as offline and refuse RCON commands.
+
+`RCON_SKIP_SERVER_CHECK=true` is set by default to bypass this check. RCON connections and all RCON commands function normally regardless of the process-detection status.
+
+```yaml
+panel:
+  rcon:
+    host: "127.0.0.1"   # always 127.0.0.1 in the sidecar pod
+    port: 27015          # must match zomboid.rcon.port
+    skipServerCheck: true  # required for sidecar deployment
+```
+
+### Panel mounts
+
+The panel reads PZ paths from two shared volume mounts:
+
+| Volume | Server path | Panel path | Access |
+|--------|------------|------------|--------|
+| `data` PVC | `/home/steam/Zomboid` | `/zomboid` | Writable (PanelBridge IPC) |
+| `serverFiles` PVC | `/home/steam/pz-dedicated` | `/pz-server` | Read-only by default |
+
+### Accessing the panel
+
+With Gateway API:
+```yaml
+gateway:
+  enabled: true
+  hostname: "zomboid.example.com"
+  parentRefs:
+    - name: main-gateway
+      namespace: gateway
+panel:
+  corsOrigins: "https://zomboid.example.com"
+  https: true
+```
+
+Via port-forward (no gateway):
+```bash
+kubectl port-forward -n games sts/zomboid-0 3001:3001
+# Open http://localhost:3001
+```
+
+### What the panel can and cannot do
+
+The panel's **Start**, **Stop**, and **Restart** server buttons cannot control the Kubernetes pod. Do not confuse the panel's **Stop** button with issuing the RCON `quit` command from the panel's RCON console — they are different things.
+
+The panel **can** do the following via its RCON console: `save`, `quit`, `players`, `kick`, `ban`, `unban`, `broadcast`, `adduser`, `setaccesslevel`, weather and event commands, and all other PZ RCON commands.
+
+The panel **cannot**:
+- Start or stop the PZ process (Kubernetes owns the container lifecycle)
+- Restart the server on crash (Kubernetes StatefulSet controller handles that)
+- Auto-update the PZ server binary (managed by image tag + pod replacement)
+- Access the Docker socket (not mounted; not needed)
+- Accurately report server process status (status indicator will show offline — this is expected)
+
+### Panel backup storage
+
+The panel stores backups created through its UI inside `/app/data` — the same directory as its database, JWT secret, and configuration.
+
+**Risk with the default 2Gi `panelData` PVC:** frequent large world backups via the panel will fill this volume. Once full, the panel process may fail to write its database.
+
+Recommended approaches:
+1. **Chart CronJob** (enabled via `backup.enabled: true`) — writes to the `backups` PVC (30Gi), not `panelData`
+2. **CSI VolumeSnapshot** after a confirmed RCON save — storage-level snapshot
+3. **Send save via RCON console, then trigger CronJob manually:**
+   ```bash
+   # 1. Issue `save` in the panel RCON console and wait for the save to complete in logs
+   # 2. Trigger the backup job immediately:
+   kubectl create job \
+     --from=cronjob/zomboid-backup \
+     zomboid-backup-manual-$(date +%s) \
+     -n games
+   ```
+4. **Increase `panelData` size** before enabling frequent panel backups:
+   ```yaml
+   persistence:
+     panelData:
+       size: 10Gi
+   ```
+
+The `backups` PVC (mounted at `/backups` in the server container) is used **only** by the chart CronJob — the panel does **not** write into it.
+
+### PanelBridge (optional, disabled by default)
+
+PanelBridge is a server-side Lua mod that enables features beyond RCON: teleport, heal, weather control at granular level, character export/import, inventory editing.
+
+**Requirements:**
+
+1. Make `/pz-server` writable in the panel (needed to install the Lua file):
+   ```yaml
+   panel:
+     panelBridge:
+       enabled: true
+     serverFilesReadOnly: false
+   ```
+
+2. `DoLuaChecksum=false` in the server INI. Set this via the panel's Settings → Server Config editor. This cannot be set via a Helm value — it must be changed in the INI directly.
+
+3. Enable PanelBridge in **Settings → PanelBridge** in the panel UI and restart the PZ server.
+
+Verify the actual path in your running container before enabling PanelBridge:
+
+```bash
+kubectl exec -n games <pod-name> -c server -- \
+  find /home/steam/pz-dedicated -path "*/Install/media/lua/server" -type d
+```
+
+PanelBridge communicates via JSON files in `/zomboid/Lua/panelbridge/<serverName>/` — on the `data` PVC, already writable for the panel at `/zomboid`.
+
+## Planned Maintenance: Safe Shutdown Procedure
+
+> **Important:** The current upstream image (`danixu86/project-zomboid-dedicated-server`) does not install a verified Kubernetes-aware SIGTERM handler. A plain pod deletion or `kubectl scale --replicas=0` may terminate the Java process without flushing a final world save. Do not rely on Kubernetes pod termination alone to produce an application-consistent save.
+
+Use this procedure before any planned maintenance: pod deletion, chart upgrade, scale-down, or VolumeSnapshot.
+
+**Steps:**
+
+1. Open the Zomboid panel and navigate to the RCON console.
+
+2. Issue the save command:
+   ```
+   save
+   ```
+   Wait until the server logs confirm the save completed. Watch the logs:
+   ```bash
+   kubectl logs -n games <pod-name> -c server --tail=100 -f
+   ```
+
+3. Issue the quit command:
+   ```
+   quit
+   ```
+   The game process will exit. The panel RCON console will lose connectivity — this is expected.
+
+4. Confirm from the server logs that the game process has exited before proceeding.
+
+5. Now delete the pod or scale to zero:
+   ```bash
+   # For pod replacement (e.g., applying a chart upgrade):
+   kubectl delete pod -n games zomboid-0
+
+   # For full stop:
+   kubectl scale statefulset -n games zomboid --replicas=0
+   ```
+
+> **Note:** After `quit` is issued through RCON, Kubernetes will detect that the container exited and will recreate it (StatefulSet controller). If you do not want an immediate restart, scale to zero before issuing `quit`, or delete the pod immediately after the process exits.
+
+## Graceful Shutdown Configuration
+
+```yaml
+shutdown:
+  graceful:
+    enabled: false
+    method: "none"
+```
+
+`shutdown.graceful.enabled: false` is the only correct default. There is currently no verified RCON client inside the `danixu86` image container, so no preStop hook is rendered.
+
+A future release may support `method: "rcon"` once a client binary is confirmed present in the image and the full save-then-quit flow is tested end-to-end. Until then, follow the manual maintenance procedure above.
+
+**The chart does not provide a preStop hook.** Kubernetes sends SIGTERM to all containers after the pod is marked for deletion. The pod will be SIGKILL'd after `terminationGracePeriodSeconds` (90 s) regardless of whether the game has saved. This is why the manual save-before-delete procedure is necessary.
+
+## Upgrades
+
+### Chart upgrade procedure
+
+The StatefulSet uses `updateStrategy: OnDelete`. This means:
+- Template changes do **not** automatically restart the running pod.
+- The pod **will** be recreated automatically by Kubernetes on crash, node failure, or eviction.
+
+To apply a chart upgrade:
+
+1. Follow the safe shutdown procedure above to save the world first.
+
+2. Take a VolumeSnapshot before any significant upgrade:
+   ```bash
+   helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml \
+     --set volumeSnapshot.enabled=true
+   helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml \
+     --set volumeSnapshot.enabled=false
+   ```
+
+3. Upgrade the chart:
+   ```bash
+   helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml
+   ```
+
+4. Delete the pod to apply the updated StatefulSet template:
+   ```bash
+   kubectl delete pod -n games zomboid-0
+   ```
+   The StatefulSet controller immediately recreates it using the updated spec.
+
+5. Watch logs to confirm startup:
+   ```bash
+   kubectl logs -f -n games zomboid-0 -c server
+   ```
+
+## Save Migration from Windows
+
+### Pre-migration checklist
+
+- [ ] Stop the Windows server cleanly before copying files
+- [ ] Branches must match (both B41 or both B42)
+- [ ] Mod list and load order must be identical
+- [ ] Take a VolumeSnapshot before the first dedicated-server startup with migrated saves
+
+### Source paths (Windows)
+
+```
+C:\Users\<username>\Zomboid\
+  Saves\Multiplayer\<serverName>\
+  Server\<serverName>.ini
+  Server\<serverName>_SandboxVars.lua
+  Server\<serverName>_spawnpoints.lua
+  Server\<serverName>_spawnregions.lua
+  db\
+```
+
+### Migration procedure
+
+1. Stop the Windows server cleanly.
+
+2. Scale the StatefulSet to zero:
+   ```bash
+   kubectl scale sts zomboid -n games --replicas=0
+   ```
+
+3. Enable the migration helper pod:
+   ```yaml
+   migration:
+     enabled: true
+   ```
+   ```bash
+   helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml
+   kubectl wait --for=condition=Ready pod/zomboid-migration -n games
+   ```
+
+4. Copy saves:
+   ```bash
+   kubectl cp "C:/Users/<user>/Zomboid/Saves/Multiplayer/<serverName>" \
+     games/zomboid-migration:/home/steam/Zomboid/Saves/Multiplayer/<serverName>
+   kubectl cp "C:/Users/<user>/Zomboid/Server" \
+     games/zomboid-migration:/home/steam/Zomboid/Server
+   kubectl cp "C:/Users/<user>/Zomboid/db" \
+     games/zomboid-migration:/home/steam/Zomboid/db
+   ```
+
+5. Fix ownership:
+   ```bash
+   kubectl exec -it -n games zomboid-migration -- \
+     chown -R 1000:1000 /home/steam/Zomboid
+   ```
+
+6. Disable migration and restart:
+   ```yaml
+   migration:
+     enabled: false
+   ```
+   ```bash
+   helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml
+   kubectl scale sts zomboid -n games --replicas=1
+   ```
+
+7. Watch logs and confirm world + character load correctly.
+
+Keep the same `serverName` as on Windows. Changing it creates a new world.
+
+## Backups
+
+### CronJob (crash-consistent)
+
+The built-in CronJob reads live files from the data PVC without coordinating a save with the running server. **Backups are crash-consistent, not application-consistent.** Files copied while the server is mid-write may be incomplete.
+
+```yaml
+backup:
+  enabled: true
+  schedule: "0 4 * * *"
+  retentionDays: 7
+```
+
+Archives are written to the `backups` PVC at `/backups/<serverName>-YYYYMMDD-HHMMSS.tar.gz`.
+
+Trigger a manual run immediately after an RCON save:
+```bash
+kubectl create job \
+  --from=cronjob/zomboid-backup \
+  zomboid-backup-manual-$(date +%s) \
+  -n games
+```
+
+### CSI VolumeSnapshots
+
+A CSI snapshot taken without a prior RCON save is still crash-consistent. For improved consistency, issue `save` through the RCON console first and wait for confirmation — then take the snapshot immediately:
+
+```bash
+# After confirmed RCON save:
+helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml \
+  --set volumeSnapshot.enabled=true
+helm upgrade zomboid janip81/zomboid-server -n games -f values.yaml \
+  --set volumeSnapshot.enabled=false
+```
+
+For the safest pre-maintenance snapshot:
+1. Issue `save` via RCON console.
+2. Issue `quit` via RCON console.
+3. Confirm the server has stopped (logs show exit).
+4. Take the VolumeSnapshot.
+5. Restart or delete/recreate the pod.
+
+Take snapshots before:
+- Server version upgrade
+- Branch switch (B41 ↔ B42)
+- Large mod list changes
+- World migration from another host
+- Panel upgrades
+
+## First-Deployment Shutdown Test
+
+Before committing a world to production, verify shutdown behavior with this test (use a disposable test world):
+
+1. Start the server and enter the game.
+2. Place or move a recognizable object.
+3. Send `save` through the panel RCON console:
+   ```bash
+   kubectl logs -n games zomboid-0 -c server --tail=100 -f
+   ```
+   Wait until logs confirm the save completed.
+4. Send `quit` through the RCON console.
+5. Confirm a clean exit in the logs.
+6. Delete/recreate the pod:
+   ```bash
+   kubectl delete pod -n games zomboid-0
+   ```
+7. Re-enter the game and verify the object placement survived.
+
+**Separately** (on a disposable world only), test a plain pod deletion without a prior RCON quit:
+```bash
+kubectl delete pod -n games zomboid-0
+```
+Check whether the last auto-save survived. Do **not** rely on this for production worlds until the behavior is confirmed repeatable. Do not update chart documentation to claim graceful SIGTERM handling unless this test passes consistently.
+
+## Cilium LoadBalancer Configuration
+
+```yaml
+service:
+  game:
+    type: LoadBalancer
+    loadBalancerIP: "192.168.101.50"
+    externalTrafficPolicy: Local
+    ports:
+      game: 16261
+      direct: 16262
+    steamPorts:
+      enabled: false   # enable for Steam client discovery (ports 8766, 8767 UDP)
+```
+
+`externalTrafficPolicy: Local` is recommended for a single-replica StatefulSet.
+
+Steam discovery ports (8766/8767 UDP) are disabled by default. Enable them if players use the Steam server browser rather than direct connect.
+
+## Troubleshooting
+
+### Volume ownership errors
+
+```bash
+kubectl exec -it zomboid-0 -n games -c server -- ls -la /home/steam/Zomboid
+```
+
+All files should be owned `1000:1000`. If not, fix with the migration pod:
+```bash
+kubectl exec -it -n games zomboid-migration -- chown -R 1000:1000 /home/steam/Zomboid
+```
+
+### Workshop downloads failing
+
+Mods install on the **second** server start. If they fail repeatedly:
+- Check logs for Steam auth errors.
+- Add `FORCESTEAMCLIENTSOUPDATE=true` via `zomboid.extraEnv` for one restart.
+- Verify the server node can reach Steam (8766/8767 UDP outbound).
+
+### Panel RCON shows server offline
+
+This is expected. The panel cannot detect the PZ process in the server container namespace. `RCON_SKIP_SERVER_CHECK=true` is set automatically — RCON commands work regardless.
+
+### Missing player after migration
+
+- The `db/` directory must have been copied completely.
+- The `serverName` must match exactly (case-sensitive).
+- Check logs for `LoadPlayerData`.
+
+### Panel data PVC full
+
+```bash
+kubectl exec -it zomboid-0 -n games -c panel -- df -h /app/data
+```
+
+If full from panel-created backups:
+```bash
+kubectl exec -it zomboid-0 -n games -c panel -- \
+  find /app/data/backups -name "*.zip" -mtime +7 -delete
+```
+Then increase `persistence.panelData.size` before re-enabling panel backups.
+
+### Why replicas must remain at 1
+
+PZ saves are single-file-per-world. Two replicas writing to the same PVC would corrupt the save. The chart hardcodes `replicas: 1`.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

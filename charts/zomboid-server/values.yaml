@@ -1,0 +1,472 @@
+# -- Docker image for the Project Zomboid dedicated server.
+# Build 41 vs Build 42 is determined by the image tag — STEAMAPPBRANCH is baked at build time.
+# Build 41 (stable):       danixu86/project-zomboid-dedicated-server:41.78.19-release
+# Build 42 (early access): danixu86/project-zomboid-dedicated-server:42.19.0-unstable
+image:
+  # -- Docker repository for the server image
+  repository: danixu86/project-zomboid-dedicated-server
+  # -- Image tag. Pin to a specific version; floating tags are discouraged in production.
+  # @default -- 41.78.19-release (Build 41 stable)
+  tag: "41.78.19-release"
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Provide a name override for chart resources
+nameOverride: ""
+# -- Provide a full name override for chart resources
+fullnameOverride: ""
+
+# Project Zomboid server configuration
+zomboid:
+  # -- Server name identifier (no spaces or special characters — admin login will fail)
+  serverName: "zomboid"
+  # -- Admin username
+  adminUsername: "admin"
+
+  # -- Reference an existing Kubernetes Secret instead of creating one.
+  # The secret must contain the keys defined in secretKeys.
+  # Set to "" to have the chart create a secret from the inline password values below.
+  existingSecret: ""
+
+  # -- Keys within the secret that hold each password
+  secretKeys:
+    # -- Key holding the admin password
+    adminPassword: "admin-password"
+    # -- Key holding the RCON password
+    rconPassword: "rcon-password"
+    # -- Key holding the server join password
+    serverPassword: "server-password"
+
+  # Inline passwords — only used when existingSecret is "" (chart creates the Secret).
+  # -- Admin password (only used for initial account creation; see adminPasswordBootstrap)
+  adminPassword: ""
+  # -- RCON password
+  rconPassword: ""
+  # -- Server join password (leave empty for no password)
+  serverPassword: ""
+
+  # Admin password bootstrap control.
+  # The danixu86 image passes ADMINPASSWORD as a command-line argument to the PZ server,
+  # which logs the full argument list in clear text on every startup.
+  #
+  # On first run, ADMINPASSWORD is required to create the admin account.
+  # After the account is created, set enabled: false to stop injecting the password
+  # into the process environment (and logs).
+  # The RCON password is always injected regardless of this setting.
+  adminPasswordBootstrap:
+    # -- Inject ADMINPASSWORD from the Secret on startup.
+    # Set false after the admin account has been created on first run.
+    enabled: true
+
+  # -- Show server in the in-game server browser
+  public: false
+  # -- Display name in the server browser (kept from INI if left empty)
+  displayName: ""
+  # -- Maximum player slots
+  maxPlayers: 16
+
+  # Java JVM memory settings
+  # -- Minimum JVM heap allocation (e.g. 2048m). Falls back to MEMORY if unset.
+  minMemory: "2048m"
+  # -- Maximum JVM heap allocation (e.g. 4096m). Must be below the container memory limit.
+  maxMemory: "4096m"
+
+  # -- Difficulty preset for a new server
+  # Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survival, Survivor
+  serverPreset: "Survival"
+  # -- Replace the preset on every container start.
+  # Set true only during initial setup; set false afterwards to protect custom INI edits.
+  serverPresetReplace: false
+
+  # Mod management
+  # -- When true, the entrypoint will NOT modify Mods/WorkshopItems in the server INI.
+  # Use this after initial mod setup or when managing mods via the web panel.
+  # WARNING: when false and workshopIds/modIds are both empty, the entrypoint will
+  # CLEAR existing mod config in the INI file on every restart.
+  selfManagedMods: false
+
+  mods:
+    # -- Steam Workshop item IDs (list of strings, e.g. ["2392709985","2458631365"])
+    workshopIds: []
+    # -- Mod IDs to load (list of strings; prefix each with \\ for Build 42)
+    modIds: []
+    # -- Mod source folders (comma-separated, order matters for load priority)
+    modFolders: "workshop,steam,mods"
+
+  rcon:
+    # -- RCON port (internal only; never exposed outside the pod)
+    port: 27015
+
+  # -- Allow non-Steam clients to connect
+  noSteam: false
+
+  # -- Additional environment variables passed to the server container
+  extraEnv: []
+  # - name: FORCEUPDATE
+  #   value: "true"
+
+# Zomboid Control Panel sidecar
+# Image: ghcr.io/fpsacha/zomboid-panel (https://github.com/fpsacha/zomboid-control-panel)
+# The panel connects to the game server via RCON at 127.0.0.1 and accesses PZ
+# data directories through shared volume mounts. No Docker socket is required.
+panel:
+  # -- Enable the Zomboid Control Panel sidecar
+  enabled: true
+
+  image:
+    # -- Panel image repository
+    repository: ghcr.io/fpsacha/zomboid-panel
+    # -- Panel image tag (pin to a specific release in production)
+    tag: "v1.0.66"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+
+  # -- Panel HTTP port
+  port: 3001
+
+  # -- CORS allowed origins. Required when the panel is behind a reverse proxy.
+  # Set to the full URL the panel is accessed from, e.g. "https://zomboid.example.com".
+  # Leave empty for LAN/localhost access (private IPs are allowed automatically).
+  corsOrigins: ""
+
+  # -- Set true when the panel is served over HTTPS by a reverse proxy (Gateway API).
+  # Enables HSTS and upgrade-insecure-requests security headers.
+  https: true
+
+  # RCON connection settings for the panel sidecar.
+  # The panel connects to the game server at 127.0.0.1 within the shared pod network namespace.
+  # RCON is never exposed outside the pod as a Kubernetes Service.
+  rcon:
+    # -- Hostname the panel uses to reach the game server RCON
+    host: "127.0.0.1"
+    # -- RCON port the panel connects to (must match zomboid.rcon.port)
+    port: 27015
+    # -- Allow RCON even when the panel cannot detect the PZ process.
+    # Must be true in Kubernetes: the panel sidecar runs in a separate container and
+    # cannot inspect the server container's process list. RCON commands still work.
+    skipServerCheck: true
+
+  # -- Optional Steam Web API key for richer mod metadata from the Workshop.
+  # See https://steamcommunity.com/dev/apikey
+  steamApiKey: ""
+
+  # -- Winston log level for the panel process (error, warn, info, debug)
+  logLevel: "info"
+
+  # PanelBridge is a server-side Lua mod that enables features beyond RCON (teleport,
+  # heal, weather, character export). PanelBridge is DISABLED BY DEFAULT.
+  # Enabling it requires:
+  #   1. DoLuaChecksum=false in the server INI (set via zomboid.extraEnv)
+  #   2. panel.serverFilesReadOnly: false (panel must write PanelBridge.lua to /pz-server)
+  #   3. A server restart after enabling
+  # See README for details.
+  panelBridge:
+    # -- Enable PanelBridge integration (requires DoLuaChecksum=false and write access to /pz-server)
+    enabled: false
+
+  # -- Mount the PZ server install (/pz-server) as read-only in the panel container.
+  # Must be set to false when panelBridge.enabled is true, because PanelBridge
+  # needs to write PanelBridge.lua into /pz-server/Install/media/lua/server/.
+  serverFilesReadOnly: true
+
+  # -- Extra environment variables for the panel container
+  extraEnv: []
+
+# Services
+service:
+  game:
+    # -- Game service type. LoadBalancer is required for direct UDP game traffic.
+    type: LoadBalancer
+    # -- Static IP from your Cilium LB pool (leave empty for automatic assignment)
+    loadBalancerIP: ""
+    # -- externalTrafficPolicy for the game service.
+    # Local preserves client source IPs and avoids the double-NAT hop.
+    # Correct for a single-replica StatefulSet (traffic only goes to the one pod).
+    externalTrafficPolicy: Local
+    # -- Annotations for the game service (e.g. Cilium LB pool selector)
+    annotations: {}
+    # -- Required game ports (always exposed)
+    ports:
+      # -- Main game UDP port
+      game: 16261
+      # -- Direct-connect UDP port
+      direct: 16262
+    # Steam connectivity ports (8766 and 8767 UDP).
+    # Required for Steam client discovery; not required for direct-connect or NoSteam servers.
+    steamPorts:
+      # -- Enable Steam discovery ports in the game Service
+      enabled: false
+      # -- Steam port 1
+      port1: 8766
+      # -- Steam port 2
+      port2: 8767
+
+  panel:
+    # -- Panel service type (ClusterIP; exposed externally only via Gateway API)
+    type: ClusterIP
+    # -- Panel service port
+    port: 3001
+
+# Gateway API — exposes the web panel via an existing Cilium Gateway
+gateway:
+  # -- Enable the HTTPRoute for the panel
+  enabled: false
+  # -- Annotations on the HTTPRoute resource
+  annotations: {}
+  # -- Parent gateway references
+  parentRefs:
+    - name: main-gateway
+      namespace: gateway
+  # -- Hostname the panel should be reachable on
+  hostname: "zomboid.example.com"
+
+# Persistent storage
+persistence:
+  # -- Default StorageClass for all PVCs (overridable per PVC). Leave "" for cluster default.
+  storageClass: ""
+
+  # Game data PVC
+  # Server mount:  /home/steam/Zomboid  (saves, config, player DB, logs, PanelBridge IPC)
+  # Panel mount:   /zomboid             (writable; PanelBridge IPC writes here)
+  data:
+    # -- Enable the game data PVC
+    enabled: true
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Size of the game data PVC
+    size: 20Gi
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Per-PVC StorageClass override
+    storageClass: ""
+
+  # Server files PVC
+  # Server mount:  /home/steam/pz-dedicated  (full PZ server install + workshop downloads)
+  # Panel mount:   /pz-server               (read-only by default; writable for PanelBridge)
+  serverFiles:
+    # -- Enable the server files PVC
+    enabled: true
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Size of the server files PVC (PZ server binary ~2 GB + workshop mods can be large)
+    size: 30Gi
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Per-PVC StorageClass override
+    storageClass: ""
+
+  # Panel data PVC — mounts at /app/data in the panel container
+  # Contains: panel database, JWT secret, panel configuration, and panel-created backups.
+  #
+  # WARNING — PANEL BACKUP STORAGE:
+  # The panel stores all backups created through its UI inside /app/data.
+  # With the default 2Gi PVC, frequent large world backups via the panel WILL fill this PVC.
+  # Risk: once full, the panel process may fail to write its database or configuration.
+  #
+  # Safe options:
+  #   1. Use the chart CronJob or CSI snapshots (recommended — these do not use this PVC).
+  #   2. Increase panelData.size before enabling frequent panel-managed backups.
+  #   3. Trigger a save via the panel RCON console, then run the chart CronJob or a snapshot.
+  #
+  # The backups PVC (mounted at /backups in the server container) is used by the chart
+  # CronJob only — the panel does NOT write into /backups.
+  panelData:
+    # -- Enable the panel data PVC
+    enabled: true
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Size of the panel data PVC. Increase if you intend to use the panel backup feature frequently.
+    size: 2Gi
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Per-PVC StorageClass override
+    storageClass: ""
+
+  # Panel logs PVC — mounts at /app/logs in the panel container
+  # Panel logs are transient and do not need to survive pod restarts in most cases.
+  # Disabled by default: uses emptyDir. Enable for persistent log retention.
+  panelLogs:
+    # -- Enable a PVC for panel logs (disabled = emptyDir)
+    enabled: false
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Size of the panel logs PVC
+    size: 2Gi
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Per-PVC StorageClass override
+    storageClass: ""
+
+  # Backups PVC — mounts at /backups in the server container and backup CronJob.
+  # Note: the panel does NOT write into this PVC. Panel-created backups go to /app/data.
+  backups:
+    # -- Enable the backups PVC
+    enabled: true
+    # -- Use an existing PVC instead of creating one
+    existingClaim: ""
+    # -- Size of the backups PVC
+    size: 30Gi
+    # -- Access modes
+    accessModes:
+      - ReadWriteOnce
+    # -- Per-PVC StorageClass override
+    storageClass: ""
+
+# -- Pod-level security context
+# fsGroup 1000 matches the steam/node user GID so mounted PVCs are writable by both containers.
+podSecurityContext:
+  fsGroup: 1000
+
+# Container security contexts
+# NOTE: readOnlyRootFilesystem is intentionally NOT set.
+# SteamCMD and the PZ server write to many locations under /home/steam at runtime.
+# The panel (Node.js) also writes temporary files. Enabling readOnlyRootFilesystem
+# without mapping every writable path to an emptyDir would prevent startup.
+securityContext:
+  # -- Security context for the game server container.
+  #
+  # Left empty intentionally. The danixu86 entrypoint requires root at startup:
+  # it runs chown -R 1000:1000 on the mounted PVC directories (requires CAP_CHOWN)
+  # then uses `su - steam` to drop to the steam user before launching the server.
+  #
+  # These entrypoint operations are INCOMPATIBLE with:
+  #   runAsUser: 1000     — entrypoint must start as root
+  #   runAsNonRoot: true  — same reason
+  #   capabilities.drop: [ALL] — removes CAP_CHOWN, breaking the chown step
+  #
+  # Do not set these values unless a real container startup test with the exact
+  # danixu86 image confirms that the entrypoint completes successfully.
+  server: {}
+
+  # -- Security context for the Zomboid Control Panel sidecar
+  # The panel image is built with UID/GID 1000 (matching the compose default build-arg).
+  # Adjust runAsUser if you see permission errors on /app/data or /zomboid.
+  panel:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+# Resource requests and limits
+resources:
+  # -- Resources for the game server container
+  server:
+    requests:
+      cpu: "1000m"
+      memory: 4Gi
+    limits:
+      cpu: "4000m"
+      memory: 8Gi
+  # -- Resources for the Zomboid Control Panel sidecar
+  panel:
+    requests:
+      cpu: "100m"
+      memory: 256Mi
+    limits:
+      cpu: "500m"
+      memory: 512Mi
+
+# Startup probe — generous timeout because Workshop downloads can take many minutes on first start
+startupProbe:
+  # -- Enable startup probe
+  enabled: true
+  # -- Seconds before the first probe fires
+  initialDelaySeconds: 60
+  # -- How often to probe
+  periodSeconds: 15
+  # -- How many consecutive failures before the pod is killed (60s + 40*15s = 10 min total)
+  failureThreshold: 40
+  # -- Probe timeout
+  timeoutSeconds: 5
+
+# Readiness probe
+readinessProbe:
+  # -- Enable readiness probe
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  failureThreshold: 10
+  timeoutSeconds: 5
+
+# Liveness probe — disabled by default to avoid restart loops during Steam updates or mod downloads
+livenessProbe:
+  # -- Enable liveness probe
+  enabled: false
+  initialDelaySeconds: 300
+  periodSeconds: 30
+  failureThreshold: 6
+  timeoutSeconds: 5
+
+# -- Seconds Kubernetes waits for the pod to shut down cleanly before SIGKILL.
+# The Danixu entrypoint does not install a verified SIGTERM handler that saves the world.
+# A plain pod deletion or scale-to-zero may terminate the server without an explicit save.
+# Before planned maintenance, issue `save` then `quit` via the panel RCON console first.
+terminationGracePeriodSeconds: 90
+
+# Graceful shutdown configuration.
+# A future release may support RCON-based save-and-quit when a verified RCON client
+# is present inside the server container. Until then, administrators must issue
+# `save` and `quit` manually via the panel's RCON console before planned maintenance.
+shutdown:
+  graceful:
+    # -- Enable graceful shutdown (no verified method is currently implemented)
+    enabled: false
+    # -- Shutdown method. Currently only "none" is supported.
+    # "rcon" may be added in a future release once a client binary is verified
+    # to exist inside the danixu86 image and tested end-to-end.
+    method: "none"
+
+# Migration helper — a sleep pod that mounts all PVCs so you can kubectl cp save files
+migration:
+  # -- Enable the migration helper pod
+  enabled: false
+  image:
+    # -- Image used by the migration pod
+    repository: busybox
+    tag: "1.36"
+    pullPolicy: IfNotPresent
+
+# Backup CronJob — crash-consistent file-level backups to the backups PVC.
+# WARNING: This CronJob reads live files without coordinating with the running game server.
+# Backups taken while the server is running are CRASH-CONSISTENT, not application-consistent.
+# For application-consistent backups, use a VolumeSnapshot after an RCON save command,
+# or use the panel's built-in backup function, or stop the server before archiving.
+backup:
+  # -- Enable the backup CronJob
+  enabled: false
+  # -- Cron schedule for backups
+  schedule: "0 4 * * *"
+  # -- Number of days to retain backup archives
+  retentionDays: 7
+  image:
+    # -- Image used for backup scripts (needs tar, find, date)
+    repository: alpine
+    tag: "3.19"
+    pullPolicy: IfNotPresent
+
+# VolumeSnapshot — create CSI snapshots before major upgrades
+volumeSnapshot:
+  # -- Enable snapshot creation (requires a CSI driver that supports VolumeSnapshots)
+  enabled: false
+  # -- VolumeSnapshotClass name (leave "" for cluster default)
+  snapshotClassName: ""
+  # -- Snapshot the game data PVC
+  data:
+    enabled: true
+  # -- Snapshot the server files PVC
+  serverFiles:
+    enabled: true
+
+# -- Node selector for pod scheduling
+nodeSelector: {}
+# -- Tolerations for pod scheduling
+tolerations: []
+# -- Affinity rules for pod scheduling
+affinity: {}

@@ -1,0 +1,65 @@
+{{- if .Values.migration.enabled }}
+# Migration helper pod — mounts all PVCs and sleeps so you can kubectl cp save files.
+# Scale the StatefulSet to 0 before enabling this pod, then copy files, then disable it.
+# See README.md for the full migration procedure.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-migration
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migration
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  # Migration pod must never run at the same time as the StatefulSet pod.
+  # Scale the StatefulSet to 0 (kubectl scale sts ... --replicas=0) before enabling this.
+  restartPolicy: Never
+  securityContext:
+    fsGroup: 1000
+  containers:
+    - name: migration
+      image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag }}"
+      imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
+      command: ["/bin/sh", "-c", "echo 'Migration pod ready. Use kubectl cp to transfer files.'; sleep infinity"]
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      volumeMounts:
+        - name: data
+          mountPath: /home/steam/Zomboid
+        - name: server-files
+          mountPath: /home/steam/pz-dedicated/steamapps/workshop
+        - name: backups
+          mountPath: /backups
+  volumes:
+    - name: data
+      {{- if .Values.persistence.data.existingClaim }}
+      persistentVolumeClaim:
+        claimName: {{ .Values.persistence.data.existingClaim }}
+      {{- else }}
+      persistentVolumeClaim:
+        claimName: {{ include "zomboid-server.fullname" . }}-data
+      {{- end }}
+    - name: server-files
+      {{- if .Values.persistence.serverFiles.existingClaim }}
+      persistentVolumeClaim:
+        claimName: {{ .Values.persistence.serverFiles.existingClaim }}
+      {{- else }}
+      persistentVolumeClaim:
+        claimName: {{ include "zomboid-server.fullname" . }}-server-files
+      {{- end }}
+    - name: backups
+      {{- if .Values.persistence.backups.existingClaim }}
+      persistentVolumeClaim:
+        claimName: {{ .Values.persistence.backups.existingClaim }}
+      {{- else }}
+      persistentVolumeClaim:
+        claimName: {{ include "zomboid-server.fullname" . }}-backups
+      {{- end }}
+{{- end }}

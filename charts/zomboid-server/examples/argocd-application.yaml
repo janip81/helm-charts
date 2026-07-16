@@ -1,0 +1,135 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: zomboid-server
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://janip81.github.io/helm-charts/
+    chart: zomboid-server
+    targetRevision: 0.1.0
+    helm:
+      releaseName: zomboid
+      valuesObject:
+        image:
+          repository: danixu86/project-zomboid-dedicated-server
+          # Build 41 stable. Switch to 42.x.x-unstable for Build 42 early access.
+          tag: "41.78.19-release"
+
+        zomboid:
+          serverName: "my-server"
+          adminUsername: "admin"
+          # Reference a pre-existing Secret — do NOT put passwords in Git
+          existingSecret: "zomboid-secrets"
+          secretKeys:
+            adminPassword: "admin-password"
+            rconPassword: "rcon-password"
+            serverPassword: "server-password"
+          # Set false after admin account is created on first run
+          adminPasswordBootstrap:
+            enabled: true
+          public: false
+          maxPlayers: 16
+          minMemory: "3072m"
+          maxMemory: "6144m"
+          serverPreset: "Survival"
+          selfManagedMods: false
+          mods:
+            workshopIds: []
+            modIds: []
+
+        panel:
+          enabled: true
+          image:
+            repository: ghcr.io/fpsacha/zomboid-panel
+            tag: "v1.0.66"
+          port: 3001
+          # Set to the panel hostname when behind Gateway / reverse proxy
+          corsOrigins: "https://zomboid.example.com"
+          https: true
+          rcon:
+            host: "127.0.0.1"
+            port: 27015
+            skipServerCheck: true
+          serverFilesReadOnly: true
+          panelBridge:
+            enabled: false
+
+        service:
+          game:
+            type: LoadBalancer
+            loadBalancerIP: "192.168.101.50"
+            externalTrafficPolicy: Local
+            ports:
+              game: 16261
+              direct: 16262
+            steamPorts:
+              enabled: false
+          panel:
+            type: ClusterIP
+            port: 3001
+
+        gateway:
+          enabled: true
+          parentRefs:
+            - name: main-gateway
+              namespace: gateway
+          hostname: "zomboid.example.com"
+
+        persistence:
+          storageClass: ""
+          data:
+            enabled: true
+            size: 20Gi
+          serverFiles:
+            enabled: true
+            size: 30Gi
+          panelData:
+            enabled: true
+            size: 2Gi
+          panelLogs:
+            enabled: false
+          backups:
+            enabled: true
+            size: 30Gi
+
+        podSecurityContext:
+          fsGroup: 1000
+
+        resources:
+          server:
+            requests:
+              cpu: "1000m"
+              memory: 4Gi
+            limits:
+              cpu: "4000m"
+              memory: 8Gi
+          panel:
+            requests:
+              cpu: "100m"
+              memory: 256Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+
+        terminationGracePeriodSeconds: 90
+
+        backup:
+          enabled: true
+          schedule: "0 4 * * *"
+          retentionDays: 7
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: games
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
