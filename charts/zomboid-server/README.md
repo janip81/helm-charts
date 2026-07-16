@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 41.78.19](https://img.shields.io/badge/AppVersion-41.78.19-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 41.78.19](https://img.shields.io/badge/AppVersion-41.78.19-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -733,7 +733,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | zomboid.selfManagedMods | bool | `false` | When true, the entrypoint will NOT modify Mods/WorkshopItems in the server INI. Use this after initial mod setup or when managing mods via the web panel. WARNING: when false and workshopIds/modIds are both empty, the entrypoint will CLEAR existing mod config in the INI file on every restart. |
 | zomboid.serverName | string | `"zomboid"` | Server name identifier (no spaces or special characters — admin login will fail) |
 | zomboid.serverPassword | string | `""` | Server join password (leave empty for no password) |
-| zomboid.serverPreset | string | `"Survival"` | Difficulty preset for a new server Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survival, Survivor |
+| zomboid.serverPreset | string | `"Survivor"` | Difficulty preset for a new server Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survivor |
 | zomboid.serverPresetReplace | bool | `false` | Replace the preset on every container start. Set true only during initial setup; set false afterwards to protect custom INI edits. |
 
 ----------------------------------------------

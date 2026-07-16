@@ -72,8 +72,8 @@ zomboid:
   maxMemory: "4096m"
 
   # -- Difficulty preset for a new server
-  # Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survival, Survivor
-  serverPreset: "Survival"
+  # Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survivor
+  serverPreset: "Survivor"
   # -- Replace the preset on every container start.
   # Set true only during initial setup; set false afterwards to protect custom INI edits.
   serverPresetReplace: false
