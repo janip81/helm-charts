@@ -1,0 +1,83 @@
+{{- if and .Values.persistence.data.enabled (not .Values.persistence.data.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-data
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.data.accessModes | nindent 4 }}
+  {{- include "zomboid-server.storageClass" (dict "local" .Values.persistence.data "global" .Values.persistence.storageClass) | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.data.size }}
+{{- end }}
+
+{{- if and .Values.persistence.serverFiles.enabled (not .Values.persistence.serverFiles.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-server-files
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.serverFiles.accessModes | nindent 4 }}
+  {{- include "zomboid-server.storageClass" (dict "local" .Values.persistence.serverFiles "global" .Values.persistence.storageClass) | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.serverFiles.size }}
+{{- end }}
+
+{{- if and .Values.persistence.panelData.enabled (not .Values.persistence.panelData.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-panel-data
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.panelData.accessModes | nindent 4 }}
+  {{- include "zomboid-server.storageClass" (dict "local" .Values.persistence.panelData "global" .Values.persistence.storageClass) | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.panelData.size }}
+{{- end }}
+
+{{- if and .Values.persistence.panelLogs.enabled (not .Values.persistence.panelLogs.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-panel-logs
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.panelLogs.accessModes | nindent 4 }}
+  {{- include "zomboid-server.storageClass" (dict "local" .Values.persistence.panelLogs "global" .Values.persistence.storageClass) | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.panelLogs.size }}
+{{- end }}
+
+{{- if and .Values.persistence.backups.enabled (not .Values.persistence.backups.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-backups
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.backups.accessModes | nindent 4 }}
+  {{- include "zomboid-server.storageClass" (dict "local" .Values.persistence.backups "global" .Values.persistence.storageClass) | nindent 2 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backups.size }}
+{{- end }}

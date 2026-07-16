@@ -1,0 +1,17 @@
+{{- if .Values.panel.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-panel
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.panel.type }}
+  ports:
+    - name: panel-http
+      port: {{ .Values.service.panel.port }}
+      targetPort: panel-http
+      protocol: TCP
+  selector:
+    {{- include "zomboid-server.selectorLabels" . | nindent 4 }}
+{{- end }}

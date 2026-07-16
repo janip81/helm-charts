@@ -1,0 +1,104 @@
+{{- if .Values.backup.enabled }}
+# CRASH-CONSISTENT BACKUP — NOT APPLICATION-CONSISTENT
+#
+# This CronJob archives world saves and player DB from a live running server
+# without coordinating a save with the game process first.
+# Files copied while the server is running may be in an inconsistent state.
+#
+# For stronger consistency guarantees, use one of these approaches instead:
+#   1. VolumeSnapshot (preferred): trigger an RCON save, then take a CSI snapshot.
+#   2. Panel backups: the Zomboid Control Panel has a built-in backup scheduler
+#      that can coordinate saves before archiving.
+#   3. Graceful stop: scale the StatefulSet to 0, archive, then restart.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-backup
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+  annotations:
+    zomboid.io/backup-consistency: "crash-consistent"
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "zomboid-server.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 1000
+          containers:
+            - name: backup
+              image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+              imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+              env:
+                - name: RETENTION_DAYS
+                  value: {{ .Values.backup.retentionDays | quote }}
+                - name: SERVER_NAME
+                  value: {{ .Values.zomboid.serverName | quote }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+                  ARCHIVE="/backups/${SERVER_NAME}-${TIMESTAMP}.tar.gz"
+
+                  echo "[backup] CRASH-CONSISTENT: archiving live server data for ${SERVER_NAME} at ${TIMESTAMP}"
+                  echo "[backup] Files may be in-flight. For application-consistent backups use a VolumeSnapshot."
+
+                  # Archive saves, server config, and player DB.
+                  # Kubernetes Secrets are never included in the archive.
+                  tar -czf "${ARCHIVE}" \
+                    -C /home/steam/Zomboid \
+                    --ignore-failed-read \
+                    "Saves/Multiplayer/${SERVER_NAME}" \
+                    "Server/${SERVER_NAME}.ini" \
+                    "Server/${SERVER_NAME}_SandboxVars.lua" \
+                    "db" \
+                    2>/dev/null || true
+
+                  echo "[backup] Written: ${ARCHIVE} ($(du -sh "${ARCHIVE}" | cut -f1))"
+
+                  # Prune archives older than RETENTION_DAYS
+                  find /backups -name "${SERVER_NAME}-*.tar.gz" -mtime +${RETENTION_DAYS} -delete
+                  echo "[backup] Pruned backups older than ${RETENTION_DAYS} days"
+              volumeMounts:
+                - name: data
+                  mountPath: /home/steam/Zomboid
+                  readOnly: true
+                - name: backups
+                  mountPath: /backups
+          volumes:
+            - name: data
+              {{- if .Values.persistence.data.existingClaim }}
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.data.existingClaim }}
+              {{- else }}
+              persistentVolumeClaim:
+                claimName: {{ include "zomboid-server.fullname" . }}-data
+              {{- end }}
+            - name: backups
+              {{- if .Values.persistence.backups.existingClaim }}
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.backups.existingClaim }}
+              {{- else }}
+              persistentVolumeClaim:
+                claimName: {{ include "zomboid-server.fullname" . }}-backups
+              {{- end }}
+{{- end }}

@@ -1,0 +1,96 @@
+== Project Zomboid Dedicated Server ==
+
+StatefulSet: {{ include "zomboid-server.fullname" . }}
+Namespace:   {{ .Release.Namespace }}
+Image:       {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+
+== Game Traffic ==
+
+{{- if eq .Values.service.game.type "LoadBalancer" }}
+The game service is type LoadBalancer. Once an external IP is assigned:
+
+  kubectl get svc {{ include "zomboid-server.fullname" . }}-game -n {{ .Release.Namespace }}
+
+Players connect to:  <EXTERNAL-IP>:{{ .Values.service.game.ports.game }} (UDP)
+Direct connect port: <EXTERNAL-IP>:{{ .Values.service.game.ports.direct }} (UDP)
+{{- if .Values.service.game.steamPorts.enabled }}
+Steam ports exposed: {{ .Values.service.game.steamPorts.port1 }}/UDP, {{ .Values.service.game.steamPorts.port2 }}/UDP
+{{- else }}
+Steam ports:  disabled (service.game.steamPorts.enabled=false)
+{{- end }}
+{{- else }}
+Game service type: {{ .Values.service.game.type }}
+Game port:   {{ .Values.service.game.ports.game }}/UDP
+Direct port: {{ .Values.service.game.ports.direct }}/UDP
+{{- end }}
+
+== Web Panel ==
+
+{{- if .Values.panel.enabled }}
+Panel image: {{ .Values.panel.image.repository }}:{{ .Values.panel.image.tag }}
+{{- if .Values.gateway.enabled }}
+Panel URL: https://{{ .Values.gateway.hostname }}
+{{- else }}
+Panel is enabled but no Gateway route is configured.
+Access via port-forward:
+
+  kubectl port-forward -n {{ .Release.Namespace }} sts/{{ include "zomboid-server.fullname" . }} {{ .Values.panel.port }}:{{ .Values.panel.port }}
+
+Then open: http://localhost:{{ .Values.panel.port }}
+{{- end }}
+
+RCON connects internally at 127.0.0.1:{{ .Values.zomboid.rcon.port }} (not a Service).
+{{- else }}
+Panel is disabled (panel.enabled=false).
+{{- end }}
+
+== First-Run Checklist ==
+
+{{- if .Values.zomboid.adminPasswordBootstrap.enabled }}
+1. ADMIN PASSWORD: ADMINPASSWORD is injected from the Secret on this startup.
+   The server passes it as a command-line argument — it will appear in logs.
+   After the admin account is created, set:
+     zomboid.adminPasswordBootstrap.enabled: false
+   Then upgrade and delete the pod to apply.
+{{- else }}
+1. adminPasswordBootstrap.enabled is false — ADMINPASSWORD is NOT injected.
+   Ensure the admin account was already created on a previous startup.
+{{- end }}
+
+2. Mods install on the SECOND server start; map mods load on the THIRD.
+   Do not be alarmed if the server restarts itself during first setup.
+
+== Applying Upgrades (OnDelete strategy) ==
+
+StatefulSet template changes do NOT automatically restart the pod.
+The pod WILL restart automatically on crash or node failure.
+
+To apply a chart upgrade:
+  kubectl delete pod -n {{ .Release.Namespace }} {{ include "zomboid-server.fullname" . }}-0
+
+The StatefulSet will immediately recreate it with the updated template.
+
+{{- if .Values.migration.enabled }}
+
+== Migration Pod ==
+
+The migration helper pod is ENABLED. Scale down the StatefulSet first:
+  kubectl scale sts {{ include "zomboid-server.fullname" . }} --replicas=0 -n {{ .Release.Namespace }}
+
+Copy files:
+  kubectl cp <source> {{ .Release.Namespace }}/{{ include "zomboid-server.fullname" . }}-migration:<dest>
+
+Set migration.enabled: false and run helm upgrade to remove the pod when done.
+{{- end }}
+
+{{- if .Values.backup.enabled }}
+
+== Backup CronJob (crash-consistent) ==
+
+Schedule: {{ .Values.backup.schedule }}
+Archives: /backups/<serverName>-YYYYMMDD-HHMMSS.tar.gz
+Retention: {{ .Values.backup.retentionDays }} days
+
+WARNING: backups are crash-consistent (live files, no server coordination).
+For application-consistent backups, use VolumeSnapshot or panel backups.
+{{- end }}

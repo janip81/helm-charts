@@ -1,0 +1,38 @@
+{{- if .Values.volumeSnapshot.enabled }}
+# VolumeSnapshot resources — triggered by setting volumeSnapshot.enabled=true.
+# Take snapshots BEFORE: version upgrades, branch switches (B41↔B42), large mod changes,
+# world migration, and panel upgrades.
+# Requires a CSI driver that supports the VolumeSnapshot API (e.g. vSphere CSI ≥ 3.0).
+{{- if .Values.volumeSnapshot.data.enabled }}
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-data-{{ now | date "20060102-150405" }}
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+    app.kubernetes.io/component: snapshot
+spec:
+  {{- if .Values.volumeSnapshot.snapshotClassName }}
+  volumeSnapshotClassName: {{ .Values.volumeSnapshot.snapshotClassName }}
+  {{- end }}
+  source:
+    persistentVolumeClaimName: {{ if .Values.persistence.data.existingClaim }}{{ .Values.persistence.data.existingClaim }}{{ else }}{{ include "zomboid-server.fullname" . }}-data{{ end }}
+{{- end }}
+{{- if .Values.volumeSnapshot.serverFiles.enabled }}
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-server-files-{{ now | date "20060102-150405" }}
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+    app.kubernetes.io/component: snapshot
+spec:
+  {{- if .Values.volumeSnapshot.snapshotClassName }}
+  volumeSnapshotClassName: {{ .Values.volumeSnapshot.snapshotClassName }}
+  {{- end }}
+  source:
+    persistentVolumeClaimName: {{ if .Values.persistence.serverFiles.existingClaim }}{{ .Values.persistence.serverFiles.existingClaim }}{{ else }}{{ include "zomboid-server.fullname" . }}-server-files{{ end }}
+{{- end }}
+{{- end }}

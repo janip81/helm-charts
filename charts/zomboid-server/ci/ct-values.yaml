@@ -1,0 +1,55 @@
+# Chart-testing values — disables external dependencies (LB IP, gateway, CSI snapshots)
+image:
+  tag: "41.78.19-release"
+
+zomboid:
+  serverName: "ct-test"
+  adminPassword: "ci-admin-pass"
+  rconPassword: "ci-rcon-pass"
+  adminPasswordBootstrap:
+    enabled: true
+  # selfManagedMods prevents WORKSHOP_IDS="" from clearing mod config in CI
+  selfManagedMods: true
+
+panel:
+  enabled: true
+  image:
+    repository: ghcr.io/fpsacha/zomboid-panel
+    tag: "v1.0.66"
+  corsOrigins: ""
+  https: false
+  rcon:
+    host: "127.0.0.1"
+    port: 27015
+    skipServerCheck: true
+
+service:
+  game:
+    type: ClusterIP
+    externalTrafficPolicy: Cluster
+    steamPorts:
+      enabled: false
+
+gateway:
+  enabled: false
+
+persistence:
+  data:
+    enabled: false
+  serverFiles:
+    enabled: false
+  panelData:
+    enabled: false
+  panelLogs:
+    enabled: false
+  backups:
+    enabled: false
+
+migration:
+  enabled: false
+
+backup:
+  enabled: false
+
+volumeSnapshot:
+  enabled: false
