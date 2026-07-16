@@ -156,14 +156,11 @@ spec:
               mountPath: /backups
           resources:
             {{- toYaml .Values.resources.server | nindent 12 }}
-          # Startup probe — generous budget for first-start Steam and Workshop downloads
+          # Startup probe — TCP check on RCON port (pgrep not available in this image)
           {{- if .Values.startupProbe.enabled }}
           startupProbe:
-            exec:
-              command:
-                - pgrep
-                - -f
-                - ProjectZomboid
+            tcpSocket:
+              port: rcon
             initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.startupProbe.periodSeconds }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
@@ -171,11 +168,8 @@ spec:
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
-            exec:
-              command:
-                - pgrep
-                - -f
-                - ProjectZomboid
+            tcpSocket:
+              port: rcon
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
@@ -183,11 +177,8 @@ spec:
           {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
-            exec:
-              command:
-                - pgrep
-                - -f
-                - ProjectZomboid
+            tcpSocket:
+              port: rcon
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
