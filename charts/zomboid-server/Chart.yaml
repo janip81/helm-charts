@@ -30,4 +30,4 @@ annotations:
     - name: zomboid-server
       image: danixu86/project-zomboid-dedicated-server:41.78.19-release
     - name: zomboid-panel
-      image: ghcr.io/fpsacha/zomboid-panel:v1.0.66
+      image: ghcr.io/fpsacha/zomboid-panel:v1.0.67
