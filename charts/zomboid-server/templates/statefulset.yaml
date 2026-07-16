@@ -24,6 +24,28 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        # Kubernetes does not auto-populate empty PVCs from image content (unlike Docker volumes).
+        # This init container copies the baked-in PZ server files to the server-files PVC on first
+        # boot so the entrypoint's preset validation and server binary can find them.
+        - name: init-server-files
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              if [ ! -f /mnt/start-server.sh ]; then
+                echo "Initializing server-files PVC from image..."
+                cp -a /home/steam/pz-dedicated/. /mnt/
+                chown -R 1000:1000 /mnt
+                echo "Done."
+              else
+                echo "server-files PVC already initialized, skipping."
+              fi
+          volumeMounts:
+            - name: server-files
+              mountPath: /mnt
       containers:
         # ── Game server ──────────────────────────────────────────────────────────
         - name: server
