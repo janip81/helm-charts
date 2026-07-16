@@ -2,7 +2,7 @@ apiVersion: v2
 name: zomboid-server
 description: A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "41.78.19"
 home: https://projectzomboid.com
 icon: https://cdn2.steamgriddb.com/icon/57b7e11eca1be1c2f09e9e9c4cfb9b28/32/256x256.png
