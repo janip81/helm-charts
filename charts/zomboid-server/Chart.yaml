@@ -3,7 +3,7 @@ name: zomboid-server
 description: A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 type: application
 version: 0.1.2
-appVersion: "42.19.0"
+appVersion: "41.78.19"
 home: https://projectzomboid.com
 icon: https://cdn2.steamgriddb.com/icon/57b7e11eca1be1c2f09e9e9c4cfb9b28/32/256x256.png
 maintainers:
@@ -28,6 +28,6 @@ annotations:
       url: https://github.com/fpsacha/zomboid-control-panel
   artifacthub.io/images: |
     - name: zomboid-server
-      image: danixu86/project-zomboid-dedicated-server:42.19.0-unstable
+      image: danixu86/project-zomboid-dedicated-server:41.78.19-release
     - name: zomboid-panel
       image: ghcr.io/fpsacha/zomboid-panel:v1.0.67
