@@ -44,6 +44,8 @@ zomboid:
   rconPassword: ""
   # -- Server join password (leave empty for no password)
   serverPassword: ""
+  # -- Set to true to enable the PASSWORD env var when using existingSecret
+  serverPasswordEnabled: false
 
   # Admin password bootstrap control.
   # The danixu86 image passes ADMINPASSWORD as a command-line argument to the PZ server,

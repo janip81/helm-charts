@@ -73,7 +73,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "zomboid-server.secretName" . }}
                   key: {{ .Values.zomboid.secretKeys.rconPassword }}
-            {{- if .Values.zomboid.serverPassword }}
+            {{- if or .Values.zomboid.serverPassword .Values.zomboid.serverPasswordEnabled }}
             - name: PASSWORD
               valueFrom:
                 secretKeyRef:
