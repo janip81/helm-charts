@@ -1,0 +1,22 @@
+{{- if and .Values.exporter.enabled .Values.exporter.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+    {{- with .Values.exporter.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource
+spec:
+  selector:
+    matchLabels:
+      {{- include "zomboid-server.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      interval: {{ .Values.exporter.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.exporter.serviceMonitor.scrapeTimeout }}
+      path: /metrics
+{{- end }}

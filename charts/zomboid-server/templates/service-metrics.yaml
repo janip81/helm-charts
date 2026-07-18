@@ -1,0 +1,17 @@
+{{- if .Values.exporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-metrics
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: {{ .Values.exporter.port }}
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    {{- include "zomboid-server.selectorLabels" . | nindent 4 }}
+{{- end }}

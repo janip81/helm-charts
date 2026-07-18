@@ -276,6 +276,44 @@ spec:
             timeoutSeconds: 5
         {{- end }}
 
+        {{- if .Values.exporter.enabled }}
+        # ── Prometheus Exporter ──────────────────────────────────────────────────
+        # Reads PanelBridge JSON files from the data PVC at /data (read-only).
+        # Requires panel.panelBridge.enabled: true for the files to be written.
+        - name: exporter
+          image: "{{ .Values.exporter.image.repository }}:{{ .Values.exporter.image.tag }}"
+          imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+          args:
+            - --server-name={{ .Values.zomboid.serverName }}
+            - --data-path=/data
+            - --web.listen-address=:{{ .Values.exporter.port }}
+            - --stale-threshold={{ .Values.exporter.staleThreshold }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.exporter.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+          resources:
+            {{- toYaml .Values.exporter.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+        {{- end }}
+
       volumes:
         - name: data
           {{- if and .Values.persistence.data.enabled .Values.persistence.data.existingClaim }}
