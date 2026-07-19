@@ -208,6 +208,9 @@ exporter:
     interval: "30s"
     # -- Scrape timeout
     scrapeTimeout: "10s"
+    # -- metricRelabelings applied after scrape; use to drop ephemeral labels
+    # that change on pod restart (instance, pod) to prevent duplicate series.
+    metricRelabelings: []
 
 # Services
 service:

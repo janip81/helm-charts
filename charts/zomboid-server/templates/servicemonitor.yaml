@@ -19,4 +19,8 @@ spec:
       interval: {{ .Values.exporter.serviceMonitor.interval }}
       scrapeTimeout: {{ .Values.exporter.serviceMonitor.scrapeTimeout }}
       path: /metrics
+      {{- with .Values.exporter.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
