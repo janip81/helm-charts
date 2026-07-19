@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 41.78.19](https://img.shields.io/badge/AppVersion-41.78.19-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 41.78.19](https://img.shields.io/badge/AppVersion-41.78.19-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -614,6 +614,18 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | backup.image.tag | string | `"3.19"` |  |
 | backup.retentionDays | int | `7` | Number of days to retain backup archives |
 | backup.schedule | string | `"0 4 * * *"` | Cron schedule for backups |
+| exporter.enabled | bool | `false` | Enable the zomboid-exporter sidecar container |
+| exporter.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| exporter.image.repository | string | `"ghcr.io/janip81/zomboid-exporter"` | Image repository for zomboid-exporter |
+| exporter.image.tag | string | `"latest"` | Image tag — pin to a SHA or semver tag in production |
+| exporter.port | int | `9091` | Port the exporter listens on |
+| exporter.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resources for the exporter sidecar |
+| exporter.serviceMonitor.enabled | bool | `false` | Create a Prometheus Operator ServiceMonitor for automatic scraping |
+| exporter.serviceMonitor.interval | string | `"30s"` | Scrape interval |
+| exporter.serviceMonitor.labels | object | `{}` | Additional labels on the ServiceMonitor (must match your Prometheus serviceMonitorSelector) |
+| exporter.serviceMonitor.metricRelabelings | list | `[]` | metricRelabelings applied after scrape; use to drop ephemeral labels that change on pod restart (instance, pod) to prevent duplicate series. |
+| exporter.serviceMonitor.scrapeTimeout | string | `"10s"` | Scrape timeout |
+| exporter.staleThreshold | string | `"120s"` | How long before an un-updated status file is treated as stale/down |
 | fullnameOverride | string | `""` | Provide a full name override for chart resources |
 | gateway.annotations | object | `{}` | Annotations on the HTTPRoute resource |
 | gateway.enabled | bool | `false` | Enable the HTTPRoute for the panel |
@@ -733,6 +745,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | zomboid.selfManagedMods | bool | `false` | When true, the entrypoint will NOT modify Mods/WorkshopItems in the server INI. Use this after initial mod setup or when managing mods via the web panel. WARNING: when false and workshopIds/modIds are both empty, the entrypoint will CLEAR existing mod config in the INI file on every restart. |
 | zomboid.serverName | string | `"zomboid"` | Server name identifier (no spaces or special characters — admin login will fail) |
 | zomboid.serverPassword | string | `""` | Server join password (leave empty for no password) |
+| zomboid.serverPasswordEnabled | bool | `false` | Set to true to enable the PASSWORD env var when using existingSecret |
 | zomboid.serverPreset | string | `"Survivor"` | Difficulty preset for a new server Options: Apocalypse, Beginner, Builder, FirstWeek, SixMonthsLater, Survivor |
 | zomboid.serverPresetReplace | bool | `false` | Replace the preset on every container start. Set true only during initial setup; set false afterwards to protect custom INI edits. |
 
