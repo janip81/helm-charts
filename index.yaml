@@ -4328,6 +4328,43 @@ entries:
           url: https://github.com/fpsacha/zomboid-control-panel
     apiVersion: v2
     appVersion: 41.78.19
+    created: "2026-07-19T11:04:32.177738714Z"
+    description: A Helm chart for deploying a Project Zomboid dedicated server on
+      Kubernetes
+    digest: 1d28f311d8942af37aeb2c8dbe55cc5f35858aaafae8088b71b2bc01889a06cf
+    home: https://projectzomboid.com
+    icon: https://cdn2.steamgriddb.com/icon/57b7e11eca1be1c2f09e9e9c4cfb9b28/32/256x256.png
+    keywords:
+    - game
+    - zomboid
+    - project-zomboid
+    - gameserver
+    - dedicated-server
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: zomboid-server
+    sources:
+    - https://github.com/Danixu/project-zomboid-server-docker
+    - https://github.com/fpsacha/zomboid-control-panel
+    - https://github.com/janip81/helm-charts/tree/main/charts/zomboid-server
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.5/zomboid-server-0.1.5.tgz
+    version: 0.1.5
+  - annotations:
+      artifacthub.io/images: |
+        - name: zomboid-server
+          image: danixu86/project-zomboid-dedicated-server:41.78.19-release
+        - name: zomboid-panel
+          image: ghcr.io/fpsacha/zomboid-panel:v1.0.67
+      artifacthub.io/links: |
+        - name: Server image source
+          url: https://github.com/Danixu/project-zomboid-server-docker
+        - name: Panel image source
+          url: https://github.com/fpsacha/zomboid-control-panel
+    apiVersion: v2
+    appVersion: 41.78.19
     created: "2026-07-18T17:30:27.042779961Z"
     description: A Helm chart for deploying a Project Zomboid dedicated server on
       Kubernetes
@@ -4500,4 +4537,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-18T17:30:27.043198716Z"
+generated: "2026-07-19T11:04:32.178029229Z"
