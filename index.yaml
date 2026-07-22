@@ -2484,6 +2484,38 @@ entries:
       artifacthub.io/changes: |
         - kind: added
           description: Optional SMTP mail configuration
+        - kind: security
+          description: Bump Ghost to 6.37.0 (fixes GHSA-62q6-4hv4-vjrw, critical cache-poisoning XSS)
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    apiVersion: v2
+    appVersion: 6.37.0
+    created: "2026-07-22T18:37:16.252766452Z"
+    description: Ghost blogging platform with external MySQL/MariaDB
+    digest: ff08435a259726ffa232d5ac63511520103cd57001c6e69081853ed59d1447d4
+    home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
+    icon: https://ghost.org/favicon.ico
+    keywords:
+    - ghost
+    - blog
+    - cms
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: ghost
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/ghost/
+    - https://hub.docker.com/_/ghost
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/ghost-0.1.2/ghost-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: added
+          description: Optional SMTP mail configuration
       artifacthub.io/links: |
         - name: Chart source
           url: https://github.com/janip81/helm-charts/tree/main/charts/ghost/
@@ -4537,4 +4569,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-19T11:04:32.178029229Z"
+generated: "2026-07-22T18:37:16.253137535Z"
