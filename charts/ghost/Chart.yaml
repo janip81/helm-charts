@@ -2,8 +2,8 @@ apiVersion: v2
 name: ghost
 description: Ghost blogging platform with external MySQL/MariaDB
 type: application
-version: 0.1.1
-appVersion: "6.32.0"
+version: 0.1.2
+appVersion: "6.37.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/ghost
 icon: https://ghost.org/favicon.ico
 keywords:
@@ -25,3 +25,5 @@ annotations:
   artifacthub.io/changes: |
     - kind: added
       description: Optional SMTP mail configuration
+    - kind: security
+      description: Bump Ghost to 6.37.0 (fixes GHSA-62q6-4hv4-vjrw, critical cache-poisoning XSS)
