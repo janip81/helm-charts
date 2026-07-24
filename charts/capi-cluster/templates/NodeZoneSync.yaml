@@ -1,0 +1,148 @@
+{{- if .Values.nodeZoneSync.enabled }}
+# Keeps topology.kubernetes.io/zone (and the legacy failure-domain.beta.* alias)
+# correct on every node of the WORKLOAD cluster, sourced from CAPV's own
+# VSphereVM.status.host — which CAPV re-verifies against live vCenter on its
+# normal reconcile loop (~5-6min), unlike vsphere-cpi's node label which is
+# only set once at node registration and never touched again.
+#
+# Runs here on prod-mgmt (not in the workload cluster) because VSphereVM
+# objects only exist on the management cluster. Reaches the workload cluster
+# using the {{ .Values.cluster.name }}-kubeconfig Secret CAPI already creates
+# in this same namespace — no vCenter credentials needed anywhere in this job.
+#
+# hostZoneMap is deliberately explicit, not derived from the ESXi hostname:
+# the vSphere tag a host carries can be an arbitrary/legacy name (e.g.
+# prod-k8s's stargate-prod host keeps the tag "k8s-stockholm" so existing
+# PVs' baked-in nodeAffinity keeps matching — PersistentVolume.spec.nodeAffinity
+# is immutable, so this "wrong-looking" name is intentional, not a leftover).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.cluster.name }}-node-zone-sync
+  namespace: {{ .Values.cluster.name }}
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.cluster.name }}-node-zone-sync
+  namespace: {{ .Values.cluster.name }}
+rules:
+  - apiGroups: ["infrastructure.cluster.x-k8s.io"]
+    resources: ["vspherevms"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["{{ .Values.cluster.name }}-kubeconfig"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Values.cluster.name }}-node-zone-sync
+  namespace: {{ .Values.cluster.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Values.cluster.name }}-node-zone-sync
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.cluster.name }}-node-zone-sync
+    namespace: {{ .Values.cluster.name }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cluster.name }}-node-zone-sync
+  namespace: {{ .Values.cluster.name }}
+spec:
+  schedule: {{ .Values.nodeZoneSync.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.nodeZoneSync.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.nodeZoneSync.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ .Values.cluster.name }}-node-zone-sync
+          restartPolicy: OnFailure
+          containers:
+            - name: node-zone-sync
+              image: {{ .Values.nodeZoneSync.image | quote }}
+              env:
+                - name: NAMESPACE
+                  value: {{ .Values.cluster.name | quote }}
+                - name: KUBECONFIG_SECRET
+                  value: {{ .Values.cluster.name }}-kubeconfig
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+
+                  # Static host -> zone-tag map, baked in from values at render time.
+                  zone_for_host() {
+                    case "$1" in
+                  {{- range $host, $zone := .Values.nodeZoneSync.hostZoneMap }}
+                      "{{ $host }}") echo "{{ $zone }}" ;;
+                  {{- end }}
+                      *) echo "" ;;
+                    esac
+                  }
+
+                  # Read VSphereVM host placement first, using the pod's own
+                  # in-cluster identity (this targets prod-mgmt, where the
+                  # job runs). KUBECONFIG is unset at this point, so kubectl
+                  # uses the mounted ServiceAccount token, not the workload
+                  # cluster kubeconfig extracted below.
+                  echo "=== Reading VSphereVM host placement (management cluster) ==="
+                  # jsonpath (single-brace syntax) on purpose, not go-template —
+                  # this whole file is itself Helm-templated, so double-brace
+                  # syntax here would get parsed by Helm instead of passed
+                  # through to kubectl.
+                  kubectl -n "$NAMESPACE" get vspherevm \
+                    -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.host}{"\n"}{end}' \
+                    > /tmp/vm-hosts.txt
+                  echo "Found $(wc -l < /tmp/vm-hosts.txt) VSphereVM objects in $NAMESPACE"
+
+                  echo "=== Extracting target cluster kubeconfig ==="
+                  kubectl get secret "$KUBECONFIG_SECRET" -n "$NAMESPACE" \
+                    -o jsonpath='{.data.value}' | base64 -d > /tmp/target.kubeconfig
+                  export KUBECONFIG=/tmp/target.kubeconfig
+
+                  # Everything from here targets the workload cluster.
+                  while IFS=$'\t' read -r NAME HOST; do
+                    if [ -z "$HOST" ]; then
+                      echo "  $NAME: no .status.host yet, skipping"
+                      continue
+                    fi
+
+                    ZONE=$(zone_for_host "$HOST")
+                    if [ -z "$ZONE" ]; then
+                      echo "  $NAME: host '$HOST' not in hostZoneMap, skipping"
+                      continue
+                    fi
+
+                    CURRENT=$(kubectl get node "$NAME" \
+                      -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/zone}' \
+                      2>/dev/null || true)
+
+                    if [ -z "$CURRENT" ]; then
+                      echo "  $NAME: node not found in workload cluster yet, skipping"
+                      continue
+                    fi
+
+                    if [ "$CURRENT" = "$ZONE" ]; then
+                      echo "  $NAME: zone already correct ($ZONE)"
+                      continue
+                    fi
+
+                    echo "  $NAME: zone drift detected ($CURRENT -> $ZONE), patching"
+                    kubectl label node "$NAME" \
+                      topology.kubernetes.io/zone="$ZONE" \
+                      failure-domain.beta.kubernetes.io/zone="$ZONE" \
+                      --overwrite
+                  done < /tmp/vm-hosts.txt
+
+                  echo "=== Done ==="
+{{- end }}
