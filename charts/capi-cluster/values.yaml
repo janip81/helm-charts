@@ -228,3 +228,27 @@ etcdDefrag:
   image: ""                       # leave empty to auto-detect from k8s version
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
+
+# Keeps each workload node's topology.kubernetes.io/zone label in sync with
+# CAPV's own VSphereVM.status.host — fixes vsphere-cpi only setting this once
+# at node registration, which goes stale after any manual storage vMotion.
+# Runs on prod-mgmt (this chart's own cluster), reaching the workload cluster
+# via the {{ cluster.name }}-kubeconfig Secret CAPI already creates here.
+# Only useful once a cluster's nodes genuinely span more than one ESXi host
+# with non-shared per-host datastores — leave disabled otherwise.
+nodeZoneSync:
+  enabled: false
+  schedule: "*/5 * * * *"        # matches CAPV's own VSphereVM resync cadence
+  image: "docker.io/bitnami/kubectl:latest"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  # ESXi hostname (VSphereVM.status.host) -> zone tag value.
+  # Not auto-derived from the hostname on purpose: the vSphere tag a host
+  # carries can be an intentionally "wrong-looking" legacy name (see
+  # prod-k8s's values — stargate-prod host keeps the tag "k8s-stockholm" so
+  # existing PVs' immutable nodeAffinity keeps matching). Must match whatever
+  # is actually configured in vsphere-csi/vsphere-cpi's labels.zone lookup
+  # for this same vCenter.
+  hostZoneMap: {}
+  # stargate-prod.server.threshold.se: k8s-stockholm
+  # stargate-burst.server.threshold.se: stargate-burst
