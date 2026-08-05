@@ -46,6 +46,33 @@ spec:
           volumeMounts:
             - name: server-files
               mountPath: /mnt
+        # The panel image's entrypoint (since its v1.1.24 PUID/PGID support) assumes it
+        # starts as root, chowns /app/data and /app/logs to PUID:PGID, then drops
+        # privileges via setpriv. Our panel container's securityContext already forces
+        # a fixed non-root runAsUser/runAsGroup, so it never runs as root and that
+        # chown fails outright (CrashLoopBackOff) -- see
+        # https://github.com/fpsacha/zomboid-control-panel/issues/33. Adding just the
+        # CHOWN capability to the panel container does not work around it: Kubernetes
+        # does not propagate added capabilities into the effective set for non-root
+        # containers, only the bounding set (confirmed live via /proc/1/status).
+        # Fix: pre-chown these volumes here as root, once, before the panel container
+        # starts -- it then bypasses the broken entrypoint entirely (see the panel
+        # container's `command` override below) since ownership is already correct.
+        - name: init-panel-data
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - chown -R 1000:1000 /app/data /app/logs
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: panel-data
+              mountPath: /app/data
+            - name: panel-logs
+              mountPath: /app/logs
       containers:
         # ── Game server ──────────────────────────────────────────────────────────
         - name: server
@@ -192,6 +219,11 @@ spec:
         - name: panel
           image: "{{ .Values.panel.image.repository }}:{{ .Values.panel.image.tag }}"
           imagePullPolicy: {{ .Values.panel.image.pullPolicy }}
+          # Bypass the image's default entrypoint (chown + setpriv drop-privileges dance --
+          # see the init-panel-data comment above for why that breaks under our fixed
+          # non-root securityContext) and exec the app directly, matching the image's
+          # own Dockerfile CMD.
+          command: ["node", "server/index.js"]
           securityContext:
             {{- toYaml .Values.securityContext.panel | nindent 12 }}
           env:
