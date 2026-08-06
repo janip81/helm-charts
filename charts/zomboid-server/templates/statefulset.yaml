@@ -46,18 +46,16 @@ spec:
           volumeMounts:
             - name: server-files
               mountPath: /mnt
-        # The panel image's entrypoint (since its v1.1.24 PUID/PGID support) assumes it
-        # starts as root, chowns /app/data and /app/logs to PUID:PGID, then drops
-        # privileges via setpriv. Our panel container's securityContext already forces
-        # a fixed non-root runAsUser/runAsGroup, so it never runs as root and that
-        # chown fails outright (CrashLoopBackOff) -- see
-        # https://github.com/fpsacha/zomboid-control-panel/issues/33. Adding just the
-        # CHOWN capability to the panel container does not work around it: Kubernetes
-        # does not propagate added capabilities into the effective set for non-root
-        # containers, only the bounding set (confirmed live via /proc/1/status).
-        # Fix: pre-chown these volumes here as root, once, before the panel container
-        # starts -- it then bypasses the broken entrypoint entirely (see the panel
-        # container's `command` override below) since ownership is already correct.
+        # The panel image's entrypoint (since its v1.1.24 PUID/PGID support) originally
+        # assumed it started as root to chown /app/data and /app/logs, then drop
+        # privileges via setpriv -- which crash-looped under our fixed non-root
+        # securityContext (see https://github.com/fpsacha/zomboid-control-panel/issues/33).
+        # Fixed upstream since v1.1.30: the entrypoint now detects it's already
+        # non-root (id -u != 0) and skips chown/setpriv entirely, exec'ing the app
+        # directly -- but it still requires /app/data and /app/logs to already be
+        # writable by the container's UID:GID, since it no longer chowns them itself.
+        # This init container does that pre-chown, once, as root, before the panel
+        # container starts. Still required even on current panel versions.
         - name: init-panel-data
           image: busybox:1.36
           command:
@@ -219,11 +217,9 @@ spec:
         - name: panel
           image: "{{ .Values.panel.image.repository }}:{{ .Values.panel.image.tag }}"
           imagePullPolicy: {{ .Values.panel.image.pullPolicy }}
-          # Bypass the image's default entrypoint (chown + setpriv drop-privileges dance --
-          # see the init-panel-data comment above for why that breaks under our fixed
-          # non-root securityContext) and exec the app directly, matching the image's
-          # own Dockerfile CMD.
-          command: ["node", "server/index.js"]
+          # No command override needed as of panel v1.1.30+ -- its entrypoint now
+          # detects non-root and execs the default CMD itself (see the
+          # init-panel-data comment above).
           securityContext:
             {{- toYaml .Values.securityContext.panel | nindent 12 }}
           env:
