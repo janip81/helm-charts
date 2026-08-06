@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 41.78.19](https://img.shields.io/badge/AppVersion-41.78.19-informational?style=flat-square)
+![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -631,10 +631,10 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | gateway.enabled | bool | `false` | Enable the HTTPRoute for the panel |
 | gateway.hostname | string | `"zomboid.example.com"` | Hostname the panel should be reachable on |
 | gateway.parentRefs | list | `[{"name":"main-gateway","namespace":"gateway"}]` | Parent gateway references |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"danixu86/project-zomboid-dedicated-server","tag":"41.78.19-release"}` | Docker image for the Project Zomboid dedicated server. Build 41 vs Build 42 is determined by the image tag — STEAMAPPBRANCH is baked at build time. Build 41 (stable):       danixu86/project-zomboid-dedicated-server:41.78.19-release Build 42 (early access): danixu86/project-zomboid-dedicated-server:42.19.0-unstable |
+| image | object | `{"pullPolicy":"IfNotPresent","repository":"danixu86/project-zomboid-dedicated-server","tag":"42.20.2-release"}` | Docker image for the Project Zomboid dedicated server. Build 42 is now the "release" branch upstream (Build 41's last tag, 41.78.19-release, hasn't been updated since 2026-04-09 — Build 42 has superseded it as the actively maintained stable line, tagged *-release rather than *-unstable since 42.20.0). Build 42 (stable):  danixu86/project-zomboid-dedicated-server:42.20.2-release Build 41 (legacy):  danixu86/project-zomboid-dedicated-server:41.78.19-release |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"danixu86/project-zomboid-dedicated-server"` | Docker repository for the server image |
-| image.tag | string | 41.78.19-release (Build 41 stable) | Image tag. Pin to a specific version; floating tags are discouraged in production. |
+| image.tag | string | 42.20.2-release (Build 42 stable) | Image tag. Pin to a specific version; floating tags are discouraged in production. |
 | livenessProbe.enabled | bool | `false` | Enable liveness probe |
 | livenessProbe.failureThreshold | int | `6` |  |
 | livenessProbe.initialDelaySeconds | int | `300` |  |
