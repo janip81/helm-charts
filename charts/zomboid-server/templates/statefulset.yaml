@@ -316,6 +316,17 @@ spec:
             - --data-path=/data
             - --web.listen-address=:{{ .Values.exporter.port }}
             - --stale-threshold={{ .Values.exporter.staleThreshold }}
+            {{- if .Values.exporter.database.enabled }}
+            - --db-dsn=postgres://{{ .Values.exporter.database.user }}:$(EXPORTER_DB_PASSWORD)@{{ .Values.exporter.database.host }}:{{ .Values.exporter.database.port }}/{{ .Values.exporter.database.name }}
+            {{- end }}
+          {{- if .Values.exporter.database.enabled }}
+          env:
+            - name: EXPORTER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.exporter.database.existingSecret }}
+                  key: {{ .Values.exporter.database.existingSecretPasswordKey }}
+          {{- end }}
           ports:
             - name: metrics
               containerPort: {{ .Values.exporter.port }}
