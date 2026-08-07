@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -614,6 +614,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | backup.image.tag | string | `"3.19"` |  |
 | backup.retentionDays | int | `7` | Number of days to retain backup archives |
 | backup.schedule | string | `"0 4 * * *"` | Cron schedule for backups |
+| exporter.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Optional Postgres persistence for PerkLog event history (deaths, respawns, skill progression) and leaderboards. Entirely optional -- the exporter runs fine for Prometheus/Grafana with this disabled, it just won't have player/death/skill history beyond current counters. Password is read from existingSecret's existingSecretPasswordKey via Kubernetes' native $(VAR) arg substitution -- no separate DSN secret needed. |
 | exporter.enabled | bool | `false` | Enable the zomboid-exporter sidecar container |
 | exporter.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | exporter.image.repository | string | `"ghcr.io/janip81/zomboid-exporter"` | Image repository for zomboid-exporter |

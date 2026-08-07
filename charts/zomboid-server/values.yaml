@@ -194,6 +194,21 @@ exporter:
   port: 9091
   # -- How long before an un-updated status file is treated as stale/down
   staleThreshold: "120s"
+  # -- Optional Postgres persistence for PerkLog event history (deaths,
+  # respawns, skill progression) and leaderboards. Entirely optional --
+  # the exporter runs fine for Prometheus/Grafana with this disabled, it
+  # just won't have player/death/skill history beyond current counters.
+  # Password is read from existingSecret's existingSecretPasswordKey via
+  # Kubernetes' native $(VAR) arg substitution -- no separate DSN secret
+  # needed.
+  database:
+    enabled: false
+    host: ""
+    port: 5432
+    name: zomboid
+    user: zomboid
+    existingSecret: ""
+    existingSecretPasswordKey: db-password
   # -- Resources for the exporter sidecar
   resources:
     requests:
