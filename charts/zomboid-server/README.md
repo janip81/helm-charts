@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -614,8 +614,8 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | backup.image.tag | string | `"3.19"` |  |
 | backup.retentionDays | int | `7` | Number of days to retain backup archives |
 | backup.schedule | string | `"0 4 * * *"` | Cron schedule for backups |
-| discordBot.adminUserIds | list | `[]` | Discord user IDs (snowflakes) allowed to run admin-tier slash commands (currently just /save). Rendered into a ConfigMap (templates/configmap-discord-bot.yaml) rather than baked into the Deployment args, so it's editable via git without an image rebuild. Empty means no admin commands can be run by anyone. |
 | discordBot.appId | string | `""` |  |
+| discordBot.bootstrapAdminIds | list | `[]` | Discord user IDs (snowflakes, not secret) seeded as admin ONLY if discordbot_user_roles is completely empty (true first boot, or after a full data wipe) -- solves the bootstrap problem of "nobody can grant admin without already being admin". Ignored on every later restart once any role row exists, so it can never fight a later demotion. MUST be quoted strings (e.g. "302139296746307585") -- an unquoted bare number gets parsed as float64 somewhere in Helm's YAML->JSON value-loading path, which silently loses precision past float64's ~15-17 significant digits on a real 18-19 digit Discord snowflake, before any template code ever runs. No template-side fix can recover digits already lost at parse time -- this has to be right at the source. |
 | discordBot.channelId | string | `""` |  |
 | discordBot.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Stats/leaderboard queries against the same Postgres DB the exporter writes to. Typically the same existingSecret/keys as exporter.database. |
 | discordBot.discordToken.existingSecret | string | `""` |  |

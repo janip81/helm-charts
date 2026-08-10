@@ -269,15 +269,28 @@ discordBot:
   # never posted (useful for testing the MQTT connection on its own).
   channelId: ""
   # -- Discord Application ID. Not a secret -- required to register slash
-  # commands (/online, /serveruptime, /save). Empty means slash commands
-  # are never registered.
+  # commands (/online, /serveruptime, /save, /block, /unblock). Empty
+  # means slash commands are never registered.
   appId: ""
-  # -- Discord user IDs (snowflakes) allowed to run admin-tier slash
-  # commands (currently just /save). Rendered into a ConfigMap
-  # (templates/configmap-discord-bot.yaml) rather than baked into the
-  # Deployment args, so it's editable via git without an image rebuild.
-  # Empty means no admin commands can be run by anyone.
-  adminUserIds: []
+  # -- Admin-tier command access (who can run /save, /block, /unblock) is
+  # NOT configured here day-to-day -- it's a Discord-user-ID -> role
+  # mapping stored in the discordbot_user_roles table in the same
+  # Postgres DB as discordBot.database.* below, managed at runtime via
+  # the /block and /unblock commands themselves. Requires
+  # discordBot.database.enabled: true to have any effect.
+  #
+  # -- Discord user IDs (snowflakes, not secret) seeded as admin ONLY if
+  # discordbot_user_roles is completely empty (true first boot, or after
+  # a full data wipe) -- solves the bootstrap problem of "nobody can grant
+  # admin without already being admin". Ignored on every later restart
+  # once any role row exists, so it can never fight a later demotion.
+  # MUST be quoted strings (e.g. "302139296746307585") -- an unquoted
+  # bare number gets parsed as float64 somewhere in Helm's YAML->JSON
+  # value-loading path, which silently loses precision past float64's
+  # ~15-17 significant digits on a real 18-19 digit Discord snowflake,
+  # before any template code ever runs. No template-side fix can recover
+  # digits already lost at parse time -- this has to be right at the source.
+  bootstrapAdminIds: []
   rcon:
     # -- RCON host:port to connect to. Empty uses this release's own RCON
     # Service (created automatically when discordBot.enabled is true).
