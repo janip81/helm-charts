@@ -46,6 +46,9 @@ spec:
             - --db-port={{ .Values.discordBot.database.port }}
             - --db-name={{ .Values.discordBot.database.name }}
             - --db-user={{ .Values.discordBot.database.user }}
+            {{- if .Values.discordBot.bootstrapAdminIds }}
+            - --bootstrap-admin-ids={{ join "," .Values.discordBot.bootstrapAdminIds }}
+            {{- end }}
             {{- end }}
           env:
             - name: DISCORD_TOKEN
@@ -72,14 +75,6 @@ spec:
                   name: {{ .Values.discordBot.database.existingSecret }}
                   key: {{ .Values.discordBot.database.existingSecretPasswordKey }}
             {{- end }}
-          volumeMounts:
-            - name: config
-              mountPath: /config
-              readOnly: true
           resources:
             {{- toYaml .Values.discordBot.resources | nindent 12 }}
-      volumes:
-        - name: config
-          configMap:
-            name: {{ include "zomboid-server.fullname" . }}-discord-bot-config
 {{- end }}
