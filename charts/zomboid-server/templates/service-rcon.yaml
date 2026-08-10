@@ -1,0 +1,21 @@
+{{- if .Values.discordBot.enabled }}
+# RCON is normally never exposed as a Service -- the panel sidecar reaches
+# it via 127.0.0.1 within the shared pod. This ClusterIP (internal-only,
+# never a LoadBalancer) exists solely so the Discord bot Deployment below
+# -- a separate pod outside the StatefulSet -- can issue RCON commands.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-rcon
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: rcon
+      port: {{ .Values.zomboid.rcon.port }}
+      targetPort: rcon
+      protocol: TCP
+  selector:
+    {{- include "zomboid-server.selectorLabels" . | nindent 4 }}
+{{- end }}

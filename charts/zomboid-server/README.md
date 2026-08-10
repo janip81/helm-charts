@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -614,6 +614,20 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | backup.image.tag | string | `"3.19"` |  |
 | backup.retentionDays | int | `7` | Number of days to retain backup archives |
 | backup.schedule | string | `"0 4 * * *"` | Cron schedule for backups |
+| discordBot.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Stats/leaderboard queries against the same Postgres DB the exporter writes to. Typically the same existingSecret/keys as exporter.database. |
+| discordBot.discordToken.existingSecret | string | `""` |  |
+| discordBot.discordToken.existingSecretTokenKey | string | `"discord-token"` |  |
+| discordBot.enabled | bool | `false` |  |
+| discordBot.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| discordBot.image.repository | string | `"ghcr.io/janip81/zomboid-discord-bot"` | Image repository for zomboid-discord-bot |
+| discordBot.image.tag | string | `"latest"` | Image tag — pin to a SHA or semver tag in production |
+| discordBot.mqtt.broker | string | `""` |  |
+| discordBot.mqtt.existingSecret | string | `""` |  |
+| discordBot.mqtt.existingSecretPasswordKey | string | `"mqtt-password"` |  |
+| discordBot.mqtt.username | string | `""` |  |
+| discordBot.rcon.host | string | `""` | RCON host:port to connect to. Empty uses this release's own RCON Service (created automatically when discordBot.enabled is true). |
+| discordBot.rcon.port | int | `27015` |  |
+| discordBot.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resources for the Discord bot Deployment |
 | exporter.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Optional Postgres persistence for PerkLog event history (deaths, respawns, skill progression) and leaderboards. Entirely optional -- the exporter runs fine for Prometheus/Grafana with this disabled, it just won't have player/death/skill history beyond current counters. Password is read from existingSecret's existingSecretPasswordKey via Kubernetes' native $(VAR) arg substitution -- no separate DSN secret needed. |
 | exporter.enabled | bool | `false` | Enable the zomboid-exporter sidecar container |
 | exporter.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |

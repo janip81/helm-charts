@@ -1,0 +1,67 @@
+{{- if .Values.discordBot.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zomboid-server.fullname" . }}-discord-bot
+  labels:
+    {{- include "zomboid-server.labels" . | nindent 4 }}
+    app.kubernetes.io/component: discord-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "zomboid-server.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: discord-bot
+  template:
+    metadata:
+      labels:
+        {{- include "zomboid-server.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: discord-bot
+    spec:
+      containers:
+        - name: discord-bot
+          image: "{{ .Values.discordBot.image.repository }}:{{ .Values.discordBot.image.tag }}"
+          imagePullPolicy: {{ .Values.discordBot.image.pullPolicy }}
+          args:
+            - --rcon-host={{ .Values.discordBot.rcon.host | default (printf "%s-rcon" (include "zomboid-server.fullname" .)) }}:{{ .Values.discordBot.rcon.port }}
+            {{- if .Values.discordBot.mqtt.broker }}
+            - --mqtt-broker={{ .Values.discordBot.mqtt.broker }}
+            - --mqtt-topic-prefix=zomboid/{{ .Values.zomboid.serverName }}
+            {{- if .Values.discordBot.mqtt.username }}
+            - --mqtt-username={{ .Values.discordBot.mqtt.username }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.discordBot.database.enabled }}
+            - --db-host={{ .Values.discordBot.database.host }}
+            - --db-port={{ .Values.discordBot.database.port }}
+            - --db-name={{ .Values.discordBot.database.name }}
+            - --db-user={{ .Values.discordBot.database.user }}
+            {{- end }}
+          env:
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.discordToken.existingSecret }}
+                  key: {{ .Values.discordBot.discordToken.existingSecretTokenKey }}
+            - name: RCON_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.zomboid.existingSecret }}
+                  key: {{ .Values.zomboid.secretKeys.rconPassword }}
+            {{- if and .Values.discordBot.mqtt.broker .Values.discordBot.mqtt.existingSecret }}
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.mqtt.existingSecret }}
+                  key: {{ .Values.discordBot.mqtt.existingSecretPasswordKey }}
+            {{- end }}
+            {{- if .Values.discordBot.database.enabled }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.database.existingSecret }}
+                  key: {{ .Values.discordBot.database.existingSecretPasswordKey }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.discordBot.resources | nindent 12 }}
+{{- end }}

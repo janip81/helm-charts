@@ -242,6 +242,61 @@ exporter:
     # that change on pod restart (instance, pod) to prevent duplicate series.
     metricRelabelings: []
 
+# Optional Discord bot -- separate from the panel's own admin/control bot
+# (this one is read-only stats/leaderboards + live event notifications, not
+# server administration). Runs as its own Deployment, not a sidecar --
+# unlike panel/exporter it shares no pod, PVC, or network namespace with
+# the game server, and reaches it only over RCON (via the ClusterIP Service
+# below, created only when this is enabled) and over MQTT/Postgres like any
+# other client.
+discordBot:
+  enabled: false
+  image:
+    # -- Image repository for zomboid-discord-bot
+    repository: ghcr.io/janip81/zomboid-discord-bot
+    # -- Image tag — pin to a SHA or semver tag in production
+    tag: "latest"
+    # -- Image pull policy
+    pullPolicy: IfNotPresent
+  # -- Discord bot token. Required -- the chart does not create this key,
+  # only references it, so add discord-token to whatever secret
+  # existingSecret points at (e.g. the same secret as zomboid.existingSecret).
+  discordToken:
+    existingSecret: ""
+    existingSecretTokenKey: discord-token
+  rcon:
+    # -- RCON host:port to connect to. Empty uses this release's own RCON
+    # Service (created automatically when discordBot.enabled is true).
+    host: ""
+    port: 27015
+  # -- Live event stream via MQTT (see exporter.mqtt above -- the exporter
+  # must have exporter.mqtt.enabled: true and publish to the same broker
+  # for this to receive anything). Typically the same existingSecret/keys
+  # as exporter.mqtt.
+  mqtt:
+    broker: ""
+    username: ""
+    existingSecret: ""
+    existingSecretPasswordKey: mqtt-password
+  # -- Stats/leaderboard queries against the same Postgres DB the exporter
+  # writes to. Typically the same existingSecret/keys as exporter.database.
+  database:
+    enabled: false
+    host: ""
+    port: 5432
+    name: zomboid
+    user: zomboid
+    existingSecret: ""
+    existingSecretPasswordKey: db-password
+  # -- Resources for the Discord bot Deployment
+  resources:
+    requests:
+      cpu: "10m"
+      memory: 32Mi
+    limits:
+      cpu: "100m"
+      memory: 64Mi
+
 # Services
 service:
   game:
