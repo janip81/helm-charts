@@ -24,6 +24,9 @@ spec:
           imagePullPolicy: {{ .Values.discordBot.image.pullPolicy }}
           args:
             - --rcon-host={{ .Values.discordBot.rcon.host | default (printf "%s-rcon" (include "zomboid-server.fullname" .)) }}:{{ .Values.discordBot.rcon.port }}
+            {{- if .Values.discordBot.channelId }}
+            - --discord-channel-id={{ .Values.discordBot.channelId }}
+            {{- end }}
             {{- if .Values.discordBot.mqtt.broker }}
             - --mqtt-broker={{ .Values.discordBot.mqtt.broker }}
             - --mqtt-topic-prefix=zomboid/{{ .Values.zomboid.serverName }}

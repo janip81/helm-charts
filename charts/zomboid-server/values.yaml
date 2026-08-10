@@ -264,6 +264,10 @@ discordBot:
   discordToken:
     existingSecret: ""
     existingSecretTokenKey: discord-token
+  # -- Discord channel ID to post live MQTT events into. Not a secret --
+  # just a snowflake ID. Empty means events are received and logged but
+  # never posted (useful for testing the MQTT connection on its own).
+  channelId: ""
   rcon:
     # -- RCON host:port to connect to. Empty uses this release's own RCON
     # Service (created automatically when discordBot.enabled is true).

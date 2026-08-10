@@ -614,6 +614,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | backup.image.tag | string | `"3.19"` |  |
 | backup.retentionDays | int | `7` | Number of days to retain backup archives |
 | backup.schedule | string | `"0 4 * * *"` | Cron schedule for backups |
+| discordBot.channelId | string | `""` |  |
 | discordBot.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Stats/leaderboard queries against the same Postgres DB the exporter writes to. Typically the same existingSecret/keys as exporter.database. |
 | discordBot.discordToken.existingSecret | string | `""` |  |
 | discordBot.discordToken.existingSecretTokenKey | string | `"discord-token"` |  |
