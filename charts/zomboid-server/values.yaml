@@ -209,6 +209,18 @@ exporter:
     user: zomboid
     existingSecret: ""
     existingSecretPasswordKey: db-password
+  # -- Optional MQTT publishing of live ExporterLog events (kills, deaths,
+  # chat, etc.) to "<topicPrefix>/<event-type>" on an existing broker, for
+  # a Discord bot or similar to subscribe to. Purely additive -- Postgres
+  # persistence above is unaffected if this is disabled or the broker is
+  # unreachable. Username/password read from existingSecret, same pattern
+  # as database above.
+  mqtt:
+    enabled: false
+    broker: ""
+    username: ""
+    existingSecret: ""
+    existingSecretPasswordKey: mqtt-password
   # -- Resources for the exporter sidecar
   resources:
     requests:

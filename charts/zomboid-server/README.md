@@ -619,6 +619,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | exporter.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | exporter.image.repository | string | `"ghcr.io/janip81/zomboid-exporter"` | Image repository for zomboid-exporter |
 | exporter.image.tag | string | `"latest"` | Image tag — pin to a SHA or semver tag in production |
+| exporter.mqtt | object | `{"broker":"","enabled":false,"existingSecret":"","existingSecretPasswordKey":"mqtt-password","username":""}` | Optional MQTT publishing of live ExporterLog events (kills, deaths, chat, etc.) to "<topicPrefix>/<event-type>" on an existing broker, for a Discord bot or similar to subscribe to. Purely additive -- Postgres persistence above is unaffected if this is disabled or the broker is unreachable. Username/password read from existingSecret, same pattern as database above. |
 | exporter.port | int | `9091` | Port the exporter listens on |
 | exporter.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resources for the exporter sidecar |
 | exporter.serviceMonitor.enabled | bool | `false` | Create a Prometheus Operator ServiceMonitor for automatic scraping |

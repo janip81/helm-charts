@@ -319,13 +319,26 @@ spec:
             {{- if .Values.exporter.database.enabled }}
             - --db-dsn=postgres://{{ .Values.exporter.database.user }}:$(EXPORTER_DB_PASSWORD)@{{ .Values.exporter.database.host }}:{{ .Values.exporter.database.port }}/{{ .Values.exporter.database.name }}
             {{- end }}
-          {{- if .Values.exporter.database.enabled }}
+            {{- if .Values.exporter.mqtt.enabled }}
+            - --mqtt-broker={{ .Values.exporter.mqtt.broker }}
+            - --mqtt-username={{ .Values.exporter.mqtt.username }}
+            {{- end }}
+          {{- if or .Values.exporter.database.enabled .Values.exporter.mqtt.enabled }}
           env:
+            {{- if .Values.exporter.database.enabled }}
             - name: EXPORTER_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.exporter.database.existingSecret }}
                   key: {{ .Values.exporter.database.existingSecretPasswordKey }}
+            {{- end }}
+            {{- if .Values.exporter.mqtt.enabled }}
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.exporter.mqtt.existingSecret }}
+                  key: {{ .Values.exporter.mqtt.existingSecretPasswordKey }}
+            {{- end }}
           {{- end }}
           ports:
             - name: metrics
