@@ -23,9 +23,16 @@ spec:
           image: "{{ .Values.discordBot.image.repository }}:{{ .Values.discordBot.image.tag }}"
           imagePullPolicy: {{ .Values.discordBot.image.pullPolicy }}
           args:
+            - --server-name={{ .Values.zomboid.serverName }}
             - --rcon-host={{ .Values.discordBot.rcon.host | default (printf "%s-rcon" (include "zomboid-server.fullname" .)) }}:{{ .Values.discordBot.rcon.port }}
             {{- if .Values.discordBot.channelId }}
             - --discord-channel-id={{ .Values.discordBot.channelId }}
+            {{- end }}
+            {{- if .Values.discordBot.appId }}
+            - --discord-app-id={{ .Values.discordBot.appId }}
+            {{- end }}
+            {{- if .Values.exporter.enabled }}
+            - --metrics-url=http://{{ include "zomboid-server.fullname" . }}-metrics:{{ .Values.exporter.port }}/metrics
             {{- end }}
             {{- if .Values.discordBot.mqtt.broker }}
             - --mqtt-broker={{ .Values.discordBot.mqtt.broker }}
@@ -65,6 +72,14 @@ spec:
                   name: {{ .Values.discordBot.database.existingSecret }}
                   key: {{ .Values.discordBot.database.existingSecretPasswordKey }}
             {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
           resources:
             {{- toYaml .Values.discordBot.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "zomboid-server.fullname" . }}-discord-bot-config
 {{- end }}
