@@ -272,6 +272,10 @@ discordBot:
   # commands (/online, /serveruptime, /save, /block, /unblock). Empty
   # means slash commands are never registered.
   appId: ""
+  # -- Discord server (guild) ID. Not a secret. Guild-scoped command
+  # registration is near-instant; leaving this empty falls back to global
+  # registration, which can take up to an hour to propagate to clients.
+  guildId: ""
   # -- Admin-tier command access (who can run /save, /block, /unblock) is
   # NOT configured here day-to-day -- it's a Discord-user-ID -> role
   # mapping stored in the discordbot_user_roles table in the same

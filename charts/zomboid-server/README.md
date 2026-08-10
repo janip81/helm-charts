@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -621,6 +621,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | discordBot.discordToken.existingSecret | string | `""` |  |
 | discordBot.discordToken.existingSecretTokenKey | string | `"discord-token"` |  |
 | discordBot.enabled | bool | `false` |  |
+| discordBot.guildId | string | `""` | Discord server (guild) ID. Not a secret. Guild-scoped command registration is near-instant; leaving this empty falls back to global registration, which can take up to an hour to propagate to clients. |
 | discordBot.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | discordBot.image.repository | string | `"ghcr.io/janip81/zomboid-discord-bot"` | Image repository for zomboid-discord-bot |
 | discordBot.image.tag | string | `"latest"` | Image tag — pin to a SHA or semver tag in production |
