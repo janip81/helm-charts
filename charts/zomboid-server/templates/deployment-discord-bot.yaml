@@ -31,6 +31,9 @@ spec:
             {{- if .Values.discordBot.appId }}
             - --discord-app-id={{ .Values.discordBot.appId }}
             {{- end }}
+            {{- if .Values.discordBot.guildId }}
+            - --discord-guild-id={{ .Values.discordBot.guildId }}
+            {{- end }}
             {{- if .Values.exporter.enabled }}
             - --metrics-url=http://{{ include "zomboid-server.fullname" . }}-metrics:{{ .Values.exporter.port }}/metrics
             {{- end }}
