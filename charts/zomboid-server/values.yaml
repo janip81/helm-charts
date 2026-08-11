@@ -105,6 +105,11 @@ zomboid:
   # -- Allow non-Steam clients to connect
   noSteam: false
 
+  # -- Launches the game server with -debug (isDebugEnabled() true
+  # server-side). Off by default -- only intended for disposable test
+  # servers, never a real/production instance.
+  debug: false
+
   # -- Additional environment variables passed to the server container
   extraEnv: []
   # - name: FORCEUPDATE
