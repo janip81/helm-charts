@@ -135,6 +135,10 @@ spec:
             - name: NOSTEAM
               value: "true"
             {{- end }}
+            {{- if .Values.zomboid.debug }}
+            - name: DEBUG
+              value: "true"
+            {{- end }}
             {{- if or .Values.zomboid.selfManagedMods (and (empty .Values.zomboid.mods.workshopIds) (empty .Values.zomboid.mods.modIds)) }}
             # Protect existing INI mod config when no mods are specified in values,
             # or when selfManagedMods is explicitly enabled.

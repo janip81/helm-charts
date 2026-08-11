@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.13](https://img.shields.io/badge/Version-0.1.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -745,6 +745,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | zomboid.adminPassword | string | `""` | Admin password (only used for initial account creation; see adminPasswordBootstrap) |
 | zomboid.adminPasswordBootstrap.enabled | bool | `true` | Inject ADMINPASSWORD from the Secret on startup. Set false after the admin account has been created on first run. |
 | zomboid.adminUsername | string | `"admin"` | Admin username |
+| zomboid.debug | bool | `false` | Launches the game server with -debug (isDebugEnabled() true server-side). Off by default -- only intended for disposable test servers, never a real/production instance. |
 | zomboid.displayName | string | `""` | Display name in the server browser (kept from INI if left empty) |
 | zomboid.existingSecret | string | `""` | Reference an existing Kubernetes Secret instead of creating one. The secret must contain the keys defined in secretKeys. Set to "" to have the chart create a secret from the inline password values below. |
 | zomboid.extraEnv | list | `[]` | Additional environment variables passed to the server container |
