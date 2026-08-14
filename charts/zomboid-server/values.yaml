@@ -214,6 +214,14 @@ exporter:
     user: zomboid
     existingSecret: ""
     existingSecretPasswordKey: db-password
+  # -- Opt-in ThoseWhoRemain (TWR) quest-engine subsystem. Off by default --
+  # a plain stats-only deployment must never get TWR's Postgres schema,
+  # dispatch args, or write access to the game-data PVC just because
+  # database.enabled happens to be true. Requires database.enabled: true
+  # (Postgres only -- the quest engine cannot run on SQLite). See
+  # zomboid-exporter-ideas/antagonist/design/exporter-twr-feature-boundary.md.
+  twr:
+    enabled: false
   # -- Optional MQTT publishing of live ExporterLog events (kills, deaths,
   # chat, etc.) to "<topicPrefix>/<event-type>" on an existing broker, for
   # a Discord bot or similar to subscribe to. Purely additive -- Postgres

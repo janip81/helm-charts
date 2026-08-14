@@ -327,6 +327,9 @@ spec:
             - --mqtt-broker={{ .Values.exporter.mqtt.broker }}
             - --mqtt-username={{ .Values.exporter.mqtt.username }}
             {{- end }}
+            {{- if .Values.exporter.twr.enabled }}
+            - --twr-enabled=true
+            {{- end }}
           {{- if or .Values.exporter.database.enabled .Values.exporter.mqtt.enabled }}
           env:
             {{- if .Values.exporter.database.enabled }}
@@ -352,6 +355,7 @@ spec:
             - name: data
               mountPath: /data
               readOnly: true
+            {{- if .Values.exporter.twr.enabled }}
             # TWR quest engine dispatch bridge (Gate 1, 2026-08-14) --
             # the exporter needs to write dispatch files under
             # Lua/twr_dispatch/ for the TWR mod's Lua poller to read
@@ -363,10 +367,15 @@ spec:
             # else on the shared PZ data volume, only its own
             # TWR-owned namespace. subPath is auto-created by the
             # kubelet on first mount (podSecurityContext.fsGroup
-            # already grants write access).
+            # already grants write access). Only mounted when
+            # exporter.twr.enabled -- a plain stats-only deployment must
+            # never get write access to the game-data PVC at all (see
+            # zomboid-exporter-ideas/antagonist/design/
+            # exporter-twr-feature-boundary.md).
             - name: data
               mountPath: /data/Lua/twr_dispatch
               subPath: Lua/twr_dispatch
+            {{- end }}
           resources:
             {{- toYaml .Values.exporter.resources | nindent 12 }}
           readinessProbe:
