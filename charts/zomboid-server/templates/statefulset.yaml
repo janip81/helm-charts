@@ -1,3 +1,6 @@
+{{- if and .Values.exporter.twr.enabled (not .Values.exporter.database.enabled) }}
+{{- fail "exporter.twr.enabled requires exporter.database.enabled=true -- the TWR quest engine is Postgres-only" }}
+{{- end }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
