@@ -352,6 +352,21 @@ spec:
             - name: data
               mountPath: /data
               readOnly: true
+            # TWR quest engine dispatch bridge (Gate 1, 2026-08-14) --
+            # the exporter needs to write dispatch files under
+            # Lua/twr_dispatch/ for the TWR mod's Lua poller to read
+            # (Postgres -> Lua job delivery; see zomboid-exporter-ideas/
+            # antagonist/tests/quest-job-dispatch-transport-chatgpt-response.md
+            # for the design). A second volumeMount on the SAME PVC,
+            # scoped via subPath to only that one directory, is
+            # least-privilege: the exporter still can't write anywhere
+            # else on the shared PZ data volume, only its own
+            # TWR-owned namespace. subPath is auto-created by the
+            # kubelet on first mount (podSecurityContext.fsGroup
+            # already grants write access).
+            - name: data
+              mountPath: /data/Lua/twr_dispatch
+              subPath: Lua/twr_dispatch
           resources:
             {{- toYaml .Values.exporter.resources | nindent 12 }}
           readinessProbe:
