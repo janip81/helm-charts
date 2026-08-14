@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.15](https://img.shields.io/badge/Version-0.1.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.16](https://img.shields.io/badge/Version-0.1.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -646,6 +646,7 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | exporter.serviceMonitor.metricRelabelings | list | `[]` | metricRelabelings applied after scrape; use to drop ephemeral labels that change on pod restart (instance, pod) to prevent duplicate series. |
 | exporter.serviceMonitor.scrapeTimeout | string | `"10s"` | Scrape timeout |
 | exporter.staleThreshold | string | `"120s"` | How long before an un-updated status file is treated as stale/down |
+| exporter.twr.enabled | bool | `false` |  |
 | fullnameOverride | string | `""` | Provide a full name override for chart resources |
 | gateway.annotations | object | `{}` | Annotations on the HTTPRoute resource |
 | gateway.enabled | bool | `false` | Enable the HTTPRoute for the panel |
