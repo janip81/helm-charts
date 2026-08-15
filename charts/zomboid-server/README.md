@@ -1,6 +1,6 @@
 # zomboid-server
 
-![Version: 0.1.17](https://img.shields.io/badge/Version-0.1.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
+![Version: 0.1.18](https://img.shields.io/badge/Version-0.1.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 42.20.2](https://img.shields.io/badge/AppVersion-42.20.2-informational?style=flat-square)
 
 A Helm chart for deploying a Project Zomboid dedicated server on Kubernetes
 
@@ -634,6 +634,10 @@ PZ saves are single-file-per-world. Two replicas writing to the same PVC would c
 | discordBot.resources | object | `{"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"32Mi"}}` | Resources for the Discord bot Deployment |
 | exporter.database | object | `{"enabled":false,"existingSecret":"","existingSecretPasswordKey":"db-password","host":"","name":"zomboid","port":5432,"user":"zomboid"}` | Optional Postgres persistence for PerkLog event history (deaths, respawns, skill progression) and leaderboards. Entirely optional -- the exporter runs fine for Prometheus/Grafana with this disabled, it just won't have player/death/skill history beyond current counters. Password is read from existingSecret's existingSecretPasswordKey via Kubernetes' native $(VAR) arg substitution -- no separate DSN secret needed. |
 | exporter.enabled | bool | `false` | Enable the zomboid-exporter sidecar container |
+| exporter.gateway.annotations | object | `{}` | Annotations on the HTTPRoute resource |
+| exporter.gateway.enabled | bool | `false` | Enable an HTTPRoute for the exporter's web dashboard (/, /twr). This is a READ-ONLY scaffold with NO authentication -- point parentRefs at an internal-only gateway (e.g. internal-shared), never an internet-facing one, until an auth story exists. |
+| exporter.gateway.hostname | string | `"zomboid-exporter.example.com"` | Hostname the exporter dashboard should be reachable on |
+| exporter.gateway.parentRefs | list | `[{"name":"main-gateway","namespace":"gateway"}]` | Parent gateway references |
 | exporter.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | exporter.image.repository | string | `"ghcr.io/janip81/zomboid-exporter"` | Image repository for zomboid-exporter |
 | exporter.image.tag | string | `"latest"` | Image tag — pin to a SHA or semver tag in production |
