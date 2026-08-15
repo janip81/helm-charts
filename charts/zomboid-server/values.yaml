@@ -254,6 +254,20 @@ exporter:
     # -- metricRelabelings applied after scrape; use to drop ephemeral labels
     # that change on pod restart (instance, pod) to prevent duplicate series.
     metricRelabelings: []
+  gateway:
+    # -- Enable an HTTPRoute for the exporter's web dashboard (/, /twr).
+    # This is a READ-ONLY scaffold with NO authentication -- point
+    # parentRefs at an internal-only gateway (e.g. internal-shared),
+    # never an internet-facing one, until an auth story exists.
+    enabled: false
+    # -- Annotations on the HTTPRoute resource
+    annotations: {}
+    # -- Parent gateway references
+    parentRefs:
+      - name: main-gateway
+        namespace: gateway
+    # -- Hostname the exporter dashboard should be reachable on
+    hostname: "zomboid-exporter.example.com"
 
 # Optional Discord bot -- separate from the panel's own admin/control bot
 # (this one is read-only stats/leaderboards + live event notifications, not
