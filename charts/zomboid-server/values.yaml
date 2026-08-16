@@ -346,6 +346,72 @@ discordBot:
     user: zomboid
     existingSecret: ""
     existingSecretPasswordKey: db-password
+  # -- "The Curator" LLM chat feature (/curator command + optional
+  # natural chat trigger). Provider list/priority/model/allow_paid live
+  # in the discordbot_llm_providers Postgres table (requires
+  # discordBot.database.enabled above), NOT here -- this block only
+  # controls the bot's own feature flags and which provider credential
+  # env vars get injected. A DB row can only ever select a credential
+  # slot the bot's own Go code (and therefore this chart) already knows
+  # about -- see zomboid-exporter-ideas' curator-llm-provider-db-config.md.
+  curator:
+    naturalChat:
+      # -- React to the standalone word "curator" in ordinary channel
+      # messages, not just /curator. REQUIRES the Discord Message Content
+      # privileged intent to be enabled for this bot in the Discord
+      # Developer Portal, or Discord silently sends empty message
+      # content and this never triggers. Independent of curator.llm.enabled
+      # below -- canned Curator responses work through this trigger even
+      # with the LLM feature off.
+      enabled: false
+      # -- Restrict the natural chat trigger to one channel ID. Empty
+      # means any channel the bot can see.
+      channelId: ""
+      # -- Probability (0-1) of replying to an ORDINARY statement that
+      # merely mentions "curator" -- a direct question/address always
+      # attempts a reply regardless of this.
+      ambientReplyChance: 0.25
+      # -- Minimum time between natural-chat Curator replies (canned or
+      # LLM) to the same Discord user. Conversational pacing, unrelated
+      # to LLM cost -- see curator.llm.userCooldown below for that.
+      userCooldown: 20s
+      # -- Minimum time between ANY two natural-chat Curator replies,
+      # across all users.
+      globalCooldown: 5s
+    llm:
+      # -- Enable the LLM reply path (/curator open-ended questions +
+      # natural chat, when naturalChat.enabled above). Default OFF adds
+      # zero DB/network load. Canned Curator responses work regardless
+      # of this setting.
+      enabled: false
+      # -- Global safety gate: a provider row with allow_paid=true is
+      # only ever actually eligible when this is ALSO true -- a
+      # hot-editable Postgres row alone can never enable real spending.
+      # Leave false for a free-tier-only deployment.
+      allowPaid: false
+      # -- Minimum time between LLM provider calls for the same Discord
+      # user, shared by /curator and natural chat. Canned replies are
+      # exempt and never count against this budget.
+      userCooldown: 30s
+      # -- Minimum time between ANY two LLM provider calls, across all
+      # users and both /curator and natural chat -- the real ceiling on
+      # provider quota consumption.
+      globalCooldown: 5s
+      # -- Provider API key secrets, one per credential_slot the bot's
+      # Go code recognizes (curator_llm.go's credentialSlots allowlist).
+      # Only set existingSecret for the slot(s) an actual
+      # discordbot_llm_providers row uses -- an unset one just means
+      # that slot can never resolve (fails closed).
+      credentials:
+        groq:
+          existingSecret: ""
+          existingSecretKey: groq-api-key
+        openrouter:
+          existingSecret: ""
+          existingSecretKey: openrouter-api-key
+        openai:
+          existingSecret: ""
+          existingSecretKey: openai-api-key
   # -- Resources for the Discord bot Deployment
   resources:
     requests:
