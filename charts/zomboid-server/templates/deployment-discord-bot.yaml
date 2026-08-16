@@ -53,6 +53,20 @@ spec:
             - --bootstrap-admin-ids={{ join "," .Values.discordBot.bootstrapAdminIds }}
             {{- end }}
             {{- end }}
+            {{- if .Values.discordBot.curator.naturalChat.enabled }}
+            - --curator-natural-chat=true
+            {{- if .Values.discordBot.curator.naturalChat.channelId }}
+            - --curator-channel-id={{ .Values.discordBot.curator.naturalChat.channelId }}
+            {{- end }}
+            - --curator-ambient-reply-chance={{ .Values.discordBot.curator.naturalChat.ambientReplyChance }}
+            - --curator-user-cooldown={{ .Values.discordBot.curator.naturalChat.userCooldown }}
+            - --curator-global-cooldown={{ .Values.discordBot.curator.naturalChat.globalCooldown }}
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.enabled }}
+            - --llm-enabled=true
+            - --llm-user-cooldown={{ .Values.discordBot.curator.llm.userCooldown }}
+            - --llm-global-cooldown={{ .Values.discordBot.curator.llm.globalCooldown }}
+            {{- end }}
           env:
             - name: DISCORD_TOKEN
               valueFrom:
@@ -77,6 +91,40 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.discordBot.database.existingSecret }}
                   key: {{ .Values.discordBot.database.existingSecretPasswordKey }}
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.enabled }}
+            {{- /*
+              LLM_ALLOW_PAID is only ever injected when explicitly true --
+              per curator-llm-provider-db-config.md, the absence of this
+              env var (not merely its value) is part of the safety
+              contract: a hot-editable Postgres allow_paid=true row alone
+              must never be sufficient to enable real spending.
+            */}}
+            {{- if .Values.discordBot.curator.llm.allowPaid }}
+            - name: LLM_ALLOW_PAID
+              value: "true"
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.credentials.groq.existingSecret }}
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.curator.llm.credentials.groq.existingSecret }}
+                  key: {{ .Values.discordBot.curator.llm.credentials.groq.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.credentials.openrouter.existingSecret }}
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.curator.llm.credentials.openrouter.existingSecret }}
+                  key: {{ .Values.discordBot.curator.llm.credentials.openrouter.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.credentials.openai.existingSecret }}
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.curator.llm.credentials.openai.existingSecret }}
+                  key: {{ .Values.discordBot.curator.llm.credentials.openai.existingSecretKey }}
+            {{- end }}
             {{- end }}
           resources:
             {{- toYaml .Values.discordBot.resources | nindent 12 }}
