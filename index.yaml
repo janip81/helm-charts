@@ -2390,6 +2390,28 @@ entries:
   frigate:
   - apiVersion: v2
     appVersion: 0.14.1
+    created: "2026-08-17T13:03:55.01329997Z"
+    description: NVR With Realtime Object Detection for IP Cameras
+    digest: e9c44f07bd1b400ebb3c45338966b5c0621679d7317a1385ac62755f4acd8c5f
+    home: https://github.com/blakeblackshear/blakeshome-charts/tree/master/charts/frigate
+    icon: https://raw.githubusercontent.com/blakeblackshear/frigate/master/docs/static/img/branding/frigate.png
+    keywords:
+    - tensorflow
+    - coral
+    - ml
+    maintainers:
+    - email: blakeb@blakeshome.com
+      name: blakeblackshear
+    - email: jeff@billimek.com
+      name: billimek
+    name: frigate
+    sources:
+    - https://github.com/blakeblackshear/frigate
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/frigate-7.8.2/frigate-7.8.2.tgz
+    version: 7.8.2
+  - apiVersion: v2
+    appVersion: 0.14.1
     created: "2026-03-21T19:05:04.725656873Z"
     description: NVR With Realtime Object Detection for IP Cameras
     digest: 39c62805065a6d0a052911f0894993c8daa14591bee991d87892d3ec45d49239
@@ -4383,6 +4405,43 @@ entries:
           url: https://github.com/fpsacha/zomboid-control-panel
     apiVersion: v2
     appVersion: 42.20.2
+    created: "2026-08-17T13:03:55.136011927Z"
+    description: A Helm chart for deploying a Project Zomboid dedicated server on
+      Kubernetes
+    digest: c2783e45156b0547f256105fd10e698225f07108ddf86523f3fb361dc1b2f1d9
+    home: https://projectzomboid.com
+    icon: https://cdn.cloudflare.steamstatic.com/steam/apps/108600/header.jpg
+    keywords:
+    - game
+    - zomboid
+    - project-zomboid
+    - gameserver
+    - dedicated-server
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: zomboid-server
+    sources:
+    - https://github.com/Danixu/project-zomboid-server-docker
+    - https://github.com/fpsacha/zomboid-control-panel
+    - https://github.com/janip81/helm-charts/tree/main/charts/zomboid-server
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.21/zomboid-server-0.1.21.tgz
+    version: 0.1.21
+  - annotations:
+      artifacthub.io/images: |
+        - name: zomboid-server
+          image: danixu86/project-zomboid-dedicated-server:42.20.2-release
+        - name: zomboid-panel
+          image: ghcr.io/fpsacha/zomboid-panel:v1.1.34
+      artifacthub.io/links: |
+        - name: Server image source
+          url: https://github.com/Danixu/project-zomboid-server-docker
+        - name: Panel image source
+          url: https://github.com/fpsacha/zomboid-control-panel
+    apiVersion: v2
+    appVersion: 42.20.2
     created: "2026-08-17T11:59:08.172320333Z"
     description: A Helm chart for deploying a Project Zomboid dedicated server on
       Kubernetes
@@ -5110,4 +5169,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-17T11:59:08.172926946Z"
+generated: "2026-08-17T13:03:55.136486641Z"
