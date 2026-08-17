@@ -111,6 +111,20 @@ spec:
                   name: {{ .Values.discordBot.curator.llm.credentials.groq.existingSecret }}
                   key: {{ .Values.discordBot.curator.llm.credentials.groq.existingSecretKey }}
             {{- end }}
+            {{- if .Values.discordBot.curator.llm.credentials.cerebras.existingSecret }}
+            - name: CEREBRAS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.curator.llm.credentials.cerebras.existingSecret }}
+                  key: {{ .Values.discordBot.curator.llm.credentials.cerebras.existingSecretKey }}
+            {{- end }}
+            {{- if .Values.discordBot.curator.llm.credentials.gemini.existingSecret }}
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.discordBot.curator.llm.credentials.gemini.existingSecret }}
+                  key: {{ .Values.discordBot.curator.llm.credentials.gemini.existingSecretKey }}
+            {{- end }}
             {{- if .Values.discordBot.curator.llm.credentials.openrouter.existingSecret }}
             - name: OPENROUTER_API_KEY
               valueFrom:
