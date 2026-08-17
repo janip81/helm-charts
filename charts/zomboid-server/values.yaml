@@ -406,6 +406,12 @@ discordBot:
         groq:
           existingSecret: ""
           existingSecretKey: groq-api-key
+        cerebras:
+          existingSecret: ""
+          existingSecretKey: cerebras-api-key
+        gemini:
+          existingSecret: ""
+          existingSecretKey: gemini-api-key
         openrouter:
           existingSecret: ""
           existingSecretKey: openrouter-api-key
