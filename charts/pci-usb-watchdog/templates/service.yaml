@@ -5,6 +5,7 @@ metadata:
   name: {{ include "pci-usb-watchdog.fullname" . }}
   labels:
     {{- include "pci-usb-watchdog.labels" . | nindent 4 }}
+    app: {{ include "pci-usb-watchdog.name" . }}
 spec:
   selector:
     app: {{ include "pci-usb-watchdog.name" . }}
