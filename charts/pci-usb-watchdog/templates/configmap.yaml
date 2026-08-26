@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pci-usb-watchdog.fullname" . }}-config
+  labels:
+    {{- include "pci-usb-watchdog.labels" . | nindent 4 }}
+data:
+  watch_targets.yaml: |
+    clusters:
+    {{- range .Values.clusters }}
+      - name: {{ .name }}
+        {{- if .inCluster }}
+        in_cluster: true
+        {{- else }}
+        kubeconfig_path: {{ include "pci-usb-watchdog.kubeconfigPath" . }}
+        {{- end }}
+        {{- if .node }}
+        node: {{ .node }}
+        {{- end }}
+    {{- end }}
+    targets:
+    {{- range .Values.targets }}
+      - device: {{ .device | quote }}
+        cluster: {{ .cluster }}
+        namespace: {{ .namespace }}
+        workload_kind: {{ .workloadKind }}
+        workload_name: {{ .workloadName }}
+        {{- if .containerName }}
+        container_name: {{ .containerName }}
+        {{- end }}
+        signatures: {{ .signatures | default list | toJson }}
+    {{- end }}

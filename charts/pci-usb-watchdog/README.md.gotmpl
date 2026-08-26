@@ -1,0 +1,69 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+Helm chart for deploying pci-usb-watchdog: a small poller that watches Kubernetes
+workloads whose containers depend on a PCI-passthrough USB device (e.g. a Coral
+Edge TPU used by Frigate, a Zigbee/Zwave USB dongle) and alerts via Prometheus
+metrics and MQTT when the device's workload goes unhealthy -- catching the class
+of failure where the passthrough USB controller dies on the hypervisor side and
+the container just crash-loops with no clear signal until someone notices.
+
+Each entry in `clusters` needs exactly one of `kubeconfigSecret` (mount an
+existing kubeconfig Secret already living in this release's namespace -- e.g. a
+CAPI-generated `<cluster>-kubeconfig` Secret) or `inCluster: true` (use this
+pod's own ServiceAccount, requires `rbac.create: true`).
+
+## Adding this helm repository
+
+To add the helm repository, run the following commands:
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo pci-usb-watchdog
+```
+
+`values.yaml` files for the charts can be found in the `charts/[chartname]` directories.
+
+## TL;DR
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install my-app-name janip81/pci-usb-watchdog -f YOUR-OWN-VALUES.yaml
+```
+
+[Helm](https://helm.sh) must be installed to use the charts.  Please refer to
+Helm's [documentation](https://helm.sh/docs) to get started.
+
+If you had already added this repo earlier, run `helm repo update` to retrieve
+the latest versions of the packages.  You can then run `helm search repo
+<alias>` to see the charts.
+
+To install the <chart-name> chart:
+
+    helm install my-<chart-name> <alias>/<chart-name>
+
+To uninstall the chart:
+
+    helm delete my-<chart-name>
+
+## Prerequisites
+
+- [Kubernetes](https://kubernetes.io/)
+- [Helm 3.1.0](https://helm.sh)
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

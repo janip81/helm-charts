@@ -1,0 +1,99 @@
+{{- $mqttSecretName := "" }}
+{{- if .Values.mqtt.existingSecret }}
+{{- $mqttSecretName = .Values.mqtt.existingSecret }}
+{{- else if .Values.mqtt.createSecret }}
+{{- $mqttSecretName = printf "%s-mqtt" (include "pci-usb-watchdog.fullname" .) }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pci-usb-watchdog.fullname" . }}
+  labels:
+    {{- include "pci-usb-watchdog.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "pci-usb-watchdog.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "pci-usb-watchdog.name" . }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.rbac.create }}
+      serviceAccountName: {{ include "pci-usb-watchdog.fullname" . }}
+      {{- end }}
+      containers:
+        - name: pci-usb-watchdog
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: WATCH_TARGETS_CONFIG
+              value: /etc/pci-usb-watchdog/watch_targets.yaml
+            - name: POLL_INTERVAL_SECONDS
+              value: {{ .Values.pollIntervalSeconds | quote }}
+            - name: METRICS_PORT
+              value: {{ .Values.metrics.port | quote }}
+            - name: MQTT_HOST
+              value: {{ .Values.mqtt.host | quote }}
+            - name: MQTT_PORT
+              value: {{ .Values.mqtt.port | quote }}
+            - name: MQTT_TOPIC_PREFIX
+              value: {{ .Values.mqtt.topicPrefix | quote }}
+            {{- if $mqttSecretName }}
+            - name: MQTT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $mqttSecretName }}
+                  key: MQTT_USER
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $mqttSecretName }}
+                  key: MQTT_PASSWORD
+            {{- end }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pci-usb-watchdog/watch_targets.yaml
+              subPath: watch_targets.yaml
+              readOnly: true
+            {{- range .Values.clusters }}
+            {{- if not .inCluster }}
+            - name: kubeconfig-{{ .name }}
+              mountPath: {{ include "pci-usb-watchdog.kubeconfigPath" . }}
+              subPath: {{ .kubeconfigSecret.key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "pci-usb-watchdog.fullname" . }}-config
+        {{- range .Values.clusters }}
+        {{- if not .inCluster }}
+        - name: kubeconfig-{{ .name }}
+          secret:
+            secretName: {{ .kubeconfigSecret.name }}
+        {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
