@@ -1,6 +1,6 @@
 # pci-usb-watchdog
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Detects PCI-passthrough USB device failures (e.g. Coral Edge TPU, Zigbee dongles) across one or more Kubernetes clusters and alerts via Prometheus + MQTT
 
@@ -76,6 +76,7 @@ To uninstall the chart:
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/janip81/pci-usb-watchdog"` |  |
 | image.tag | string | `"latest"` |  |
+| imagePullSecrets | list | `[]` |  |
 | metrics.port | int | `8000` |  |
 | mqtt.createSecret | bool | `false` | If true, render a Secret from mqtt.username / mqtt.password below |
 | mqtt.existingSecret | string | `""` | Name of an existing Secret with MQTT_USER / MQTT_PASSWORD keys. Takes precedence over createSecret. |
