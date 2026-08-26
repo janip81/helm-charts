@@ -3809,6 +3809,34 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.0/n8n-0.1.0.tgz
     version: 0.1.0
+  pci-usb-watchdog:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-08-26T12:41:38.774872568Z"
+    description: Detects PCI-passthrough USB device failures (e.g. Coral Edge TPU,
+      Zigbee dongles) across one or more Kubernetes clusters and alerts via Prometheus
+      + MQTT
+    digest: babd330f99698d9b7eab804be55113b620946a7987ced23f4f8437d493e2d215
+    home: https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog
+    keywords:
+    - homelab
+    - monitoring
+    - usb
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: pci-usb-watchdog
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/pci-usb-watchdog-0.1.0/pci-usb-watchdog-0.1.0.tgz
+    version: 0.1.0
   remnant:
   - annotations:
       artifacthub.io/links: |
@@ -5123,4 +5151,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-17T13:03:55.136486641Z"
+generated: "2026-08-26T12:41:38.77527655Z"
