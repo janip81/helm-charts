@@ -1,0 +1,8 @@
+# chart-testing installs with default values + this override in an ephemeral
+# kind cluster that has none of the real prod-mgmt secrets (prod-k8s-kubeconfig,
+# MQTT creds). replicaCount: 0 validates the rendered manifests apply cleanly
+# without needing a pod to actually schedule/mount/run.
+replicaCount: 0
+
+serviceMonitor:
+  enabled: false

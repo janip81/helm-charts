@@ -88,6 +88,7 @@ To uninstall the chart:
 | podAnnotations | object | `{}` |  |
 | pollIntervalSeconds | int | `60` | Seconds between poll cycles |
 | rbac.create | bool | `false` | Only needed if any entry in `clusters` sets `inCluster: true` |
+| replicaCount | int | `1` |  |
 | resources.limits.memory | string | `"128Mi"` |  |
 | resources.requests.cpu | string | `"25m"` |  |
 | resources.requests.memory | string | `"64Mi"` |  |
