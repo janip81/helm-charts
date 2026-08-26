@@ -1,0 +1,84 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/janip81/pci-usb-watchdog
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# -- Seconds between poll cycles
+pollIntervalSeconds: 60
+
+metrics:
+  port: 8000
+
+mqtt:
+  host: mosquitto.mqtt.svc.cluster.local
+  port: 1883
+  topicPrefix: homelab/pci-watchdog
+  # -- Name of an existing Secret with MQTT_USER / MQTT_PASSWORD keys. Takes precedence over createSecret.
+  existingSecret: ""
+  # -- If true, render a Secret from mqtt.username / mqtt.password below
+  createSecret: false
+  username: ""
+  password: ""
+
+# -- Clusters this watchdog can watch. Each cluster needs exactly one of
+# `kubeconfigSecret` (mount an existing kubeconfig Secret, e.g. a CAPI-generated
+# `<cluster>-kubeconfig` Secret already living in this release's namespace) or
+# `inCluster: true` (use this pod's own ServiceAccount -- requires rbac.create: true).
+clusters:
+  - name: prod-k8s
+    node: prod-k8s-pci-node-6xx5v-krjsp
+    kubeconfigSecret:
+      name: prod-k8s-kubeconfig
+      key: value
+  # - name: prod-mgmt
+  #   inCluster: true
+
+# -- Workloads to watch for PCI-passthrough USB device failures. `signatures`
+# is a list of case-sensitive substrings matched against container logs; an
+# empty list means "watch for crashes/restarts but there's no known log
+# signature to confirm the root cause yet" (still alerts, with reason=unknown).
+targets:
+  - device: "Coral Edge TPU"
+    cluster: prod-k8s
+    namespace: frigate
+    workloadKind: Deployment
+    workloadName: frigate
+    signatures:
+      - "No EdgeTPU was detected"
+      - "HC died"
+  - device: "Sonoff Zigbee Dongle"
+    cluster: prod-k8s
+    namespace: zigbee2mqtt
+    workloadKind: StatefulSet
+    workloadName: zigbee2mqtt
+    signatures: []
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    memory: 128Mi
+
+service:
+  enabled: true
+  port: 8000
+
+serviceMonitor:
+  enabled: false
+  namespace: ""
+  interval: 30s
+  scrapeTimeout: 10s
+  labels:
+    release: prometheus
+
+rbac:
+  # -- Only needed if any entry in `clusters` sets `inCluster: true`
+  create: false
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

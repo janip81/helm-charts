@@ -1,0 +1,22 @@
+apiVersion: v2
+name: pci-usb-watchdog
+description: Detects PCI-passthrough USB device failures (e.g. Coral Edge TPU, Zigbee dongles) across one or more Kubernetes clusters and alerts via Prometheus + MQTT
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+keywords:
+  - homelab
+  - monitoring
+  - usb
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog
+deprecated: false
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/pci-usb-watchdog/
