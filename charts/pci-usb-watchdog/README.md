@@ -1,6 +1,6 @@
 # pci-usb-watchdog
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Detects PCI-passthrough USB device failures (e.g. Coral Edge TPU, Zigbee dongles) across one or more Kubernetes clusters and alerts via Prometheus + MQTT
 
@@ -89,6 +89,7 @@ To uninstall the chart:
 | podAnnotations | object | `{}` |  |
 | pollIntervalSeconds | int | `60` | Seconds between poll cycles |
 | rbac.create | bool | `false` | Only needed if any entry in `clusters` sets `inCluster: true` |
+| rebootCooldownSeconds | int | `1800` | Minimum time between two auto-reboots of the SAME node, regardless of how many targets on that node ask for a reboot or how many times the same target re-confirms unhealthy. Guards against reboot-looping a node whose hardware fault a reboot doesn't actually fix. |
 | replicaCount | int | `1` |  |
 | resources.limits.memory | string | `"128Mi"` |  |
 | resources.requests.cpu | string | `"25m"` |  |
@@ -100,7 +101,7 @@ To uninstall the chart:
 | serviceMonitor.labels.release | string | `"prometheus"` |  |
 | serviceMonitor.namespace | string | `""` |  |
 | serviceMonitor.scrapeTimeout | string | `"10s"` |  |
-| targets | list | `[{"cluster":"prod-k8s","device":"Coral Edge TPU","namespace":"frigate","signatures":["No EdgeTPU was detected","HC died"],"workloadKind":"Deployment","workloadName":"frigate"},{"cluster":"prod-k8s","device":"Sonoff Zigbee Dongle","namespace":"zigbee2mqtt","signatures":[],"workloadKind":"StatefulSet","workloadName":"zigbee2mqtt"}]` | Workloads to watch for PCI-passthrough USB device failures. `signatures` is a list of case-sensitive substrings matched against container logs; an empty list means "watch for crashes/restarts but there's no known log signature to confirm the root cause yet" (still alerts, with reason=unknown). |
+| targets | list | `[{"autoReboot":true,"cluster":"prod-k8s","device":"Coral Edge TPU","namespace":"frigate","signatures":["No EdgeTPU was detected","HC died"],"workloadKind":"Deployment","workloadName":"frigate"},{"cluster":"prod-k8s","device":"Sonoff Zigbee Dongle","namespace":"zigbee2mqtt","signatures":[],"workloadKind":"StatefulSet","workloadName":"zigbee2mqtt"}]` | Workloads to watch for PCI-passthrough USB device failures. `signatures` is a list of case-sensitive substrings matched against container logs; an empty list means "watch for crashes/restarts but there's no known log signature to confirm the root cause yet" (still alerts, with reason=unknown). `autoReboot` (default false) reboots the node when a poll confirms one of `signatures` -- never on reason=unknown. Only makes sense for a failure mode already confirmed to need a real host reboot, not just a pod restart. |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------

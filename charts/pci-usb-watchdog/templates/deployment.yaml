@@ -48,6 +48,8 @@ spec:
               value: {{ .Values.mqtt.port | quote }}
             - name: MQTT_TOPIC_PREFIX
               value: {{ .Values.mqtt.topicPrefix | quote }}
+            - name: REBOOT_COOLDOWN_SECONDS
+              value: {{ .Values.rebootCooldownSeconds | quote }}
             {{- if $mqttSecretName }}
             - name: MQTT_USER
               valueFrom:

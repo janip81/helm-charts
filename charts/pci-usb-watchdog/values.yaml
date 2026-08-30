@@ -10,6 +10,12 @@ imagePullSecrets: []
 # -- Seconds between poll cycles
 pollIntervalSeconds: 60
 
+# -- Minimum time between two auto-reboots of the SAME node, regardless of
+# how many targets on that node ask for a reboot or how many times the same
+# target re-confirms unhealthy. Guards against reboot-looping a node whose
+# hardware fault a reboot doesn't actually fix.
+rebootCooldownSeconds: 1800
+
 metrics:
   port: 8000
 
@@ -41,6 +47,9 @@ clusters:
 # is a list of case-sensitive substrings matched against container logs; an
 # empty list means "watch for crashes/restarts but there's no known log
 # signature to confirm the root cause yet" (still alerts, with reason=unknown).
+# `autoReboot` (default false) reboots the node when a poll confirms one of
+# `signatures` -- never on reason=unknown. Only makes sense for a failure
+# mode already confirmed to need a real host reboot, not just a pod restart.
 targets:
   - device: "Coral Edge TPU"
     cluster: prod-k8s
@@ -50,6 +59,12 @@ targets:
     signatures:
       - "No EdgeTPU was detected"
       - "HC died"
+    # Confirmed live 2026-08-30: the Coral USB accelerator drops off the
+    # node's USB bus entirely at the kernel level -- restarting Frigate's
+    # pod never recovers it, only a full node reboot does. Auto-remediation
+    # is safe here specifically because the fix is well-understood and the
+    # cooldown above prevents a reboot-loop if it ever stops working.
+    autoReboot: true
   - device: "Sonoff Zigbee Dongle"
     cluster: prod-k8s
     namespace: zigbee2mqtt

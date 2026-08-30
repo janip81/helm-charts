@@ -29,4 +29,5 @@ data:
         container_name: {{ .containerName }}
         {{- end }}
         signatures: {{ .signatures | default list | toJson }}
+        auto_reboot: {{ .autoReboot | default false }}
     {{- end }}
