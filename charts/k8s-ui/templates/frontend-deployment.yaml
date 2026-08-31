@@ -14,6 +14,8 @@ spec:
       labels:
         app: {{ include "k8s-ui.name" . }}-frontend
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
       containers:
         - name: frontend
           image: "{{ .Values.image.frontend }}:{{ .Values.image.tag }}"
