@@ -20,6 +20,10 @@ spec:
       dnsPolicy: {{ if .Values.hostNetwork }}ClusterFirstWithHostNet{{ else }}ClusterFirst{{ end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+{{ toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: home-assistant
           image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
@@ -40,6 +44,9 @@ spec:
               mountPath: {{ .path }}
               readOnly: true
             {{- end }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
           env:
             - name: TZ
@@ -79,4 +86,7 @@ spec:
             path: {{ .path }}
             type: CharDevice
         {{- end }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | nindent 8 }}
         {{- end }}
