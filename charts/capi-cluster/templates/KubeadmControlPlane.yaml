@@ -15,6 +15,16 @@ spec:
         extraArgs:
           - name: authorization-mode
             value: Node,RBAC
+        {{- if .Values.oidc.enabled }}
+          - name: oidc-issuer-url
+            value: {{ .Values.oidc.issuerURL }}
+          - name: oidc-client-id
+            value: {{ .Values.oidc.clientID }}
+          - name: oidc-username-claim
+            value: {{ .Values.oidc.usernameClaim | default "email" }}
+          - name: oidc-groups-claim
+            value: {{ .Values.oidc.groupsClaim | default "groups" }}
+        {{- end }}
         {{- if .Values.podSecurityStandard.enabled }}
           - name: admission-control-config-file
             value: /etc/kubernetes/kube-apiserver-admission-pss.yaml

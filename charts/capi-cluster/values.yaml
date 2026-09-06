@@ -35,6 +35,17 @@ network:
   poolStart: "192.168.1.2"
   poolEnd: "192.168.1.254"
 
+# OIDC auth on kube-apiserver (e.g. for per-user login via Headlamp instead
+# of a shared admin kubeconfig). Corresponding RBAC bindings for the users/
+# groups this issuer authenticates must be applied separately (GitOps'd
+# under this cluster's cluster-config, not part of this chart).
+oidc:
+  enabled: false
+  issuerURL: https://keycloak.mgmt.threshold.se/realms/techmonkeys
+  clientID: headlamp
+  usernameClaim: email
+  groupsClaim: groups
+
 gatewayapi:
   enabled: true
   version: v1.3.0
