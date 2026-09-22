@@ -3930,6 +3930,34 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.0/n8n-0.1.0.tgz
     version: 0.1.0
+  node-bootstrap:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-09-22T11:05:23.0888599Z"
+    description: Declares external/physical nodes in values.yaml and serves a per-node
+      kubeadm join script over HTTP, so joining a node to the cluster needs no CAPI
+      infrastructure provider and minimal pre-install on the target machine
+    digest: 014c344e56e7682d7984f290d848a29d41f6d7227245825bd9bf9d82551e5764
+    home: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    keywords:
+    - homelab
+    - kubeadm
+    - bootstrap
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: node-bootstrap
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/node-bootstrap-0.1.0/node-bootstrap-0.1.0.tgz
+    version: 0.1.0
   pci-usb-watchdog:
   - annotations:
       artifacthub.io/links: |
@@ -5353,4 +5381,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-06T12:30:26.602019241Z"
+generated: "2026-09-22T11:05:23.089091316Z"
