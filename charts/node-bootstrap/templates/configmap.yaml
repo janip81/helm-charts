@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "node-bootstrap.fullname" . }}-registry
+  labels:
+    {{- include "node-bootstrap.labels" . | nindent 4 }}
+data:
+  nodes.yaml: |
+    nodes:
+    {{- range .Values.nodes }}
+      - name: {{ .name }}
+        k8sVersion: {{ .k8sVersion | quote }}
+        osFamily: {{ .osFamily }}
+        {{- if .labels }}
+        labels:
+          {{- toYaml .labels | nindent 10 }}
+        {{- end }}
+        {{- if .taints }}
+        taints:
+          {{- toYaml .taints | nindent 10 }}
+        {{- end }}
+    {{- end }}

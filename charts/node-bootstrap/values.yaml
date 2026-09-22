@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/janip81/node-bootstrap
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# -- kube-apiserver endpoint embedded in every generated join script
+# (the cluster's VIP, not an individual control-plane node).
+apiEndpoint: "192.168.101.11:6443"
+
+# -- Bearer token required on every GET /bootstrap/{name} request. Exactly
+# one of existingSecret or createSecret should be used -- existingSecret
+# takes precedence. In this repo's own deployment this is Vault-backed via
+# AVP (kubernetes/prod-k8s/node-bootstrap#fetch-token), same pattern as
+# every other app's secrets -- see cluster-config/node-bootstrap/ in
+# k8s-gitops.
+fetchToken:
+  existingSecret: ""
+  existingSecretKey: fetch-token
+  createSecret: false
+  value: ""
+
+# -- Declared nodes. Each entry becomes fetchable at
+# GET /bootstrap/{name} once this release syncs. osFamily: ubuntu is the
+# only implemented script path today.
+nodes: []
+  # - name: gpu-box-1
+  #   k8sVersion: "1.37.0"
+  #   osFamily: ubuntu
+  #   labels:
+  #     gpu: "true"
+  #   taints:
+  #     - key: gpu
+  #       value: "true"
+  #       effect: NoSchedule
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 32Mi
+  limits:
+    memory: 64Mi
+
+service:
+  enabled: true
+  port: 8080
+
+# -- Role/RoleBinding created in kube-system (NOT the release namespace --
+# bootstrap tokens must live in kube-system regardless of where this app
+# runs). Grants create/get/delete on Secrets in kube-system only -- the
+# same broad-within-kube-system scope kubeadm's own bootstrap-token
+# machinery requires; RBAC has no way to further restrict "create" by name
+# since the object doesn't exist yet.
+rbac:
+  create: true
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

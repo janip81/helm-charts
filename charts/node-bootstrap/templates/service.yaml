@@ -1,0 +1,16 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "node-bootstrap.fullname" . }}
+  labels:
+    {{- include "node-bootstrap.labels" . | nindent 4 }}
+    app: {{ include "node-bootstrap.name" . }}
+spec:
+  selector:
+    app: {{ include "node-bootstrap.name" . }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+{{- end }}

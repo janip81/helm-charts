@@ -1,0 +1,21 @@
+# chart-testing installs with default values + this override in an ephemeral
+# kind cluster with no real Vault-backed secrets. replicaCount: 0 validates
+# the rendered manifests apply cleanly without needing the pod to actually
+# schedule/run; createSecret+a dummy value exercises the secret.yaml/
+# configmap.yaml/rbac.yaml templates fully instead of leaving them empty.
+replicaCount: 0
+
+fetchToken:
+  createSecret: true
+  value: "ci-test-token"
+
+nodes:
+  - name: ci-test-node
+    k8sVersion: "1.37.0"
+    osFamily: ubuntu
+    labels:
+      gpu: "true"
+    taints:
+      - key: gpu
+        value: "true"
+        effect: NoSchedule
