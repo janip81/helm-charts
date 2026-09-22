@@ -1,0 +1,42 @@
+{{- if .Values.rbac.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "node-bootstrap.fullname" . }}
+  labels:
+    {{- include "node-bootstrap.labels" . | nindent 4 }}
+---
+# Deliberately a Role in kube-system, not a ClusterRole -- bootstrap tokens
+# are always created there regardless of which namespace this chart is
+# released into. Scope is "any Secret in kube-system" because RBAC's
+# resourceNames filter can't narrow a create verb (the object doesn't exist
+# yet); this matches the same breadth kubeadm's own bootstrap-token
+# machinery requires.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "node-bootstrap.fullname" . }}-token-minter
+  namespace: kube-system
+  labels:
+    {{- include "node-bootstrap.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "node-bootstrap.fullname" . }}-token-minter
+  namespace: kube-system
+  labels:
+    {{- include "node-bootstrap.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "node-bootstrap.fullname" . }}-token-minter
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "node-bootstrap.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
