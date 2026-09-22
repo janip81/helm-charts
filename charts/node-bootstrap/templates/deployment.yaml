@@ -18,9 +18,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if or .Values.imagePullSecrets .Values.ghcrSecret.create }}
       imagePullSecrets:
+        {{- with .Values.imagePullSecrets }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.ghcrSecret.create }}
+        - name: {{ include "node-bootstrap.fullname" . }}-ghcr
+        {{- end }}
       {{- end }}
       {{- if .Values.rbac.create }}
       serviceAccountName: {{ include "node-bootstrap.fullname" . }}

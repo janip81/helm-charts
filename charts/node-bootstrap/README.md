@@ -76,6 +76,7 @@ To uninstall the chart:
 | affinity | object | `{}` |  |
 | apiEndpoint | string | `"192.168.101.11:6443"` | kube-apiserver endpoint embedded in every generated join script (the cluster's VIP, not an individual control-plane node). |
 | fetchToken | object | `{"createSecret":false,"existingSecret":"","existingSecretKey":"fetch-token","value":""}` | Bearer token required on every GET /bootstrap/{name} request. Exactly one of existingSecret or createSecret should be used -- existingSecret takes precedence. In this repo's own deployment this is Vault-backed via AVP (kubernetes/prod-k8s/node-bootstrap#fetch-token), same pattern as every other app's secrets -- see cluster-config/node-bootstrap/ in k8s-gitops. |
+| ghcrSecret | object | `{"create":false,"dockerconfigjson":""}` | Alternative to imagePullSecrets above: have the chart render its own pull secret from an already-base64-encoded dockerconfigjson, for when the node-bootstrap image repo is private and no externally-managed pull secret already exists in this release's namespace. If both this and imagePullSecrets are set, both are applied. |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/janip81/node-bootstrap"` |  |
 | image.tag | string | `"latest"` |  |

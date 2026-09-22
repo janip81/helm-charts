@@ -7,6 +7,15 @@ image:
 
 imagePullSecrets: []
 
+# -- Alternative to imagePullSecrets above: have the chart render its own
+# pull secret from an already-base64-encoded dockerconfigjson, for when the
+# node-bootstrap image repo is private and no externally-managed pull
+# secret already exists in this release's namespace. If both this and
+# imagePullSecrets are set, both are applied.
+ghcrSecret:
+  create: false
+  dockerconfigjson: ""
+
 # -- kube-apiserver endpoint embedded in every generated join script
 # (the cluster's VIP, not an individual control-plane node).
 apiEndpoint: "192.168.101.11:6443"
