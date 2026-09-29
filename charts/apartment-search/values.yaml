@@ -1,0 +1,154 @@
+# -- Web replicas. Safe to scale: migrations run in a single Job and source runs use a DB lease.
+replicaCount: 1
+
+# -- Image pull secrets for private registries (e.g. ghcr.io)
+imagePullSecrets: []
+
+image:
+  # -- Image repository (one image serves web, collector and migrations)
+  repository: ghcr.io/janip81/apartment-search
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag (pin to a git SHA in GitOps)
+  tag: "main"
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port (Next.js listens on 3000)
+  port: 3000
+
+# -- Non-secret configuration, rendered into a ConfigMap and injected as env vars
+env:
+  NODE_ENV: "production"
+  NEXT_TELEMETRY_DISABLED: "1"
+  LOG_LEVEL: "info"
+  # -- Implicit single user until real authentication exists
+  DEFAULT_USER_EMAIL: "owner@localhost"
+  # -- Minutes a source execution lease is held before it is considered abandoned
+  SOURCE_LEASE_MINUTES: "10"
+  # -- User-Agent sent to apartment sources — identify yourself honestly
+  HTTP_USER_AGENT: "apartment-search/0.1 (personal rental aggregator)"
+
+# -- Secret holding DATABASE_URL (and any future secrets). Never put real credentials in values.
+secret:
+  # -- Create the Secret from secretEnv. Keep false when it is managed externally (AVP/Vault via cluster-config).
+  create: false
+  # -- Name of the Secret (created or existing). Defaults to <fullname>-secret.
+  name: ""
+
+# -- Used only when secret.create is true (local/test installs)
+secretEnv:
+  DATABASE_URL: ""
+
+# -- Dedicated CloudNativePG cluster for this app. Leave disabled to use a shared cluster (DATABASE_URL in the Secret).
+cnpg:
+  enabled: false
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  database: apartment_search
+  owner: apartment_search
+  storage:
+    # -- PVC size — this is where listing data persists
+    size: 5Gi
+    # -- StorageClass (empty = cluster default)
+    storageClass: ""
+
+# -- Prisma migrations run ONCE per deploy in a Job (never per replica).
+# Argo CD: Sync hook at wave 1, after Secrets/ConfigMaps and before the Deployment/CronJob (wave 2).
+# Plain Helm: pre-install/pre-upgrade hook (the DB Secret must already exist).
+migrations:
+  enabled: true
+  backoffLimit: 2
+  activeDeadlineSeconds: 600
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+# -- Source collection. One CronJob "tick" runs every source that is due according to its own
+# interval stored in the database — no per-source CronJobs.
+collector:
+  enabled: true
+  # -- Tick frequency (the finest per-source interval that can be honoured)
+  schedule: "*/5 * * * *"
+  timeZone: "Europe/Stockholm"
+  suspend: false
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  activeDeadlineSeconds: 900
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  # -- Extra env for the collector only (e.g. MOCK_UNSTABLE_MODE)
+  env: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
+gatewayApi:
+  # -- Expose via Gateway API HTTPRoute
+  enabled: true
+  host: apartments.example.com
+  parentRefs:
+    - name: internal-shared
+      namespace: kube-system
+      kind: Gateway
+      group: gateway.networking.k8s.io
+
+ingress:
+  # -- Classic Ingress alternative to gatewayApi
+  enabled: false
+  className: ""
+  host: apartments.example.com
+  annotations: {}
+  tls: []
+
+probes:
+  liveness:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 192Mi
+  limits:
+    memory: 512Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,61 @@
+{{- if .Values.collector.enabled }}
+# Scheduler tick for source collection. Each tick runs every enabled source whose own
+# interval (Source.scheduleIntervalMinutes in the DB) has elapsed. Overlap is prevented by
+# concurrencyPolicy: Forbid and, per source, by a database lease.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "apartment-search.fullname" . }}-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "apartment-search.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  schedule: {{ .Values.collector.schedule | quote }}
+  {{- with .Values.collector.timeZone }}
+  timeZone: {{ . | quote }}
+  {{- end }}
+  suspend: {{ .Values.collector.suspend }}
+  concurrencyPolicy: {{ .Values.collector.concurrencyPolicy }}
+  startingDeadlineSeconds: {{ .Values.collector.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.collector.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.collector.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: {{ .Values.collector.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "apartment-search.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: collector
+        spec:
+          restartPolicy: Never
+          {{- include "apartment-search.podCommon" . | nindent 10 }}
+          containers:
+            - name: collector
+              image: {{ include "apartment-search.image" . }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              command: ["node", "/app/dist/worker.cjs", "tick"]
+              envFrom:
+                - configMapRef:
+                    name: {{ include "apartment-search.fullname" . }}-config
+              env:
+                {{- include "apartment-search.databaseEnv" . | nindent 16 }}
+                {{- range $k, $v := .Values.collector.env }}
+                - name: {{ $k }}
+                  value: {{ $v | quote }}
+                {{- end }}
+              resources:
+                {{- toYaml .Values.collector.resources | nindent 16 }}
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir: {}
+{{- end }}

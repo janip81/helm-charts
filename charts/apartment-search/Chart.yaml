@@ -1,0 +1,25 @@
+apiVersion: v2
+name: apartment-search
+description: Self-hosted aggregator for Swedish rental apartment listings (Next.js + PostgreSQL)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/apartment-search
+keywords:
+  - apartment-search
+  - rental
+  - housing
+  - aggregator
+  - nextjs
+  - prisma
+maintainers:
+  - name: janip81
+    email: jani@techmonkeys.se
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/apartment-search/
+  - https://github.com/janip81/apartment-search
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/apartment-search/

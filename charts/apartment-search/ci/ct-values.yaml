@@ -1,0 +1,16 @@
+replicaCount: 0
+
+migrations:
+  enabled: false
+
+collector:
+  enabled: false
+
+gatewayApi:
+  enabled: false
+
+secret:
+  create: true
+
+secretEnv:
+  DATABASE_URL: "postgresql://ct:ct@localhost:5432/ct"

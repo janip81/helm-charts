@@ -1,0 +1,21 @@
+Apartment Search has been deployed.
+
+{{- if .Values.gatewayApi.enabled }}
+App URL: https://{{ .Values.gatewayApi.host }}
+{{- end }}
+
+Health:     /health (liveness)   /ready (DB reachable + schema migrated)
+
+{{- if .Values.collector.enabled }}
+
+Collector CronJob {{ include "apartment-search.fullname" . }}-collector ticks on "{{ .Values.collector.schedule }}".
+Run a tick now:
+  kubectl -n {{ .Release.Namespace }} create job --from=cronjob/{{ include "apartment-search.fullname" . }}-collector manual-tick-$(date +%s)
+{{- end }}
+
+{{- if not .Values.migrations.enabled }}
+
+Migrations are disabled. Run them manually:
+  kubectl -n {{ .Release.Namespace }} exec deploy/{{ include "apartment-search.fullname" . }} -- \
+    node prisma-cli/node_modules/prisma/build/index.js migrate deploy --schema=prisma/schema.prisma
+{{- end }}
