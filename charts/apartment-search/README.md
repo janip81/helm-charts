@@ -1,6 +1,6 @@
 # apartment-search
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Self-hosted aggregator for Swedish rental apartment listings (Next.js + PostgreSQL)
 
@@ -80,6 +80,8 @@ stringData:
 | collector | object | `{"activeDeadlineSeconds":900,"concurrencyPolicy":"Forbid","enabled":true,"env":{},"failedJobsHistoryLimit":5,"resources":{"limits":{"memory":"384Mi"},"requests":{"cpu":"50m","memory":"128Mi"}},"schedule":"*/5 * * * *","startingDeadlineSeconds":120,"successfulJobsHistoryLimit":3,"suspend":false,"timeZone":"Europe/Stockholm"}` | Source collection. One CronJob "tick" runs every source that is due according to its own interval stored in the database — no per-source CronJobs. |
 | collector.env | object | `{}` | Extra env for the collector only (e.g. MOCK_UNSTABLE_MODE) |
 | collector.schedule | string | `"*/5 * * * *"` | Tick frequency (the finest per-source interval that can be honoured) |
+| discovery | object | `{"activeDeadlineSeconds":3600,"concurrencyPolicy":"Forbid","enabled":false,"failedJobsHistoryLimit":3,"limit":25,"resources":{"limits":{"memory":"384Mi"},"requests":{"cpu":"50m","memory":"128Mi"}},"schedule":"30 3 * * *","successfulJobsHistoryLimit":3,"timeZone":"Europe/Stockholm"}` | Landlord website discovery (registry). Only VERIFIED landlords whose last discovery is older than staleDays are crawled; public pages only, robots.txt obeyed, ~8 requests per landlord. Results are review candidates — nothing is activated automatically. |
+| discovery.limit | int | `25` | Max landlords per run |
 | env | object | `{"DEFAULT_USER_EMAIL":"owner@localhost","HTTP_USER_AGENT":"apartment-search/0.1 (personal rental aggregator)","LOG_LEVEL":"info","NEXT_TELEMETRY_DISABLED":"1","NODE_ENV":"production","SOURCE_LEASE_MINUTES":"10"}` | Non-secret configuration, rendered into a ConfigMap and injected as env vars |
 | env.DEFAULT_USER_EMAIL | string | `"owner@localhost"` | Implicit single user until real authentication exists |
 | env.HTTP_USER_AGENT | string | `"apartment-search/0.1 (personal rental aggregator)"` | User-Agent sent to apartment sources — identify yourself honestly |

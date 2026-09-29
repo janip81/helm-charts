@@ -93,6 +93,26 @@ collector:
     limits:
       memory: 384Mi
 
+# -- Landlord website discovery (registry). Only VERIFIED landlords whose last discovery is older than
+# staleDays are crawled; public pages only, robots.txt obeyed, ~8 requests per landlord. Results are
+# review candidates — nothing is activated automatically.
+discovery:
+  enabled: false
+  schedule: "30 3 * * *"
+  timeZone: "Europe/Stockholm"
+  # -- Max landlords per run
+  limit: 25
+  concurrencyPolicy: Forbid
+  activeDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+
 gatewayApi:
   # -- Expose via Gateway API HTTPRoute
   enabled: true
