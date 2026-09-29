@@ -1,0 +1,70 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Helm chart for deploying [apartment-search](https://github.com/janip81/apartment-search) — a self-hosted aggregator for Swedish rental apartment listings.
+
+One image serves three roles:
+
+| Resource | Purpose |
+|---|---|
+| Deployment `<release>` | Next.js web app (UI, API, `/health`, `/ready`) |
+| CronJob `<release>-collector` | Collector tick — runs every source that is due (per-source interval lives in the DB) |
+| Job `<release>-migrate` | `prisma migrate deploy`, once per deploy |
+| ConfigMap `<release>-config` | Non-secret env (`env:` values) |
+| Secret `<release>-secret` | Only when `secret.create: true`; normally provided externally with key `DATABASE_URL` |
+| HTTPRoute / Ingress | Gateway API (default) or classic Ingress |
+| CNPG Cluster `<release>-pg` | Only when `cnpg.enabled: true` (dedicated PostgreSQL with a PVC) |
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm search repo apartment-search
+```
+
+## Migrations
+
+Migrations never run per replica. A single Job runs `prisma migrate deploy`:
+
+- **Argo CD:** Sync hook at wave 1 — after Secrets/ConfigMaps (wave 0), before the Deployment and CronJob (wave 2).
+- **Plain Helm:** `pre-install,pre-upgrade` hook — the database Secret must already exist.
+
+## Secret Management (ArgoCD Vault Plugin)
+
+```yaml
+secret:
+  create: false
+  name: apartment-search-secret
+```
+
+```yaml
+# cluster-config/apartment-search/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: apartment-search-secret
+  namespace: apartment-search
+  annotations:
+    avp.kubernetes.io/path: "kubernetes/data/prod-k8s/apartment-search"
+type: Opaque
+stringData:
+  DATABASE_URL: <path:kubernetes/data/prod-k8s/apartment-search#database-url>
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
