@@ -1,0 +1,53 @@
+{{- if .Values.discovery.enabled }}
+# Scheduled landlord website discovery. Produces review candidates only.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "apartment-search.fullname" . }}-discovery
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "apartment-search.labels" . | nindent 4 }}
+    app.kubernetes.io/component: discovery
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  schedule: {{ .Values.discovery.schedule | quote }}
+  {{- with .Values.discovery.timeZone }}
+  timeZone: {{ . | quote }}
+  {{- end }}
+  concurrencyPolicy: {{ .Values.discovery.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.discovery.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.discovery.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: {{ .Values.discovery.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "apartment-search.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: discovery
+        spec:
+          restartPolicy: Never
+          {{- include "apartment-search.podCommon" . | nindent 10 }}
+          containers:
+            - name: discovery
+              image: {{ include "apartment-search.image" . }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              command: ["node", "/app/dist/worker.cjs", "discover", "--limit", {{ .Values.discovery.limit | quote }}]
+              envFrom:
+                - configMapRef:
+                    name: {{ include "apartment-search.fullname" . }}-config
+              env:
+                {{- include "apartment-search.databaseEnv" . | nindent 16 }}
+              resources:
+                {{- toYaml .Values.discovery.resources | nindent 16 }}
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir: {}
+{{- end }}
