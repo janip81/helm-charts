@@ -6,6 +6,36 @@ entries:
         - name: Chart source
           url: https://github.com/janip81/helm-charts/tree/main/charts/apartment-search/
     apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-09-29T09:52:32.244037473Z"
+    description: Self-hosted aggregator for Swedish rental apartment listings (Next.js
+      + PostgreSQL)
+    digest: 592368652c036b2443aab556b5ff6e2c468155df00fe0c930ccddaefc345b220
+    home: https://github.com/janip81/helm-charts/tree/main/charts/apartment-search
+    keywords:
+    - apartment-search
+    - rental
+    - housing
+    - aggregator
+    - nextjs
+    - prisma
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: apartment-search
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/apartment-search/
+    - https://github.com/janip81/apartment-search
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/apartment-search-0.2.0/apartment-search-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/apartment-search/
+    apiVersion: v2
     appVersion: 0.1.0
     created: "2026-09-29T09:15:54.051702343Z"
     description: Self-hosted aggregator for Swedish rental apartment listings (Next.js
@@ -5412,4 +5442,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-29T09:15:54.05211759Z"
+generated: "2026-09-29T09:52:32.24434567Z"
