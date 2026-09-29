@@ -1,0 +1,56 @@
+{{- if .Values.migrations.enabled }}
+# Runs `prisma migrate deploy` exactly once per deploy, before the web pods and collector
+# roll out. Replicas never migrate on startup, so there are no migration races.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "apartment-search.fullname" . }}-migrate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "apartment-search.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrate
+  annotations:
+    # Argo CD: Sync-phase hook in wave 1 → after Secret/ConfigMap (wave 0), before Deployment/CronJob (wave 2)
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    # Plain Helm equivalent (DB Secret must exist beforehand)
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: {{ .Values.migrations.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.migrations.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        {{- include "apartment-search.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: migrate
+    spec:
+      restartPolicy: Never
+      {{- include "apartment-search.podCommon" . | nindent 6 }}
+      containers:
+        - name: migrate
+          image: {{ include "apartment-search.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          command: ["node", "/app/prisma-cli/node_modules/prisma/build/index.js", "migrate", "deploy", "--schema=/app/prisma/schema.prisma"]
+          env:
+            - name: HOME
+              value: /tmp
+            - name: CHECKPOINT_DISABLE
+              value: "1"
+            - name: PRISMA_HIDE_UPDATE_MESSAGE
+              value: "1"
+            {{- include "apartment-search.databaseEnv" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+{{- end }}

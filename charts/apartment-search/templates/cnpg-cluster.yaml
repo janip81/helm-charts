@@ -1,0 +1,24 @@
+{{- if .Values.cnpg.enabled }}
+# Optional dedicated PostgreSQL. The homelab deployment uses the shared pg-main cluster instead.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "apartment-search.fullname" . }}-pg
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "apartment-search.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  instances: {{ .Values.cnpg.instances }}
+  imageName: {{ .Values.cnpg.imageName }}
+  storage:
+    size: {{ .Values.cnpg.storage.size }}
+    {{- with .Values.cnpg.storage.storageClass }}
+    storageClass: {{ . }}
+    {{- end }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.cnpg.database }}
+      owner: {{ .Values.cnpg.owner }}
+{{- end }}
