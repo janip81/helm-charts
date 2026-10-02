@@ -19,6 +19,9 @@ data:
         taints:
           {{- toYaml .taints | nindent 10 }}
         {{- end }}
+        {{- if .nodeIP }}
+        nodeIP: {{ .nodeIP | quote }}
+        {{- end }}
         {{- if .gpu }}
         gpu:
           {{- toYaml .gpu | nindent 10 }}

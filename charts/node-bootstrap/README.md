@@ -82,7 +82,7 @@ To uninstall the chart:
 | image.tag | string | `"latest"` |  |
 | imagePullSecrets | list | `[]` |  |
 | nodeSelector | object | `{}` |  |
-| nodes | list | `[]` | Declared nodes. Each entry becomes fetchable at GET /bootstrap/{name} once this release syncs. osFamily: ubuntu is the only implemented script path today. Add `gpu:` to make it a GPU node: the script then installs the NVIDIA driver (ubuntu-drivers' pick, or gpu.driverPackage) + container toolkit, sets nvidia as containerd's default runtime, and labels the node nvidia.com/gpu.present=true. |
+| nodes | list | `[]` | Declared nodes. Each entry becomes fetchable at GET /bootstrap/{name} once this release syncs. osFamily: ubuntu is the only implemented script path today. Add `gpu:` to make it a GPU node: the script then installs the NVIDIA driver (ubuntu-drivers' pick, or gpu.driverPackage) + container toolkit, sets nvidia as containerd's default runtime, and labels the node nvidia.com/gpu.present=true. nodeIP is optional: by default the node keeps the address it already uses to reach the API, so it can live in any VLAN (the firewall must allow API, kubelet and CNI traffic to/from it). |
 | podAnnotations | object | `{}` |  |
 | rbac.create | bool | `true` |  |
 | replicaCount | int | `1` |  |
