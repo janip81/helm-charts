@@ -3997,6 +3997,33 @@ entries:
         - name: Chart source
           url: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap/
     apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-02T13:56:42.094426355Z"
+    description: Declares external/physical nodes in values.yaml and serves a per-node
+      kubeadm join script over HTTP, so joining a node to the cluster needs no CAPI
+      infrastructure provider and minimal pre-install on the target machine
+    digest: 36625f01ddcf19b70d8e9bb3f12dca447fb005527fb0f1fb5bdc0758f98b0e07
+    home: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    keywords:
+    - homelab
+    - kubeadm
+    - bootstrap
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: node-bootstrap
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/node-bootstrap-0.2.0/node-bootstrap-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap/
+    apiVersion: v2
     appVersion: 0.1.0
     created: "2026-09-22T11:05:23.0888599Z"
     description: Declares external/physical nodes in values.yaml and serves a per-node
@@ -5442,4 +5469,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-09-29T09:52:32.24434567Z"
+generated: "2026-10-02T13:56:42.094858845Z"
