@@ -2,8 +2,8 @@ apiVersion: v2
 name: node-bootstrap
 description: Declares external/physical nodes in values.yaml and serves a per-node kubeadm join script over HTTP, so joining a node to the cluster needs no CAPI infrastructure provider and minimal pre-install on the target machine
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 0.2.0
+appVersion: "0.2.0"
 home: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
 maintainers:
   - name: janip81

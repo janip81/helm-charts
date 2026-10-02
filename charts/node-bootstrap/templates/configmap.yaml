@@ -19,4 +19,8 @@ data:
         taints:
           {{- toYaml .taints | nindent 10 }}
         {{- end }}
+        {{- if .gpu }}
+        gpu:
+          {{- toYaml .gpu | nindent 10 }}
+        {{- end }}
     {{- end }}

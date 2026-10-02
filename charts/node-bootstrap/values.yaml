@@ -34,17 +34,23 @@ fetchToken:
 
 # -- Declared nodes. Each entry becomes fetchable at
 # GET /bootstrap/{name} once this release syncs. osFamily: ubuntu is the
-# only implemented script path today.
+# only implemented script path today. Add `gpu:` to make it a GPU node: the
+# script then installs the NVIDIA driver (ubuntu-drivers' pick, or
+# gpu.driverPackage) + container toolkit, sets nvidia as containerd's
+# default runtime, and labels the node nvidia.com/gpu.present=true.
 nodes: []
   # - name: gpu-box-1
   #   k8sVersion: "1.37.0"
   #   osFamily: ubuntu
   #   labels:
-  #     gpu: "true"
+  #     node.kubernetes.io/baremetal: "true"
   #   taints:
-  #     - key: gpu
-  #       value: "true"
+  #     - key: dedicated
+  #       value: gpu
   #       effect: NoSchedule
+  #   gpu:
+  #     vendor: nvidia
+  #     # driverPackage: nvidia-driver-580-server  # optional pin
 
 resources:
   requests:

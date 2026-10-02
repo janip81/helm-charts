@@ -19,3 +19,9 @@ nodes:
       - key: gpu
         value: "true"
         effect: NoSchedule
+  - name: ci-test-gpu-node
+    k8sVersion: "1.37.0"
+    osFamily: ubuntu
+    gpu:
+      vendor: nvidia
+      driverPackage: nvidia-driver-580-server
