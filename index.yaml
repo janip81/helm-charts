@@ -1,5 +1,34 @@
 apiVersion: v1
 entries:
+  alertmanager-mqtt-bridge:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/alertmanager-mqtt-bridge/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-10-08T08:54:08.883225542Z"
+    description: Bridges Prometheus Alertmanager to MQTT so Home Assistant sees homelab
+      alerts (MQTT discovery sensors, push events, dead-man's-switch heartbeat)
+    digest: 39f0a10f644fbb00ff9c60ac8d4bb11185ffe686606de2b6962a10caf23f2a1f
+    home: https://github.com/janip81/helm-charts/tree/main/charts/alertmanager-mqtt-bridge
+    keywords:
+    - homelab
+    - monitoring
+    - alertmanager
+    - mqtt
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: alertmanager-mqtt-bridge
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/alertmanager-mqtt-bridge
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/alertmanager-mqtt-bridge-0.1.0/alertmanager-mqtt-bridge-0.1.0.tgz
+    version: 0.1.0
   apartment-search:
   - annotations:
       artifacthub.io/links: |
@@ -5469,4 +5498,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-02T13:56:42.094858845Z"
+generated: "2026-10-08T08:54:08.883543108Z"
