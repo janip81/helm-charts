@@ -15,6 +15,11 @@ spec:
   selector:
     matchLabels:
       {{- include "remnant.selectorLabels" . | nindent 6 }}
+    # remnant-ui shares the selector labels but has no /metrics (404 -> TargetDown)
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: NotIn
+        values: ["ui"]
   namespaceSelector:
     matchNames: ["{{ .Release.Namespace }}"]
   endpoints:
