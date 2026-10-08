@@ -1,0 +1,66 @@
+# -- Replicas. Keep 1: two bridges would publish duplicate events.
+replicaCount: 1
+
+image:
+  # -- Image repository
+  repository: ghcr.io/janip81/alertmanager-mqtt-bridge
+  # -- Image tag
+  tag: "latest"
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+
+# -- Image pull secrets (the image is private)
+imagePullSecrets: []
+
+# -- Alertmanager base URL the bridge polls (GET /api/v2/alerts)
+alertmanagerUrl: "http://alertmanager-operated.prometheus.svc:9093"
+# -- Seconds between Alertmanager API polls (also the heartbeat cadence)
+pollIntervalSeconds: 60
+
+mqtt:
+  # -- MQTT broker host
+  host: "mosquitto.mqtt.svc.cluster.local"
+  # -- MQTT broker port
+  port: 1883
+  # -- Topic prefix (active, event, heartbeat, availability live under it)
+  topicPrefix: "homelab/alerts"
+  # -- Existing Secret with keys MQTT_USER and MQTT_PASSWORD (recommended)
+  existingSecret: ""
+  # -- Create a Secret from user/password below instead (test/CI only)
+  createSecret: false
+  # -- MQTT user when createSecret is true
+  user: ""
+  # -- MQTT password when createSecret is true
+  password: ""
+
+service:
+  # -- Service port (webhook POST /alertmanager, GET /metrics, GET /healthz)
+  port: 8000
+
+serviceMonitor:
+  # -- Create a Prometheus Operator ServiceMonitor
+  enabled: false
+  # -- Extra labels so your Prometheus selects it (e.g. release: <prometheus>)
+  labels: {}
+  # -- Scrape interval
+  interval: 60s
+  # -- Scrape timeout
+  scrapeTimeout: 10s
+
+# -- Resource requests/limits
+resources:
+  requests:
+    cpu: 10m
+    memory: 48Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# -- Pod annotations
+podAnnotations: {}
+# -- Node selector
+nodeSelector: {}
+# -- Tolerations
+tolerations: []
+# -- Affinity
+affinity: {}

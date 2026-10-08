@@ -1,0 +1,27 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+Bridges Prometheus Alertmanager to MQTT so Home Assistant shows homelab
+alerts. It polls the Alertmanager API for the current state (retained
+`<prefix>/active`, plus a `<prefix>/heartbeat` from the always-firing
+Watchdog alert), and turns Alertmanager webhooks (`POST /alertmanager`)
+into deduplicated firing/resolved events on `<prefix>/event`. Home Assistant
+entities are created via MQTT discovery.
+
+Point an Alertmanager webhook receiver at
+`http://<release service>.<namespace>.svc:8000/alertmanager`.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

@@ -1,0 +1,9 @@
+# chart-testing: no broker or Alertmanager in the kind cluster, so only
+# validate that the manifests apply.
+replicaCount: 0
+mqtt:
+  createSecret: true
+  user: ci
+  password: ci
+serviceMonitor:
+  enabled: false

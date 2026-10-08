@@ -1,0 +1,92 @@
+{{- $secret := include "alertmanager-mqtt-bridge.mqttSecret" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "alertmanager-mqtt-bridge.fullname" . }}
+  labels:
+    {{- include "alertmanager-mqtt-bridge.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate  # never two bridges at once (duplicate events)
+  selector:
+    matchLabels:
+      {{- include "alertmanager-mqtt-bridge.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "alertmanager-mqtt-bridge.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      containers:
+        - name: bridge
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ALERTMANAGER_URL
+              value: {{ .Values.alertmanagerUrl | quote }}
+            - name: POLL_INTERVAL_SECONDS
+              value: {{ .Values.pollIntervalSeconds | quote }}
+            - name: LISTEN_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: MQTT_HOST
+              value: {{ .Values.mqtt.host | quote }}
+            - name: MQTT_PORT
+              value: {{ .Values.mqtt.port | quote }}
+            - name: MQTT_TOPIC_PREFIX
+              value: {{ .Values.mqtt.topicPrefix | quote }}
+            {{- if $secret }}
+            - name: MQTT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret }}
+                  key: MQTT_USER
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret }}
+                  key: MQTT_PASSWORD
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
