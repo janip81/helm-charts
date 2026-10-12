@@ -12,3 +12,4 @@ excluded-charts:
   - n8n
   - remnant
   - zomboid-server
+  - matrix-synapse   # needs a PostgreSQL database (secret + host), not available on the kind cluster
