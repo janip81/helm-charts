@@ -2967,6 +2967,30 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
     apiVersion: v2
     appVersion: 2025.10.4
+    created: "2026-10-12T14:38:47.601103437Z"
+    description: An unofficial Helm chart to deploy Home Assistant
+    digest: 77a7e23a876fd3659e9d172e9545c0f8961a1bfd4702e793e43f609753207133
+    home: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant
+    icon: https://www.home-assistant.io/images/favicon-192x192.png
+    keywords:
+    - home-assistant
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: home-assistant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/home-assistant-0.1.4/home-assistant-0.1.4.tgz
+    version: 0.1.4
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/home-assistant/
+    apiVersion: v2
+    appVersion: 2025.10.4
     created: "2026-09-01T09:21:29.33613639Z"
     description: An unofficial Helm chart to deploy Home Assistant
     digest: 6f9eb4d9ddd986508cd43fbdc469da27fd89efd62bd17e421e6dd070d7a26d05
@@ -5749,4 +5773,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-12T13:26:25.920336509Z"
+generated: "2026-10-12T14:38:47.601662782Z"
