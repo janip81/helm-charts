@@ -1,6 +1,6 @@
 # castlist
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
 
@@ -83,7 +83,9 @@ helm upgrade --install castlist janip81/castlist \
 | persistence.enabled | bool | `false` | Enable persistent storage (requires a PVC-capable storage class) |
 | persistence.size | string | `"100Mi"` | Storage size |
 | persistence.storageClass | string | `""` | Storage class (leave empty to use cluster default) |
+| podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context. RuntimeDefault seccomp blocks syscalls no normal app needs. Add `runAsNonRoot: true` (and runAsUser) here if the image runs as a non-root user. |
 | registry.create | bool | `false` | Create a ghcr.io image pull secret automatically |
 | registry.password | string | `""` | GitHub personal access token with read:packages scope |
 | registry.username | string | `""` | GitHub username |
 | secrets | object | `{}` | Extra secrets to inject (arbitrary key/value, mounted as env vars) |
+| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container security context, applied to every container (incl. init and migrate containers). |

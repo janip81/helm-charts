@@ -1,0 +1,3 @@
+# Chart-testing values for ct install (kind cluster): no vsphere-csi StorageClass there.
+persistence:
+  enabled: false

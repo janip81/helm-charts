@@ -24,6 +24,8 @@ spec:
         spec:
           restartPolicy: Never
           securityContext:
+            seccompProfile:
+              type: RuntimeDefault
             runAsNonRoot: true
             runAsUser: 1000
           {{- with .Values.imagePullSecrets }}
@@ -32,6 +34,8 @@ spec:
           {{- end }}
           initContainers:
             - name: wait-for-db
+              securityContext:
+                allowPrivilegeEscalation: false
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:
@@ -58,6 +62,8 @@ spec:
                   value: "postgresql://{{ .Values.cnpg.owner }}:$(DB_PASSWORD)@{{ include "remnant.fullname" . }}-pg-rw:5432/{{ .Values.cnpg.database }}"
           containers:
             - name: dedup
+              securityContext:
+                allowPrivilegeEscalation: false
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:

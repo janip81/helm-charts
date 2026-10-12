@@ -1,6 +1,6 @@
 # n8n
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.86.0](https://img.shields.io/badge/AppVersion-1.86.0-informational?style=flat-square)
 
 n8n workflow automation
 
@@ -176,7 +176,7 @@ To uninstall the chart:
 | secrets.encryption.value | string | `""` |  |
 | secrets.extra | list | `[]` |  |
 | secrets.useStringData | bool | `true` |  |
-| securityContext | object | `{}` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container security context (n8n container) |
 | service.annotations | object | `{}` |  |
 | service.port | int | `5678` |  |
 | service.type | string | `"ClusterIP"` |  |

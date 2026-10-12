@@ -21,9 +21,13 @@ spec:
         app.kubernetes.io/name: {{ include "matrix-synapse.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       serviceAccountName: {{ include "matrix-synapse.serviceAccountName" . }}
       containers:
         - name: synapse
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["python"]
@@ -75,8 +79,12 @@ spec:
           configMap:
             name: {{ default (printf "%s-config" (include "matrix-synapse.fullname" .)) .Values.existingConfigMap }}
         - name: media
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ default (printf "%s-media" (include "matrix-synapse.fullname" .)) .Values.persistence.existingClaim }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         {{- if .Values.bridges.appserviceConfigMap }}
         - name: appservices
           configMap:

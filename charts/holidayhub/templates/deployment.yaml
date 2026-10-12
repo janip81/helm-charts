@@ -30,6 +30,8 @@ spec:
         {{- end }}
     spec:
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         runAsNonRoot: true
         runAsUser: 1001
       {{- with .Values.imagePullSecrets }}
@@ -38,6 +40,8 @@ spec:
       {{- end }}
       initContainers:
         - name: migrate
+          securityContext:
+            allowPrivilegeEscalation: false
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/sh", "-c"]

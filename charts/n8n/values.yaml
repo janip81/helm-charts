@@ -136,7 +136,9 @@ secrets:
 podSecurityContext:
   fsGroup: 1000
 
-securityContext: {}
+# -- Container security context (n8n container)
+securityContext:
+  allowPrivilegeEscalation: false
 
 livenessProbe:
   initialDelaySeconds: 120

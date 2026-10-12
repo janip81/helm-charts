@@ -1,6 +1,6 @@
 # matrix-synapse
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.116.0](https://img.shields.io/badge/AppVersion-1.116.0-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.116.0](https://img.shields.io/badge/AppVersion-1.116.0-informational?style=flat-square)
 
 Matrix Synapse homeserver Helm chart
 
@@ -43,6 +43,7 @@ Matrix Synapse homeserver Helm chart
 | persistence.existingClaim | string | `""` |  |
 | persistence.size | string | `"20Gi"` |  |
 | persistence.storageClass | string | `""` |  |
+| podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context. RuntimeDefault seccomp blocks syscalls no normal app needs. Add `runAsNonRoot: true` (and runAsUser) here if the image runs as a non-root user. |
 | postgres.database | string | `"synapse"` |  |
 | postgres.existingSecret | string | `"synapse-postgres"` |  |
 | postgres.host | string | `"postgres.default.svc.cluster.local"` |  |
@@ -54,6 +55,7 @@ Matrix Synapse homeserver Helm chart
 | secrets.formSecret | string | `""` |  |
 | secrets.macaroonSecretKey | string | `""` |  |
 | secrets.registrationSharedSecret | string | `""` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container security context, applied to every container (incl. init and migrate containers). |
 | serverName | string | `"matrix.example.com"` |  |
 | service.annotations | object | `{}` |  |
 | service.federationPort | int | `8448` |  |
