@@ -2003,6 +2003,26 @@ entries:
   castlist:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-10-12T13:26:24.37823152Z"
+    description: Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
+    digest: 4e5fcec4a19b2a1dcd05d852fc419df41557809391e860bf3c70a0384080aad1
+    home: https://github.com/janip81/castlist
+    keywords:
+    - chromecast
+    - media
+    - queue
+    - yt-dlp
+    maintainers:
+    - name: janip81
+    name: castlist
+    sources:
+    - https://github.com/janip81/castlist
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/castlist-0.5.1/castlist-0.5.1.tgz
+    version: 0.5.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-03-27T11:15:43.354081526Z"
     description: Chromecast video queue player — self-hosted, mobile-friendly, Keycloak-authenticated
     digest: 29d9ffa878d851a2a52ae0eb7e6d88e6a6196cde6998462818a85745af9d1088
@@ -2528,6 +2548,29 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/gameledger/
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-10-12T13:26:24.551597673Z"
+    description: App to keep track of card and board game wins losses
+    digest: a1bd160880f3294daaa946ec3b4d413763107bdc348ef396ee4b57e6f2d00441
+    home: https://github.com/janip81/helm-charts/tree/main/charts/gameledger
+    keywords:
+    - gameledger
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: gameledger
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/gameledger/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/gameledger-0.1.3/gameledger-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/gameledger/
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-04-21T14:20:34.089851029Z"
     description: App to keep track of card and board game wins losses
     digest: 4a507dd0048663610b4137939a1cbfb6f01b3b4e4b3d578c23d44a8da7dc6a59
@@ -2685,6 +2728,35 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/ghost-0.1.0/ghost-0.1.0.tgz
     version: 0.1.0
   holidayhub:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-10-12T13:26:24.742483098Z"
+    description: Private vacation and travel management dashboard
+    digest: 9f24df57ff0f9fcf5db4cfc689b8124b6e8ffdc2f83ed5174e34df73e9debf06
+    home: https://github.com/janip81/helm-charts/tree/main/charts/holidayhub
+    keywords:
+    - holidayhub
+    - vacation
+    - travel
+    - planner
+    - nextjs
+    - prisma
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: holidayhub
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/holidayhub/
+    - https://github.com/janip81/holidayhub
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/holidayhub-0.1.8/holidayhub-0.1.8.tgz
+    version: 0.1.8
   - annotations:
       artifacthub.io/links: |
         - name: Chart source
@@ -3607,6 +3679,29 @@ entries:
   matrix-synapse:
   - apiVersion: v2
     appVersion: 1.116.0
+    created: "2026-10-12T13:26:24.900713043Z"
+    description: Matrix Synapse homeserver Helm chart
+    digest: 360e12da15cdb3bf2abff0a4bb4224c6d35993b1a8457072c224e46cc70c7d51
+    home: https://github.com/matrix-org/synapse
+    keywords:
+    - matrix
+    - synapse
+    - chat
+    - homeserver
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: jani
+      url: https://techmonkeys.se
+    name: matrix-synapse
+    sources:
+    - https://github.com/matrix-org/synapse
+    - https://github.com/janip81/helm-charts
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/matrix-synapse-0.1.6/matrix-synapse-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.116.0
     created: "2026-04-01T12:01:51.83697665Z"
     description: Matrix Synapse homeserver Helm chart
     digest: fb9056d3558db89d67fee0e4af63a6d780d4df56da046c8dedaee62b6684d1bb
@@ -3744,6 +3839,35 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/matrix-synapse-0.1.0/matrix-synapse-0.1.0.tgz
     version: 0.1.0
   mqtt-broker:
+  - annotations:
+      artifacthub.io/images: |
+        - name: eclipse-mosquitto
+          image: docker.io/eclipse-mosquitto:2.0.18
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+        - name: Docker image source
+          url: https://hub.docker.com/_/eclipse-mosquitto
+    apiVersion: v2
+    appVersion: 2.0.18
+    created: "2026-10-12T13:26:25.269600629Z"
+    description: A Helm chart for Eclipse Mosquitto
+    digest: f899c2df8f0a067ee501d48e7ed0aeaeff8cba3621ce3a3ce4c6badd825e2305
+    home: https://mosquitto.org/
+    icon: https://cdn2.steamgriddb.com/icon/d17892563a6984845a0e23df7841f903/32/256x256.png
+    keywords:
+    - mqtt
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+    name: mqtt-broker
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/mqtt-broker
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/mqtt-broker-0.1.5/mqtt-broker-0.1.5.tgz
+    version: 0.1.5
   - annotations:
       artifacthub.io/images: |
         - name: eclipse-mosquitto
@@ -3896,6 +4020,32 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
     apiVersion: v2
     appVersion: 1.86.0
+    created: "2026-10-12T13:26:25.410663554Z"
+    description: n8n workflow automation
+    digest: 0d1ec3d217253debb41e8f162b6c06d7b20f6f4549daeb3d8251093cc6939e1e
+    home: https://github.com/janip81/helm-charts/tree/main/charts/n8n
+    icon: https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png
+    keywords:
+    - n8n
+    - automation
+    - workflows
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: n8n
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.5/n8n-0.1.5.tgz
+    version: 0.1.5
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/n8n/
+    apiVersion: v2
+    appVersion: 1.86.0
     created: "2026-04-27T13:14:45.731189525Z"
     description: n8n workflow automation
     digest: b5cb27ee99ec5a6695e614641617676928d72f09ae00cfcd923f8a1fd4e8d4da
@@ -4021,6 +4171,33 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/n8n-0.1.0/n8n-0.1.0.tgz
     version: 0.1.0
   node-bootstrap:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap/
+    apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-12T13:26:25.623597039Z"
+    description: Declares external/physical nodes in values.yaml and serves a per-node
+      kubeadm join script over HTTP, so joining a node to the cluster needs no CAPI
+      infrastructure provider and minimal pre-install on the target machine
+    digest: 078facb66419c06c949a141ffd5e20a167b772bf1ccea87b47b18f68bd9c8c88
+    home: https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    keywords:
+    - homelab
+    - kubeadm
+    - bootstrap
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: node-bootstrap
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/node-bootstrap
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/node-bootstrap-0.2.1/node-bootstrap-0.2.1.tgz
+    version: 0.2.1
   - annotations:
       artifacthub.io/links: |
         - name: Chart source
@@ -4185,6 +4362,36 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/pci-usb-watchdog-0.1.0/pci-usb-watchdog-0.1.0.tgz
     version: 0.1.0
   remnant:
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    apiVersion: v2
+    appVersion: 0.2.0
+    created: "2026-10-12T13:26:25.760782134Z"
+    description: Remnant — a shared local memory layer for stateless AI agents
+    digest: 1838a2b99a9b5df35bc68cc22d75f442ceccdf7fca1f93471a55c7da88aacb80
+    home: https://github.com/janip81/helm-charts/tree/main/charts/remnant
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/main/charts/remnant/icon.png
+    keywords:
+    - mcp
+    - memory
+    - remnant
+    - pgvector
+    - ollama
+    - ai
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: remnant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    - https://github.com/janip81/remnant
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/remnant-0.2.6/remnant-0.2.6.tgz
+    version: 0.2.6
   - annotations:
       artifacthub.io/links: |
         - name: Chart source
@@ -4722,6 +4929,20 @@ entries:
     - https://github.com/janip81/helm-charts/releases/download/vsphere-cns-volume-monitor-0.0.1-dev/vsphere-cns-volume-monitor-0.0.1-dev.tgz
     version: 0.0.1-dev
   worklog:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-10-12T13:26:25.920069817Z"
+    description: Worklog salary tracker — Go API + React frontend
+    digest: 17db782feae63be812110180013bea417890737f2ed96c52699ab0f55ffadcd4
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: worklog
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.2/worklog-0.1.2.tgz
+    version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.0
     created: "2026-03-24T07:42:57.216204899Z"
@@ -5528,4 +5749,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-08T12:42:26.17406211Z"
+generated: "2026-10-12T13:26:25.920336509Z"
