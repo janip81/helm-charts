@@ -79,8 +79,12 @@ spec:
           configMap:
             name: {{ default (printf "%s-config" (include "matrix-synapse.fullname" .)) .Values.existingConfigMap }}
         - name: media
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ default (printf "%s-media" (include "matrix-synapse.fullname" .)) .Values.persistence.existingClaim }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         {{- if .Values.bridges.appserviceConfigMap }}
         - name: appservices
           configMap:

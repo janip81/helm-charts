@@ -48,5 +48,9 @@ spec:
             name: mosquitto-config
           {{- end }}
         - name: data
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: mosquitto-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
