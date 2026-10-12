@@ -1,6 +1,6 @@
 # mqtt-broker
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
 
 A Helm chart for Eclipse Mosquitto
 
@@ -114,10 +114,12 @@ kubectl delete pvc -l app.kubernetes.io/instance=mqtt -n mqtt
 | persistence.enabled | bool | `true` |  |
 | persistence.size | string | `"1Gi"` |  |
 | persistence.storageClass | string | `"vsphere-csi"` |  |
+| podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context. RuntimeDefault seccomp blocks syscalls no normal app needs. Add `runAsNonRoot: true` (and runAsUser) here if the image runs as a non-root user. |
 | resources.limits.cpu | string | `"100m"` |  |
 | resources.limits.memory | string | `"128Mi"` |  |
 | resources.requests.cpu | string | `"50m"` |  |
 | resources.requests.memory | string | `"64Mi"` |  |
+| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container security context, applied to every container (incl. init and migrate containers). |
 | service.port | int | `1883` |  |
 | service.type | string | `"ClusterIP"` |  |
 | service.websocketPort | int | `9001` |  |

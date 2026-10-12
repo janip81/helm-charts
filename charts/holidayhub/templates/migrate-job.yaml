@@ -19,6 +19,8 @@ spec:
     spec:
       restartPolicy: Never
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         runAsUser: 0
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -26,6 +28,8 @@ spec:
       {{- end }}
       containers:
         - name: migrate
+          securityContext:
+            allowPrivilegeEscalation: false
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:

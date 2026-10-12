@@ -18,6 +18,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       {{- if or .Values.imagePullSecrets .Values.ghcrSecret.create }}
       imagePullSecrets:
         {{- with .Values.imagePullSecrets }}
@@ -32,6 +34,8 @@ spec:
       {{- end }}
       containers:
         - name: node-bootstrap
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:

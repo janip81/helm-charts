@@ -1,6 +1,6 @@
 # gameledger
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 App to keep track of card and board game wins losses
 
@@ -86,6 +86,7 @@ To uninstall the chart:
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
+| podSecurityContext | object | `{"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context. RuntimeDefault seccomp blocks syscalls no normal app needs. Add `runAsNonRoot: true` (and runAsUser) here if the image runs as a non-root user. |
 | replicaCount | int | `1` | Keep at 1 — iron-session cookies are node-local (no shared session store) |
 | resources.limits.cpu | string | `"500m"` |  |
 | resources.limits.memory | string | `"512Mi"` |  |
@@ -93,6 +94,7 @@ To uninstall the chart:
 | resources.requests.memory | string | `"256Mi"` |  |
 | secret | object | `{"create":true}` | Secret management. Set create: false when the secret is managed externally (e.g. AVP via cluster-config) |
 | secretEnv | object | `{"DATABASE_URL":"changeme","SESSION_SECRET":"changeme"}` | Secret environment variables rendered via ArgoCD Vault Plugin (only used when secret.create: true) |
+| securityContext | object | `{"allowPrivilegeEscalation":false}` | Container security context, applied to every container (incl. init and migrate containers). |
 | service.annotations | object | `{}` |  |
 | service.port | int | `80` |  |
 | service.targetPort | int | `3000` |  |

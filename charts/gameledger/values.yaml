@@ -78,3 +78,13 @@ metrics:
 
 podAnnotations: {}
 podLabels: {}
+
+# -- Pod security context. RuntimeDefault seccomp blocks syscalls no normal app needs.
+# Add `runAsNonRoot: true` (and runAsUser) here if the image runs as a non-root user.
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context, applied to every container (incl. init and migrate containers).
+securityContext:
+  allowPrivilegeEscalation: false

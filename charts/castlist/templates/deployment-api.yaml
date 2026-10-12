@@ -19,12 +19,16 @@ spec:
       labels:
         app: castlist-api
     spec:
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecret }}
       {{- end }}
       containers:
         - name: api
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
           image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
           imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           ports:

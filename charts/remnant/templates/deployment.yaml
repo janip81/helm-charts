@@ -17,6 +17,8 @@ spec:
         app.kubernetes.io/component: mcp
     spec:
       securityContext:
+        seccompProfile:
+          type: RuntimeDefault
         runAsNonRoot: true
         runAsUser: 1000
       {{- with .Values.imagePullSecrets }}
@@ -25,6 +27,8 @@ spec:
       {{- end }}
       containers:
         - name: remnant
+          securityContext:
+            allowPrivilegeEscalation: false
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
