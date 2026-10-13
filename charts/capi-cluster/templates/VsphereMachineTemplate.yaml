@@ -30,7 +30,9 @@ spec:
       powerOffMode: trySoft
       resourcePool: "{{ .resourcePool }}"
       server: "{{ $.Values.vsphere.serverIP }}"
+{{- if .storagePolicyName }}
       storagePolicyName: "{{ .storagePolicyName }}"
+{{- end }}
       template: "{{ .isoTemplate }}"
       thumbprint: "{{ $.Values.vsphere.thumbprint }}"
 {{- if .hardwareVersion }}
