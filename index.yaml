@@ -4415,6 +4415,36 @@ entries:
           url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
     apiVersion: v2
     appVersion: 0.2.0
+    created: "2026-10-17T16:21:27.285046172Z"
+    description: Remnant — a shared local memory layer for stateless AI agents
+    digest: 4afbcd54ad3d9171cc41fd220e8e25d943f50f410e204ae9f99fa67976fff60d
+    home: https://github.com/janip81/helm-charts/tree/main/charts/remnant
+    icon: https://raw.githubusercontent.com/janip81/helm-charts/main/charts/remnant/icon.png
+    keywords:
+    - mcp
+    - memory
+    - remnant
+    - pgvector
+    - ollama
+    - ai
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: remnant
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    - https://github.com/janip81/remnant
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/remnant-0.2.7/remnant-0.2.7.tgz
+    version: 0.2.7
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/remnant/
+    apiVersion: v2
+    appVersion: 0.2.0
     created: "2026-10-12T13:26:25.760782134Z"
     description: Remnant — a shared local memory layer for stateless AI agents
     digest: 1838a2b99a9b5df35bc68cc22d75f442ceccdf7fca1f93471a55c7da88aacb80
@@ -5796,4 +5826,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-13T12:21:28.510944706Z"
+generated: "2026-10-17T16:21:27.2854289Z"
