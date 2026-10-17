@@ -65,6 +65,10 @@ spec:
               value: {{ .Values.mem0.agentId | quote }}
             - name: MEM0_INFER
               value: {{ .Values.mem0.infer | quote }}
+            {{- if .Values.mcp.dnsRebindingProtection }}
+            - name: MCP_ALLOWED_HOSTS
+              value: {{ include "remnant.mcpAllowedHosts" . | quote }}
+            {{- end }}
             {{- if .Values.redis.enabled }}
             - name: REDIS_PASSWORD
               valueFrom:

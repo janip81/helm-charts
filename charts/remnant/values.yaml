@@ -50,6 +50,15 @@ gatewayApi:
     - name: internal-shared
       namespace: kube-system
 
+mcp:
+  # -- DNS rebinding protection for /mcp: sets MCP_ALLOWED_HOSTS (needs remnant image c5d1012 or newer).
+  # Off keeps the previous behaviour.
+  dnsRebindingProtection: false
+  # -- Allowed Host headers for /mcp ("host" or "host:*"). Empty = the in-cluster service
+  # (<fullname>:<service.port>, used by the UI and the dedup job) plus gatewayApi.host when enabled.
+  # Loopback is always allowed by the server.
+  allowedHosts: []
+
 resources:
   requests:
     # -- CPU request
