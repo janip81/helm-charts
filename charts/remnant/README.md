@@ -1,6 +1,6 @@
 # remnant
 
-![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.2.7](https://img.shields.io/badge/Version-0.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Remnant — a shared local memory layer for stateless AI agents
 
@@ -121,6 +121,8 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | image.repository | string | `"ghcr.io/janip81/remnant"` | Image repository |
 | image.tag | string | `"latest"` | Image tag |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries (e.g. ghcr.io) |
+| mcp.allowedHosts | list | `[]` | Allowed Host headers for /mcp ("host" or "host:*"). Empty = the in-cluster service (<fullname>:<service.port>, used by the UI and the dedup job) plus gatewayApi.host when enabled. Loopback is always allowed by the server. |
+| mcp.dnsRebindingProtection | bool | `false` | DNS rebinding protection for /mcp: sets MCP_ALLOWED_HOSTS (needs remnant image c5d1012 or newer). Off keeps the previous behaviour. |
 | mem0.agentId | string | `"default"` | Default agent ID tag (overridden per client via X-Agent-ID header) |
 | mem0.infer | string | `"true"` | Enable LLM extraction and deduplication on add_memory calls |
 | mem0.userId | string | `"default"` | User ID namespace for stored memories |

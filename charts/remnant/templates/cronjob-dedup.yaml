@@ -86,9 +86,9 @@ spec:
                   value: {{ .Values.ollama.baseUrl | quote }}
                 - name: OLLAMA_MODEL
                   value: {{ .Values.ollama.model | quote }}
-                - name: CLAUDE_MEMORY_URL
+                - name: REMNANT_URL
                   value: "http://{{ include "remnant.fullname" . }}:{{ .Values.service.port }}"
-                - name: CLAUDE_MEMORY_TOKEN
+                - name: REMNANT_TOKEN
                   valueFrom:
                     secretKeyRef:
                       name: {{ .Values.auth.secretName }}

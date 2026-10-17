@@ -27,3 +27,19 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "remnant.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Host headers allowed on /mcp: mcp.allowedHosts, or by default the in-cluster service
+(fullname:service.port) plus the Gateway API host.
+*/}}
+{{- define "remnant.mcpAllowedHosts" -}}
+{{- if .Values.mcp.allowedHosts -}}
+{{- join "," .Values.mcp.allowedHosts -}}
+{{- else -}}
+{{- $hosts := list (printf "%s:%v" (include "remnant.fullname" .) .Values.service.port) -}}
+{{- if and .Values.gatewayApi.enabled .Values.gatewayApi.host -}}
+{{- $hosts = append $hosts .Values.gatewayApi.host -}}
+{{- end -}}
+{{- join "," $hosts -}}
+{{- end -}}
+{{- end }}
