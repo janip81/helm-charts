@@ -1,6 +1,6 @@
 # remnant
 
-![Version: 0.2.8](https://img.shields.io/badge/Version-0.2.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.2.9](https://img.shields.io/badge/Version-0.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Remnant — a shared local memory layer for stateless AI agents
 
@@ -160,6 +160,23 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | ui.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | ui.image.repository | string | `"ghcr.io/janip81/remnant-ui"` | UI image repository (separate from MCP image) |
 | ui.image.tag | string | `"latest"` | Image tag |
+| ui.oauth2Proxy.allowedEmails | list | `[]` | Only these e-mail addresses may log in (empty = any user the issuer authenticates) |
+| ui.oauth2Proxy.clientId | string | `"remnant-ui"` | OIDC client id (confidential client) |
+| ui.oauth2Proxy.clientSecretKey | string | `"client-secret"` |  |
+| ui.oauth2Proxy.cookieExpire | string | `"168h"` | Session cookie lifetime |
+| ui.oauth2Proxy.cookieSecretKey | string | `"cookie-secret"` |  |
+| ui.oauth2Proxy.enabled | bool | `false` | Put an oauth2-proxy sidecar (OIDC login) in front of the UI |
+| ui.oauth2Proxy.existingSecret | string | `""` | Existing Secret with the client secret and cookie secret |
+| ui.oauth2Proxy.extraArgs | list | `[]` | Extra oauth2-proxy arguments |
+| ui.oauth2Proxy.image.pullPolicy | string | `"IfNotPresent"` |  |
+| ui.oauth2Proxy.image.repository | string | `"quay.io/oauth2-proxy/oauth2-proxy"` |  |
+| ui.oauth2Proxy.image.tag | string | `"v7.15.5"` |  |
+| ui.oauth2Proxy.issuerUrl | string | `""` | OIDC issuer, e.g. https://keycloak.example.com/realms/myrealm |
+| ui.oauth2Proxy.port | int | `4180` | Port the proxy listens on |
+| ui.oauth2Proxy.resources.limits.cpu | string | `"100m"` |  |
+| ui.oauth2Proxy.resources.limits.memory | string | `"64Mi"` |  |
+| ui.oauth2Proxy.resources.requests.cpu | string | `"10m"` |  |
+| ui.oauth2Proxy.resources.requests.memory | string | `"32Mi"` |  |
 | ui.port | int | `8081` | Port the UI listens on inside the container |
 | ui.resources.limits.cpu | string | `"200m"` |  |
 | ui.resources.limits.memory | string | `"128Mi"` |  |
