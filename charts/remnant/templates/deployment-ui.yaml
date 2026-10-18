@@ -1,4 +1,5 @@
 {{- if .Values.ui.enabled }}
+{{- $proxy := .Values.ui.oauth2Proxy }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,6 +19,10 @@ spec:
       labels:
         {{- include "remnant.labels" . | nindent 8 }}
         app.kubernetes.io/component: ui
+      {{- if and $proxy.enabled $proxy.allowedEmails }}
+      annotations:
+        checksum/allowed-emails: {{ join "\n" $proxy.allowedEmails | sha256sum }}
+      {{- end }}
     spec:
       securityContext:
         seccompProfile:
@@ -34,10 +39,12 @@ spec:
             allowPrivilegeEscalation: false
           image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
           imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+          {{- if not $proxy.enabled }}
           ports:
             - name: http
               containerPort: {{ .Values.ui.port }}
               protocol: TCP
+          {{- end }}
           env:
             - name: MCP_INTERNAL_URL
               value: "http://{{ include "remnant.fullname" . }}:{{ .Values.service.port }}"
@@ -48,6 +55,25 @@ spec:
                   key: BEARER_TOKEN
             - name: UI_PORT
               value: {{ .Values.ui.port | quote }}
+            {{- if $proxy.enabled }}
+            - name: UI_HOST
+              value: "127.0.0.1"
+            {{- end }}
+          {{- if $proxy.enabled }}
+          {{- /* bound to 127.0.0.1: kubelet httpGet can't reach it, so probe from inside */}}
+          livenessProbe:
+            exec:
+              command: ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:{{ .Values.ui.port }}/health', timeout=4)"]
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:{{ .Values.ui.port }}/health', timeout=4)"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          {{- else }}
           livenessProbe:
             httpGet:
               path: /health
@@ -60,6 +86,98 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 10
+          {{- end }}
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
+        {{- if $proxy.enabled }}
+        - name: oauth2-proxy
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          image: "{{ $proxy.image.repository }}:{{ $proxy.image.tag }}"
+          imagePullPolicy: {{ $proxy.image.pullPolicy }}
+          args:
+            - --provider=oidc
+            - --oidc-issuer-url={{ required "ui.oauth2Proxy.issuerUrl is required" $proxy.issuerUrl }}
+            - --client-id={{ $proxy.clientId }}
+            - --code-challenge-method=S256
+            - --http-address=0.0.0.0:{{ $proxy.port }}
+            - --upstream=http://127.0.0.1:{{ .Values.ui.port }}
+            - --redirect-url=https://{{ required "ui.host is required with ui.oauth2Proxy" .Values.ui.host }}/oauth2/callback
+            - --reverse-proxy=true
+            - --skip-provider-button=true
+            - --cookie-name=_remnant_ui
+            - --cookie-secure=true
+            - --cookie-samesite=lax
+            - --cookie-expire={{ $proxy.cookieExpire }}
+            {{- if $proxy.allowedEmails }}
+            {{- /* no --email-domain: with "*" oauth2-proxy would admit everyone despite the file */}}
+            - --authenticated-emails-file=/etc/oauth2-proxy/allowed-emails
+            {{- else }}
+            - --email-domain=*
+            {{- end }}
+            - --skip-auth-route=GET=^/health$
+            {{- range $proxy.extraArgs }}
+            - {{ . }}
+            {{- end }}
+          env:
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "ui.oauth2Proxy.existingSecret is required" $proxy.existingSecret }}
+                  key: {{ $proxy.clientSecretKey }}
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $proxy.existingSecret }}
+                  key: {{ $proxy.cookieSecretKey }}
+          ports:
+            - name: http
+              containerPort: {{ $proxy.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          {{- if $proxy.allowedEmails }}
+          volumeMounts:
+            - name: allowed-emails
+              mountPath: /etc/oauth2-proxy
+              readOnly: true
+          {{- end }}
+          resources:
+            {{- toYaml $proxy.resources | nindent 12 }}
+      {{- if $proxy.allowedEmails }}
+      volumes:
+        - name: allowed-emails
+          configMap:
+            name: {{ include "remnant.fullname" . }}-ui-allowed-emails
+      {{- end }}
+        {{- end }}
+{{- if and $proxy.enabled $proxy.allowedEmails }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "remnant.fullname" . }}-ui-allowed-emails
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "remnant.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ui
+data:
+  allowed-emails: |
+    {{- range $proxy.allowedEmails }}
+    {{ . }}
+    {{- end }}
+{{- end }}
 {{- end }}

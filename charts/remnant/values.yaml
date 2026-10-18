@@ -39,6 +39,40 @@ ui:
     limits:
       cpu: 200m
       memory: 128Mi
+  # The UI proxy adds the MCP bearer token server-side, so whoever reaches the UI has full
+  # access. oauth2Proxy puts an OIDC login (e.g. Keycloak) in front: the UI then binds to
+  # 127.0.0.1 and the Service targets the proxy.
+  oauth2Proxy:
+    # -- Put an oauth2-proxy sidecar (OIDC login) in front of the UI
+    enabled: false
+    image:
+      repository: quay.io/oauth2-proxy/oauth2-proxy
+      tag: v7.15.5
+      pullPolicy: IfNotPresent
+    # -- Port the proxy listens on
+    port: 4180
+    # -- OIDC issuer, e.g. https://keycloak.example.com/realms/myrealm
+    issuerUrl: ""
+    # -- OIDC client id (confidential client)
+    clientId: remnant-ui
+    # -- Existing Secret with the client secret and cookie secret
+    existingSecret: ""
+    clientSecretKey: client-secret
+    # -- 32-byte cookie secret (e.g. openssl rand -base64 32 | tr -- '+/' '-_')
+    cookieSecretKey: cookie-secret
+    # -- Only these e-mail addresses may log in (empty = any user the issuer authenticates)
+    allowedEmails: []
+    # -- Session cookie lifetime
+    cookieExpire: 168h
+    # -- Extra oauth2-proxy arguments
+    extraArgs: []
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
 
 gatewayApi:
   # -- Enable Gateway API HTTPRoute
