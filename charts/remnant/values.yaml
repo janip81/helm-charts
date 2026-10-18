@@ -100,6 +100,19 @@ dedup:
   semanticThreshold: "0.92"
   # -- Suspend the CronJob without deleting it
   suspend: false
+  llm:
+    # -- LLM for nightly tagging/merges: ollama (local, default) or openai (OpenAI-compatible, e.g. OmniRoute)
+    provider: ollama
+    # -- OpenAI-compatible base URL (provider=openai), e.g. http://omniroute.omniroute.svc:20128/v1
+    url: ""
+    # -- Model name at the OpenAI-compatible endpoint
+    model: ""
+    # -- Existing Secret holding the API key (provider=openai)
+    apiKeySecret: ""
+    # -- Key within apiKeySecret
+    apiKeySecretKey: api-key
+    # -- Fall back to local Ollama when the OpenAI-compatible endpoint fails
+    fallback: true
   resources:
     requests:
       cpu: 100m

@@ -1,6 +1,6 @@
 # remnant
 
-![Version: 0.2.7](https://img.shields.io/badge/Version-0.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.2.8](https://img.shields.io/badge/Version-0.2.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Remnant — a shared local memory layer for stateless AI agents
 
@@ -107,6 +107,12 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | cnpg.storage.size | string | `"5Gi"` | Storage size for the CNPG cluster |
 | cnpg.storage.storageClass | string | `""` | Storage class for the CNPG cluster |
 | dedup.enabled | bool | `true` | Enable the deduplication CronJob |
+| dedup.llm.apiKeySecret | string | `""` | Existing Secret holding the API key (provider=openai) |
+| dedup.llm.apiKeySecretKey | string | `"api-key"` | Key within apiKeySecret |
+| dedup.llm.fallback | bool | `true` | Fall back to local Ollama when the OpenAI-compatible endpoint fails |
+| dedup.llm.model | string | `""` | Model name at the OpenAI-compatible endpoint |
+| dedup.llm.provider | string | `"ollama"` | LLM for nightly tagging/merges: ollama (local, default) or openai (OpenAI-compatible, e.g. OmniRoute) |
+| dedup.llm.url | string | `""` | OpenAI-compatible base URL (provider=openai), e.g. http://omniroute.omniroute.svc:20128/v1 |
 | dedup.resources.limits.cpu | string | `"500m"` |  |
 | dedup.resources.limits.memory | string | `"256Mi"` |  |
 | dedup.resources.requests.cpu | string | `"100m"` |  |
