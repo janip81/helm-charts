@@ -86,6 +86,21 @@ spec:
                   value: {{ .Values.ollama.baseUrl | quote }}
                 - name: OLLAMA_MODEL
                   value: {{ .Values.ollama.model | quote }}
+                - name: DEDUP_LLM
+                  value: {{ .Values.dedup.llm.provider | quote }}
+                {{- if eq .Values.dedup.llm.provider "openai" }}
+                - name: DEDUP_LLM_URL
+                  value: {{ required "dedup.llm.url is required when provider=openai" .Values.dedup.llm.url | quote }}
+                - name: DEDUP_LLM_MODEL
+                  value: {{ required "dedup.llm.model is required when provider=openai" .Values.dedup.llm.model | quote }}
+                - name: DEDUP_LLM_FALLBACK
+                  value: {{ .Values.dedup.llm.fallback | quote }}
+                - name: DEDUP_LLM_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ required "dedup.llm.apiKeySecret is required when provider=openai" .Values.dedup.llm.apiKeySecret }}
+                      key: {{ .Values.dedup.llm.apiKeySecretKey }}
+                {{- end }}
                 - name: REMNANT_URL
                   value: "http://{{ include "remnant.fullname" . }}:{{ .Values.service.port }}"
                 - name: REMNANT_TOKEN
