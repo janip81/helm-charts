@@ -119,6 +119,8 @@ spec:
             - --email-domain=*
             {{- end }}
             - --skip-auth-route=GET=^/health$
+            # XHRs to /api/* get 401 instead of a login redirect; the SPA reloads into the login
+            - --api-route=^/api/
             {{- range $proxy.extraArgs }}
             - {{ . }}
             {{- end }}

@@ -42,6 +42,8 @@ ui:
   # The UI proxy adds the MCP bearer token server-side, so whoever reaches the UI has full
   # access. oauth2Proxy puts an OIDC login (e.g. Keycloak) in front: the UI then binds to
   # 127.0.0.1 and the Service targets the proxy.
+  # Needs a UI image with UI_HOST support (remnant #29); an older image keeps listening on
+  # 0.0.0.0, so the pod IP would bypass the proxy. Pin a recent tag or use pullPolicy Always.
   oauth2Proxy:
     # -- Put an oauth2-proxy sidecar (OIDC login) in front of the UI
     enabled: false
