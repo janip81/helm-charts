@@ -13,11 +13,12 @@
       expr: |
         (time() - backup_operator_last_success_timestamp_seconds)
           > on(namespace, source) group_left() (1.5 * backup_operator_schedule_interval_seconds)
+        unless on(namespace, source) (backup_operator_schedule_paused == 1)
       for: 30m
       labels: {severity: warning}
       annotations:
         summary: "No successful backup for {{ $labels.namespace }}/{{ $labels.source }}"
-        description: The newest successful backup is older than 1.5x the schedule interval.
+        description: The newest successful backup is older than 1.5x the schedule interval. Schedules paused because their volume is unused (whenSourceUnused Skip) don't alert.
 
     - alert: BackupNeverSucceeded
       expr: |
