@@ -10,7 +10,7 @@ src="$(mktemp -d)"
 trap 'rm -rf -- "$src"' EXIT
 git clone -q https://github.com/janip81/backup-operator.git "$src"
 git -C "$src" checkout -q "$ref"
-cp "$src"/k8s/base/crds/*.yaml "$chart/crds/"
+cp "$src"/k8s/base/crds/*.yaml "$chart/files/crds/"
 cp "$src/k8s/monitoring/grafana/backup-operator.json" "$chart/files/dashboard.json"
 python3 - "$src/k8s/monitoring/prometheusrule.yaml" "$chart/files/prometheus-rules.yaml" <<'PY'
 import sys, yaml

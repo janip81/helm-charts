@@ -30,8 +30,9 @@ helm install backup-operator janip81/backup-operator -n backup-operator --create
 
 ## Notes
 
-- **CRDs** are in `crds/`: Helm installs them but never upgrades them. Argo CD applies them like any
-  other resource, so upgrades work there; with plain Helm apply the new CRDs by hand before upgrading.
+- **CRDs** are rendered from templates (`crds.enabled`), so `helm upgrade` and Argo CD's Helm plugins
+  upgrade them too. They carry `helm.sh/resource-policy: keep` (`crds.keep`): an uninstall never
+  deletes them, because that would delete every Backup record and schedule.
 - **One replica only** (`replicaCount` 0 or 1). Use 0 to pause the operator.
 - **Private images:** set `imagePullSecrets` for the controller and `worker.imagePullSecret` to a
   pull secret that exists in every namespace with backups.

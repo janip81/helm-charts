@@ -36,8 +36,9 @@ helm install backup-operator janip81/backup-operator -n backup-operator --create
 
 ## Notes
 
-- **CRDs** are in `crds/`: Helm installs them but never upgrades them. Argo CD applies them like any
-  other resource, so upgrades work there; with plain Helm apply the new CRDs by hand before upgrading.
+- **CRDs** are rendered from templates (`crds.enabled`), so `helm upgrade` and Argo CD's Helm plugins
+  upgrade them too. They carry `helm.sh/resource-policy: keep` (`crds.keep`): an uninstall never
+  deletes them, because that would delete every Backup record and schedule.
 - **One replica only** (`replicaCount` 0 or 1). Use 0 to pause the operator.
 - **Private images:** set `imagePullSecrets` for the controller and `worker.imagePullSecret` to a
   pull secret that exists in every namespace with backups.
@@ -52,6 +53,8 @@ helm install backup-operator janip81/backup-operator -n backup-operator --create
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | config | object | `{}` | Controller settings as environment variables, e.g. MAX_CONCURRENT_RUNS, MAX_SNAPSHOTS_PER_PVC, DEFAULT_MAX_ATTEMPTS, DEFAULT_STORAGE_CLASS, JOB_TIMEOUT_SECONDS. Unset means the operator default; see the backup-operator README. |
+| crds.enabled | bool | `true` | Install and upgrade the CRDs with the chart (rendered from templates, so `helm upgrade` and Argo CD's Helm plugins update them too) |
+| crds.keep | bool | `true` | Keep the CRDs on uninstall; deleting them would delete every Backup record and schedule |
 | dashboard.annotations | object | `{}` |  |
 | dashboard.enabled | bool | `false` | Create the Grafana dashboard as a ConfigMap for the Grafana sidecar |
 | dashboard.labels.grafana_dashboard | string | `"1"` |  |

@@ -1,3 +1,10 @@
+crds:
+  # -- Install and upgrade the CRDs with the chart (rendered from templates, so `helm upgrade` and
+  # Argo CD's Helm plugins update them too)
+  enabled: true
+  # -- Keep the CRDs on uninstall; deleting them would delete every Backup record and schedule
+  keep: true
+
 # -- Number of controller replicas: 1, or 0 to pause the operator. Never more than one: admission
 # control is in-process.
 replicaCount: 1
