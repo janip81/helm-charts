@@ -1,0 +1,18 @@
+{{- if .Values.prometheusRule.enabled }}
+# Rules are kept verbatim in files/ (they contain Prometheus templates, not Helm ones).
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backup-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "backup-operator.labels" . | nindent 4 }}
+    {{- with .Values.prometheusRule.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  groups:
+{{ .Files.Get "files/prometheus-rules.yaml" | replace "namespace=\"backup-operator\"" (printf "namespace=%q" .Release.Namespace) | indent 4 }}
+{{- end }}

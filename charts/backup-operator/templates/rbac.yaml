@@ -1,0 +1,71 @@
+# Least privilege (backup-operator #13): the operator never copies secrets or creates RBAC; it only reads
+# a Secret/ConfigMap to validate that a run's credentials and custom plugin exist.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-operator
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "backup-operator.labels" . | nindent 4 }}
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backup-operator
+  labels: {{- include "backup-operator.labels" . | nindent 4 }}
+rules:
+  # Own resources
+  - apiGroups: ["backup.techmonkeys.se"]
+    resources: ["backuprequests", "backups", "backupschedules"]
+    verbs: ["get", "list", "watch", "create", "patch", "delete"]
+  - apiGroups: ["backup.techmonkeys.se"]
+    resources: ["backuprequests/status", "backups/status", "backupschedules/status"]
+    verbs: ["get", "patch"]
+  # Per-run temporary objects (always labelled and UID-checked before deletion)
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  # Read-only inventory for the orphaned-snapshot metrics (never modified)
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]            # worker exit code and termination message only, never logs
+  # Validation only (existence and key names)
+  - apiGroups: [""]
+    resources: ["secrets", "configmaps"]
+    verbs: ["get"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get"]
+  # kopf framework
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["", "events.k8s.io"]
+    resources: ["events"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: backup-operator
+  labels: {{- include "backup-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: backup-operator
+subjects:
+  - kind: ServiceAccount
+    name: backup-operator
+    namespace: {{ .Release.Namespace }}

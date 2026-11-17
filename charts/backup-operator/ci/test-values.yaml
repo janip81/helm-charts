@@ -1,0 +1,2 @@
+# chart-testing on kind: no controller pod (the images may need credentials), monitoring off.
+replicaCount: 0

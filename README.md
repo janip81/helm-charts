@@ -6,6 +6,7 @@ Warning! Forked charts here contain changes from the original to suit my needs.
 
 ## Charts written by me
 
+  [backup-operator](https://github.com/janip81/helm-charts/tree/main/charts/backup-operator) - PVC backups to restic with plugins
   [capi-cluster](https://github.com/janip81/helm-charts/tree/main/charts/capi-cluster)
   [home-assistant](https://github.com/janip81/helm-charts/tree/main/charts/home-assistant) - IN DEVELOPMENT
 

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backup-operator-metrics
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "backup-operator.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: metrics
+  selector: {{- include "backup-operator.selectorLabels" . | nindent 4 }}

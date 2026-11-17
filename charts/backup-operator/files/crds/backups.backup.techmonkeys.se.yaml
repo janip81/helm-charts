@@ -1,0 +1,138 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backups.backup.techmonkeys.se
+spec:
+  group: backup.techmonkeys.se
+  names:
+    kind: Backup
+    listKind: BackupList
+    plural: backups
+    singular: backup
+    shortNames:
+    - bck
+  scope: Namespaced
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        description: Backup represents a completed or attempted backup job.
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            type: object
+            description: Where the backup came from. Written once by the operator.
+            properties:
+              requestRef:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                  uid:
+                    type: string
+              source:
+                type: string
+                description: Schedule name, or the source PVC for ad-hoc requests.
+              sourceNamespace:
+                type: string
+              sourcePVC:
+                type: string
+              method:
+                type: string
+                description: Deprecated (v0.3 records).
+              targetNamespace:
+                type: string
+                description: Deprecated (v0.3 records).
+              customScript:
+                type: object
+                description: Deprecated (v0.3 records).
+                x-kubernetes-preserve-unknown-fields: true
+              plugin:
+                type: string
+              repository:
+                type: string
+                description: restic repository URL (no credentials).
+          status:
+            type: object
+            description: Result of the run, written before temporary objects are removed.
+            properties:
+              phase:
+                type: string
+                enum:
+                - Succeeded
+                - Failed
+                description: Final result of the run.
+              reason:
+                type: string
+              message:
+                type: string
+              source:
+                type: string
+              startedAt:
+                type: string
+                format: date-time
+              completedAt:
+                type: string
+                format: date-time
+                description: When the transfer finished (success) or the run failed. Basis for backup age.
+              durationSeconds:
+                type: integer
+              attempts:
+                type: integer
+                description: Attempts used.
+              result:
+                type: object
+                description: Worker container exit details.
+                properties:
+                  exitCode:
+                    type: integer
+                  reason:
+                    type: string
+              artifact:
+                type: object
+                description: Worker-reported summary of what was stored (e.g. snapshot ID, sizes).
+                x-kubernetes-preserve-unknown-fields: true
+              duration:
+                type: string
+                description: Deprecated (v0.3 records).
+              logTail:
+                type: string
+                description: Deprecated (v0.3 records).
+              snapshotName:
+                type: string
+                description: Deprecated (v0.3 records).
+              remotePath:
+                type: string
+                description: Deprecated (v0.3 records).
+              size:
+                type: string
+                description: Deprecated (v0.3 records).
+              recordedAt:
+                type: string
+                format: date-time
+                description: When this record was written.
+    subresources:
+      status: {}
+    additionalPrinterColumns:
+    - name: Phase
+      type: string
+      jsonPath: .status.phase
+    - name: Source
+      type: string
+      jsonPath: .status.source
+    - name: Duration
+      type: integer
+      jsonPath: .status.durationSeconds
+    - name: Completed
+      type: date
+      jsonPath: .status.completedAt
