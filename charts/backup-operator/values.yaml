@@ -1,0 +1,60 @@
+# -- Number of controller replicas: 1, or 0 to pause the operator. Never more than one: admission
+# control is in-process.
+replicaCount: 1
+
+image:
+  # -- Controller image
+  repository: ghcr.io/janip81/backup-operator-controller
+  # -- Image tag; defaults to the chart's appVersion. Pin a release or `sha-<commit>` tag.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+worker:
+  image:
+    # -- Worker image (restic and the plugins), run as a Job in the backed-up app's namespace
+    repository: ghcr.io/janip81/backup-operator-worker
+    # -- Worker image tag; defaults to the chart's appVersion
+    tag: ""
+  # -- Name of a pull secret that must exist in every namespace with backups (worker Jobs use it)
+  imagePullSecret: ""
+
+# -- Pull secrets for the controller pod (in the release namespace)
+imagePullSecrets: []
+
+# -- Controller settings as environment variables, e.g. MAX_CONCURRENT_RUNS, MAX_SNAPSHOTS_PER_PVC,
+# DEFAULT_MAX_ATTEMPTS, DEFAULT_STORAGE_CLASS, JOB_TIMEOUT_SECONDS. Unset means the operator default;
+# see the backup-operator README.
+config: {}
+
+resources:
+  requests: {cpu: 50m, memory: 128Mi}
+  limits: {memory: 256Mi}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
+
+serviceMonitor:
+  # -- Create a ServiceMonitor (Prometheus Operator)
+  enabled: false
+  # -- Labels your Prometheus selects ServiceMonitors by
+  labels: {}
+  interval: 30s
+  # -- If set, add a `k8s_cluster` label with this value to every scraped series
+  clusterLabel: ""
+
+prometheusRule:
+  # -- Create the alert rules (stale or failed backups, runaway snapshots/requests, operator health)
+  enabled: false
+  # -- Labels your Prometheus selects rules by
+  labels: {}
+
+dashboard:
+  # -- Create the Grafana dashboard as a ConfigMap for the Grafana sidecar
+  enabled: false
+  # -- Namespace for the dashboard ConfigMap (defaults to the release namespace)
+  namespace: ""
+  labels:
+    grafana_dashboard: "1"
+  annotations: {}

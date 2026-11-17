@@ -1,0 +1,32 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backup-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "backup-operator.labels" . | nindent 4 }}
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  selector:
+    matchLabels: {{- include "backup-operator.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ .Values.serviceMonitor.interval }}
+      # Keep the metrics' own namespace label (the backed-up app's namespace) instead of replacing it
+      # with the operator's namespace; the alerts and the dashboard group by it.
+      honorLabels: true
+      {{- with .Values.serviceMonitor.clusterLabel }}
+      metricRelabelings:
+        - action: replace
+          replacement: {{ . | quote }}
+          targetLabel: k8s_cluster
+      {{- end }}
+{{- end }}

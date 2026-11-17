@@ -1,0 +1,10 @@
+backup-operator {{ .Chart.AppVersion }} is installed in {{ .Release.Namespace }}.
+
+Next steps per application namespace:
+  1. A credentials Secret (RESTIC_PASSWORD, plus S3 keys or SFTP key and known_hosts).
+  2. A BackupSchedule; `kubectl get backupschedules -A` must show READY True.
+  3. A supervised first run and a restore check:
+     https://github.com/janip81/backup-operator/blob/main/docs/operations.md
+{{- if .Values.worker.imagePullSecret }}
+Worker Jobs use the pull secret "{{ .Values.worker.imagePullSecret }}", which must exist in each of those namespaces.
+{{- end }}

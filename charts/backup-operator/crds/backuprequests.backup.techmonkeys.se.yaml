@@ -1,0 +1,256 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backuprequests.backup.techmonkeys.se
+spec:
+  group: backup.techmonkeys.se
+  scope: Namespaced
+  names:
+    kind: BackupRequest
+    plural: backuprequests
+    singular: backuprequest
+    shortNames:
+    - bkr
+    - bkre
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        description: BackupRequest triggers a backup run.
+        properties:
+          spec:
+            type: object
+            required:
+            - sourcePVC
+            - snapshotClass
+            - repository
+            properties:
+              sourceNamespace:
+                type: string
+                description: Namespace of the source PVC. Defaults to the request's namespace.
+              sourcePVC:
+                type: string
+              snapshotClass:
+                type: string
+              storageClass:
+                type: string
+                description: StorageClass for the temporary PVC. Defaults to the operator's DEFAULT_STORAGE_CLASS or the cluster
+                  default.
+              maxAttempts:
+                type: integer
+                minimum: 1
+                maximum: 10
+                description: 'Attempts before the request is marked Failed (default: operator DEFAULT_MAX_ATTEMPTS).'
+              plugin:
+                type: object
+                description: What to back up from the volume.
+                default:
+                  name: files
+                required:
+                - name
+                properties:
+                  name:
+                    type: string
+                    enum:
+                    - files
+                    - archives
+                    - sqlite
+                    - custom
+                    description: 'files: whole volume or paths; archives: archives the app writes itself; sqlite: consistent
+                      SQLite copies plus other files; custom: script from configMapRef.'
+                  config:
+                    type: object
+                    description: Plugin settings as strings (camelCase keys become PLUGIN_* variables; lists are comma separated),
+                      e.g. paths, exclude, dir, pattern, newest.
+                    additionalProperties:
+                      type: string
+                  configMapRef:
+                    type: object
+                    description: 'custom plugin: ConfigMap in the source namespace holding the script.'
+                    required:
+                    - name
+                    properties:
+                      name:
+                        type: string
+                      key:
+                        type: string
+                        default: plugin.sh
+                x-kubernetes-validations:
+                - rule: self.name != 'custom' || has(self.configMapRef)
+                  message: custom plugin needs configMapRef
+              repository:
+                type: object
+                required:
+                - url
+                - credentialsSecret
+                description: restic repository the snapshots are stored in.
+                properties:
+                  url:
+                    type: string
+                    description: restic repository, e.g. s3:https://s3.example/bucket/prefix, sftp:user@host:/path, rest:https://host/repo.
+                      Credentials are never part of the URL; they come from credentialsSecret.
+                    pattern: ^(?:(?:s3|rest):https?://[A-Za-z0-9.-]+(?::[0-9]{1,5})?(?:/[A-Za-z0-9._~/-]*)?|sftp:[a-z_][a-z0-9_.-]{0,31}@[A-Za-z0-9.-]+:/[A-Za-z0-9._~/-]*)$
+                    maxLength: 512
+                  credentialsSecret:
+                    type: string
+                    description: 'Secret in the source namespace: RESTIC_PASSWORD (required); AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY
+                      for S3; RESTIC_REST_USERNAME/RESTIC_REST_PASSWORD for a REST server; ssh-privatekey + known_hosts for
+                      SFTP; optional ca.crt.'
+                  initialize:
+                    type: boolean
+                    default: true
+                    description: Create the repository if it doesn't exist yet.
+                  allowInsecure:
+                    type: boolean
+                    default: false
+                    description: Allow plain-http repositories (tests only).
+              retention:
+                type: object
+                description: 'restic retention applied to this source after each successful backup. Empty: keep everything.'
+                properties:
+                  keepLast:
+                    type: integer
+                    minimum: 1
+                  keepDaily:
+                    type: integer
+                    minimum: 1
+                  keepWeekly:
+                    type: integer
+                    minimum: 1
+                  keepMonthly:
+                    type: integer
+                    minimum: 1
+              verify:
+                type: boolean
+                default: false
+                description: Read back a sample (5%) of repository data after each backup.
+              worker:
+                type: object
+                description: 'Worker identity. Default: root with only DAC_READ_SEARCH (reads any file; needs Pod Security
+                  ''privileged'' in the source namespace). Set runAsUser to run non-root without capabilities (''restricted'')
+                  when that user can read the volume.'
+                properties:
+                  runAsUser:
+                    type: integer
+                    minimum: 1
+                  runAsGroup:
+                    type: integer
+                    minimum: 0
+            x-kubernetes-validations:
+            - rule: self == oldSelf
+              message: spec is immutable; create a new BackupRequest instead
+          status:
+            type: object
+            description: Observed state, written by the operator.
+            properties:
+              phase:
+                type: string
+                description: Pending, Snapshotting, Cloning, Running, Recording, CleaningUp, Succeeded or Failed.
+                enum:
+                - Pending
+                - Snapshotting
+                - Cloning
+                - Running
+                - Recording
+                - CleaningUp
+                - Succeeded
+                - Failed
+              reason:
+                type: string
+                description: Machine-readable reason for the current phase or failure.
+              message:
+                type: string
+                description: Human-readable progress or error message.
+              attempt:
+                type: integer
+                description: Current attempt number (1-based).
+              maxAttempts:
+                type: integer
+                description: Attempt budget for this request.
+              outcome:
+                type: string
+                description: Outcome being finalized during CleaningUp (succeeded, retry, failed).
+              nextAttemptAt:
+                type: string
+                description: The operator won't act on this request before this time (backoff).
+                format: date-time
+              phaseStartedAt:
+                type: string
+                description: When the current phase started (used for phase timeouts).
+                format: date-time
+              startedAt:
+                type: string
+                description: When the first attempt was admitted.
+                format: date-time
+              finishedAt:
+                type: string
+                description: When the request reached a terminal phase.
+                format: date-time
+              apiErrors:
+                type: integer
+                description: Consecutive transient API errors in the current step.
+              lastError:
+                type: string
+                description: Most recent error.
+              restoreSize:
+                type: string
+                description: Snapshot restore size used for the temporary PVC.
+              resources:
+                type: object
+                description: Names of this attempt's temporary objects in the source namespace.
+                properties:
+                  snapshot:
+                    type: string
+                  pvc:
+                    type: string
+                  job:
+                    type: string
+                  secret:
+                    type: string
+                  configMap:
+                    type: string
+              sourceNamespace:
+                type: string
+                description: Source namespace recorded at first admission; used for all cleanup.
+              backupRef:
+                type: string
+                description: Name of the Backup record (same namespace) holding the final result.
+              attempts:
+                type: array
+                description: Failed attempts (most recent 10).
+                items:
+                  type: object
+                  properties:
+                    attempt:
+                      type: integer
+                    reason:
+                      type: string
+                    message:
+                      type: string
+                    finishedAt:
+                      type: string
+                      format: date-time
+              completedAt:
+                type: string
+                format: date-time
+                description: When the transfer finished or the run failed.
+        required:
+        - spec
+    subresources:
+      status: {}
+    additionalPrinterColumns:
+    - name: Phase
+      type: string
+      jsonPath: .status.phase
+    - name: Attempt
+      type: integer
+      jsonPath: .status.attempt
+    - name: Reason
+      type: string
+      jsonPath: .status.reason
+    - name: Age
+      type: date
+      jsonPath: .metadata.creationTimestamp

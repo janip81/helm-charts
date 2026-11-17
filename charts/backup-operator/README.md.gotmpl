@@ -1,0 +1,45 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+# Overview
+
+Installs [backup-operator](https://github.com/janip81/backup-operator): CRDs (`BackupSchedule`,
+`BackupRequest`, `Backup`), a least-privilege ClusterRole, the controller, and optionally a
+ServiceMonitor, alert rules and a Grafana dashboard.
+
+Each run snapshots a PersistentVolume, mounts a read-only copy in a short-lived worker Job, and a
+plugin (`files`, `archives`, `sqlite` or `custom`) decides what is stored as a versioned, encrypted
+restic snapshot in S3, a REST server or over SFTP.
+
+## Adding this helm repository
+
+```bash
+helm repo add janip81 https://janip81.github.io/helm-charts/
+helm install backup-operator janip81/backup-operator -n backup-operator --create-namespace
+```
+
+## Notes
+
+- **CRDs** are in `crds/`: Helm installs them but never upgrades them. Argo CD applies them like any
+  other resource, so upgrades work there; with plain Helm apply the new CRDs by hand before upgrading.
+- **One replica only** (`replicaCount` 0 or 1). Use 0 to pause the operator.
+- **Private images:** set `imagePullSecrets` for the controller and `worker.imagePullSecret` to a
+  pull secret that exists in every namespace with backups.
+- **Worker pods** run as root with only `DAC_READ_SEARCH` by default, which needs Pod Security
+  "privileged" in the app's namespace (or run non-root per schedule, see the operator README).
+- Upgrading from v0.3: [docs/upgrade-0.4.md](https://github.com/janip81/backup-operator/blob/main/docs/upgrade-0.4.md).
+- CRDs, rules and dashboard are copied from the operator repo with `hack/sync.sh <ref>`.
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

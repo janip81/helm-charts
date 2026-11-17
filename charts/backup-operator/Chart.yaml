@@ -1,0 +1,25 @@
+apiVersion: v2
+name: backup-operator
+description: Kubernetes operator that backs up PersistentVolume data as versioned, encrypted restic snapshots, with plugins that choose what to keep
+type: application
+version: 0.4.0
+appVersion: "0.4.0"
+home: https://github.com/janip81/helm-charts/tree/main/charts/backup-operator
+keywords:
+  - backup
+  - restic
+  - volumesnapshot
+  - operator
+  - kopf
+maintainers:
+  - name: janip81
+    url: https://github.com/janip81
+sources:
+  - https://github.com/janip81/helm-charts/tree/main/charts/backup-operator/
+  - https://github.com/janip81/backup-operator
+annotations:
+  artifacthub.io/links: |
+    - name: Chart source
+      url: https://github.com/janip81/helm-charts/tree/main/charts/backup-operator/
+    - name: Operations guide
+      url: https://github.com/janip81/backup-operator/blob/main/docs/operations.md

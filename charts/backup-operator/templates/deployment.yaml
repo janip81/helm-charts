@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backup-operator
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "backup-operator.labels" . | nindent 4 }}
+spec:
+  {{- if gt (int .Values.replicaCount) 1 }}
+  {{- fail "replicaCount must be 0 or 1: admission control is in-process" }}
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate            # never two controllers at once, not even during a rollout
+  selector:
+    matchLabels: {{- include "backup-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "backup-operator.labels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: backup-operator
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: controller
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: OPERATOR_NAMESPACE
+              valueFrom:
+                fieldRef: {fieldPath: metadata.namespace}
+            - name: WORKER_IMAGE
+              value: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag | default .Chart.AppVersion }}"
+            {{- with .Values.worker.imagePullSecret }}
+            - name: IMAGE_PULL_SECRET
+              value: {{ . | quote }}
+            {{- end }}
+            {{- range $k, $v := .Values.config }}
+            - name: {{ $k }}
+              value: {{ $v | toString | quote }}
+            {{- end }}
+          ports:
+            - {name: metrics, containerPort: 8080, protocol: TCP}
+            - {name: health, containerPort: 8081, protocol: TCP}
+          livenessProbe:
+            httpGet: {path: /healthz, port: health}
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 64Mi}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}

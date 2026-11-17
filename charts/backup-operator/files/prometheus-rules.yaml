@@ -1,0 +1,210 @@
+# spec.groups of backup-operator k8s/monitoring/prometheusrule.yaml, verbatim (hack/sync.sh).
+- name: backup-operator
+  rules:
+    - alert: BackupOperatorDown
+      expr: absent(backup_operator_active_runs)
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: Backup operator metrics are missing
+        description: The operator isn't running or isn't scraped, so no backups are being taken or tracked.
+
+    - alert: BackupStale
+      expr: |
+        (time() - backup_operator_last_success_timestamp_seconds)
+          > on(namespace, source) group_left() (1.5 * backup_operator_schedule_interval_seconds)
+      for: 30m
+      labels: {severity: warning}
+      annotations:
+        summary: "No successful backup for {{ $labels.namespace }}/{{ $labels.source }}"
+        description: The newest successful backup is older than 1.5x the schedule interval.
+
+    - alert: BackupNeverSucceeded
+      expr: |
+        backup_operator_schedule_interval_seconds
+          unless on(namespace, source) backup_operator_last_success_timestamp_seconds
+      for: 48h
+      labels: {severity: warning}
+      annotations:
+        summary: "Schedule {{ $labels.namespace }}/{{ $labels.source }} has no successful backup"
+
+    # Based on durable timestamps rebuilt from Backup records, so the first failure of a source
+    # (and failures from before an operator restart) still fire.
+    - alert: BackupLatestRunFailed
+      expr: |
+        backup_operator_last_failure_timestamp_seconds
+          > on(namespace, source) backup_operator_last_success_timestamp_seconds
+        or
+        backup_operator_last_failure_timestamp_seconds
+          unless on(namespace, source) backup_operator_last_success_timestamp_seconds
+      labels: {severity: warning}
+      annotations:
+        summary: "Latest backup run failed for {{ $labels.namespace }}/{{ $labels.source }}"
+        description: Check the newest Backup record and the BackupRequest status for the reason.
+
+    - alert: BackupScheduleNotReady
+      expr: backup_operator_schedule_ready == 0
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: "Schedule {{ $labels.namespace }}/{{ $labels.source }} is not ready"
+        description: Its source volume, credentials or repository settings are invalid, so its runs are skipped. See the schedule's Ready condition.
+
+    # Per source PVC: the controller allows MAX_SNAPSHOTS_PER_PVC (default 1) operator snapshots per
+    # volume. Raise the threshold if you raised that setting.
+    - alert: BackupSnapshotsAccumulating
+      expr: backup_operator_owned_snapshots > 1
+      for: 30m
+      labels: {severity: critical}
+      annotations:
+        summary: "{{ $value }} operator-owned VolumeSnapshots of {{ $labels.namespace }}/{{ $labels.pvc }}"
+        description: Only one should exist, and only while a run is active. Scale the operator to 0 and check for stuck cleanup before the storage's per-volume snapshot limit is reached.
+
+    - alert: BackupCleanupStuck
+      expr: backup_operator_cleanup_stuck_requests > 0
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: Backup cleanup is stuck
+        description: A run can't remove its temporary objects. New runs for that source stay blocked.
+
+# Early warnings for a runaway operator or a storage backend that stops deleting: thousands of
+# snapshots or requests load etcd, the snapshot controller and the CSI driver. The inventory
+# covers every VolumeSnapshot and VolumeSnapshotContent, not only objects with operator labels.
+- name: backup-operator-runaway
+  rules:
+    - alert: BackupSnapshotStorm
+      expr: sum by (namespace, pvc) (increase(backup_operator_snapshots_created_total[1h])) > 4
+      labels: {severity: critical}
+      annotations:
+        summary: "{{ $value | humanize }} VolumeSnapshots of {{ $labels.namespace }}/{{ $labels.pvc }} created in the last hour"
+        description: A run creates one snapshot per attempt (three attempts by default). Scale the operator to 0 replicas, then check the newest BackupRequests and the CSI snapshotter logs.
+
+    - alert: BackupSnapshotNotRemoved
+      expr: time() - backup_operator_owned_snapshot_oldest_created_timestamp_seconds > 4 * 3600
+      labels: {severity: warning}
+      annotations:
+        summary: "An operator snapshot of {{ $labels.namespace }}/{{ $labels.pvc }} is {{ $value | humanizeDuration }} old"
+        description: Snapshots live only for one run (snapshot and job timeouts are 15 minutes and 2 hours by default). Check the request that owns it.
+
+    - alert: BackupSnapshotDeletionStuck
+      expr: time() - backup_operator_snapshot_deleting_since_timestamp_seconds > 1800
+      labels: {severity: warning}
+      annotations:
+        summary: "A VolumeSnapshot of {{ $labels.namespace }}/{{ $labels.pvc }} has been deleting for {{ $value | humanizeDuration }}"
+        description: The snapshot controller or the CSI driver can't delete it, so the backend snapshot may stay. Check the VolumeSnapshotContent events and the CSI controller logs; never remove finalizers by hand.
+
+    - alert: BackupOrphanSnapshotContents
+      expr: backup_operator_orphan_snapshot_contents > 0
+      for: 30m
+      labels: {severity: warning}
+      annotations:
+        summary: "{{ $value }} VolumeSnapshotContents have no VolumeSnapshot"
+        description: Leftover contents can hold backend snapshots and count against per-volume limits. Check their deletionPolicy and whether the backend snapshot still exists.
+
+    - alert: BackupClusterSnapshotsGrowing
+      # max by instance: two pods during a rollout must not double the count. Waits until this
+      # process completed a full inventory an hour ago, so a partial startup replay can't fire it.
+      expr: |
+        (
+          max(sum by (instance) (backup_operator_cluster_volume_snapshots))
+            - max(sum by (instance) (backup_operator_cluster_volume_snapshots offset 1h))
+        ) > 20
+        and on() (time() - max(backup_operator_inventory_first_sync_timestamp_seconds) > 3600)
+      labels: {severity: critical}
+      annotations:
+        summary: "{{ $value }} more VolumeSnapshots in the cluster than an hour ago"
+        description: Counts every VolumeSnapshot, whoever created it. Find the namespace on the Backup Operator dashboard; if it's the operator, scale it to 0.
+
+    - alert: BackupClusterSnapshotsHigh
+      expr: max(sum by (instance) (backup_operator_cluster_volume_snapshots)) > 100
+      for: 1h
+      labels: {severity: warning}
+      annotations:
+        summary: "{{ $value }} VolumeSnapshots exist in the cluster"
+        description: Adjust the threshold to what your cluster normally holds.
+
+    - alert: BackupRequestsPilingUp
+      expr: max(sum by (instance) (backup_operator_requests{phase!~"Succeeded|Failed|Legacy"})) > 10
+      for: 30m
+      labels: {severity: critical}
+      annotations:
+        summary: "{{ $value }} unfinished BackupRequests"
+        description: Requests are created faster than they finish. Check the schedules' overlap policy and the oldest pending request's reason.
+
+    - alert: BackupRequestsGrowing
+      expr: |
+        (
+          max(sum by (instance) (backup_operator_requests))
+            - max(sum by (instance) (backup_operator_requests offset 1h))
+        ) > 20
+        and on() (time() - max(backup_operator_inventory_first_sync_timestamp_seconds) > 3600)
+      labels: {severity: critical}
+      annotations:
+        summary: "{{ $value }} more BackupRequests than an hour ago"
+        description: Schedules create one request per tick and prune their history. Check which schedule or client creates them.
+
+    - alert: BackupRequestStuck
+      expr: |
+        backup_operator_oldest_unfinished_request_created_timestamp_seconds > 0
+          and time() - backup_operator_oldest_unfinished_request_created_timestamp_seconds > 6 * 3600
+      labels: {severity: warning}
+      annotations:
+        summary: A BackupRequest has been unfinished for more than 6 hours
+        description: Look at the oldest non-terminal request's phase, reason and lastError.
+
+    - alert: BackupRequestHistoryTooLarge
+      expr: max(sum by (instance) (backup_operator_requests)) > 200
+      for: 1h
+      labels: {severity: warning}
+      annotations:
+        summary: "{{ $value }} BackupRequests exist"
+        description: Finished requests should be pruned by the schedules' history limits. Large numbers of objects slow the controller and the API server.
+
+    - alert: BackupLegacyRequestsPresent
+      expr: max(backup_operator_requests{phase="Legacy"}) > 0
+      for: 24h
+      labels: {severity: info}
+      annotations:
+        summary: "{{ $value }} v0.3 BackupRequests are left"
+        description: v0.4 ignores them. Delete them as described in docs/upgrade-0.4.md.
+
+    - alert: BackupInventoryStale
+      expr: time() - max(backup_operator_inventory_synced_timestamp_seconds) > 3 * 600
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: The backup operator's snapshot inventory hasn't been refreshed
+        description: The periodic relist (INVENTORY_RESYNC_SECONDS, default 600) keeps failing, so snapshot and request metrics may be stale. Check the operator logs and RBAC.
+
+    - alert: BackupOperatorForbidden
+      expr: sum by (code) (increase(backup_operator_api_errors_total{code="403"}[15m])) > 0
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: The backup operator is denied Kubernetes API access
+        description: Persistent 403 errors mean the ClusterRole doesn't match the controller version. Re-apply k8s/base.
+
+    - alert: BackupOperatorApiErrors
+      expr: sum by (code) (rate(backup_operator_api_errors_total{code=~"429|5..|network"}[10m])) > 0.02
+      for: 15m
+      labels: {severity: warning}
+      annotations:
+        summary: "Backup operator API calls are failing with {{ $labels.code }}"
+        description: "{{ $value | humanize }} failed calls per second. The operator retries with backoff; check API server and etcd health."
+
+    # Needs kube-state-metrics. Adjust the namespace if the operator is installed elsewhere.
+    - alert: BackupOperatorRestarting
+      expr: sum(increase(kube_pod_container_status_restarts_total{namespace="backup-operator", container="controller"}[1h])) > 2
+      labels: {severity: warning}
+      annotations:
+        summary: Backup operator restarted {{ $value | humanize }} times in the last hour
+        description: Check the previous container's logs and its memory limit.
+
+    - alert: BackupOperatorCrashLooping
+      expr: max(kube_pod_container_status_waiting_reason{namespace="backup-operator", container="controller", reason="CrashLoopBackOff"}) > 0
+      for: 10m
+      labels: {severity: warning}
+      annotations:
+        summary: The backup operator is in CrashLoopBackOff
+        description: Check the previous container's logs and its memory limit.
