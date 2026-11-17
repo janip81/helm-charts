@@ -504,7 +504,7 @@
       "type": "table",
       "title": "Schedules",
       "description": "Ready: source volume, credentials and repository settings are valid. Times are ages.",
-      "id": 21,
+      "id": 22,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -557,6 +557,18 @@
           "instant": true,
           "range": false,
           "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max by (namespace, source) (backup_operator_schedule_paused{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"})",
+          "legendFormat": "",
+          "refId": "Paused",
+          "instant": true,
+          "range": false,
+          "format": "table"
         }
       ],
       "transformations": [
@@ -578,7 +590,8 @@
               "Value #Ready": "Ready",
               "Value #Last success": "Last success",
               "Value #Last failure": "Last failure",
-              "Value #Interval": "Interval"
+              "Value #Interval": "Interval",
+              "Value #Paused": "Paused"
             }
           }
         },
@@ -592,7 +605,8 @@
                 "Ready",
                 "Last success",
                 "Last failure",
-                "Interval"
+                "Interval",
+                "Paused"
               ]
             }
           }
@@ -633,6 +647,38 @@
                 "id": "custom.cellOptions",
                 "value": {
                   "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Paused"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "1": {
+                        "text": "Paused (unused)",
+                        "color": "blue"
+                      },
+                      "0": {
+                        "text": "Active",
+                        "color": "green"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
                 }
               }
             ]
@@ -694,7 +740,7 @@
       "type": "timeseries",
       "title": "Runs per day by result",
       "description": "",
-      "id": 23,
+      "id": 24,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -707,7 +753,7 @@
           },
           "expr": "round(sum by (namespace, source, result) (increase(backup_operator_runs_total{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"}[1d])))",
           "legendFormat": "{{namespace}}/{{source}} {{result}}",
-          "refId": "V"
+          "refId": "W"
         }
       ],
       "fieldConfig": {
@@ -750,7 +796,7 @@
       "type": "timeseries",
       "title": "Failed attempts by reason (per hour)",
       "description": "",
-      "id": 25,
+      "id": 26,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -763,7 +809,7 @@
           },
           "expr": "round(sum by (reason) (increase(backup_operator_attempt_failures_total{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"}[1h])))",
           "legendFormat": "{{reason}}",
-          "refId": "X"
+          "refId": "Y"
         }
       ],
       "fieldConfig": {
@@ -806,7 +852,7 @@
       "type": "timeseries",
       "title": "Run duration p95",
       "description": "",
-      "id": 27,
+      "id": 28,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -819,7 +865,7 @@
           },
           "expr": "histogram_quantile(0.95, sum by (namespace, source, le) (rate(backup_operator_run_duration_seconds_bucket{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"}[1d])))",
           "legendFormat": "{{namespace}}/{{source}}",
-          "refId": "@"
+          "refId": "A"
         }
       ],
       "fieldConfig": {
@@ -861,7 +907,7 @@
     {
       "type": "row",
       "title": "Runaway guards (what overloaded a cluster before)",
-      "id": 28,
+      "id": 29,
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -874,7 +920,7 @@
       "type": "stat",
       "title": "VolumeSnapshots in cluster",
       "description": "Every VolumeSnapshot, whoever created it.",
-      "id": 29,
+      "id": 30,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -887,7 +933,7 @@
           },
           "expr": "sum(backup_operator_cluster_volume_snapshots{k8s_cluster=~\"$cluster\"}) or vector(0)",
           "legendFormat": "",
-          "refId": "D",
+          "refId": "E",
           "instant": true,
           "range": false
         }
@@ -935,7 +981,7 @@
       "type": "stat",
       "title": "Orphan snapshot contents",
       "description": "VolumeSnapshotContents older than 15 minutes without a VolumeSnapshot.",
-      "id": 31,
+      "id": 32,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -948,7 +994,7 @@
           },
           "expr": "max(backup_operator_orphan_snapshot_contents{k8s_cluster=~\"$cluster\"}) or vector(0)",
           "legendFormat": "",
-          "refId": "F",
+          "refId": "G",
           "instant": true,
           "range": false
         }
@@ -992,7 +1038,7 @@
       "type": "stat",
       "title": "Oldest unfinished request",
       "description": "",
-      "id": 33,
+      "id": 34,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1005,7 +1051,7 @@
           },
           "expr": "time() - (max(backup_operator_oldest_unfinished_request_created_timestamp_seconds{k8s_cluster=~\"$cluster\"}) > 0) or vector(0)",
           "legendFormat": "",
-          "refId": "H",
+          "refId": "I",
           "instant": true,
           "range": false
         }
@@ -1053,7 +1099,7 @@
       "type": "stat",
       "title": "Stuck cleanups",
       "description": "",
-      "id": 35,
+      "id": 36,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1066,7 +1112,7 @@
           },
           "expr": "max(backup_operator_cleanup_stuck_requests{k8s_cluster=~\"$cluster\"}) or vector(0)",
           "legendFormat": "",
-          "refId": "J",
+          "refId": "K",
           "instant": true,
           "range": false
         }
@@ -1110,7 +1156,7 @@
       "type": "timeseries",
       "title": "Snapshots created per hour, per volume",
       "description": "BackupSnapshotStorm fires above 4 per hour for one volume.",
-      "id": 38,
+      "id": 39,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1123,7 +1169,7 @@
           },
           "expr": "round(sum by (namespace, pvc) (increase(backup_operator_snapshots_created_total{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"}[1h])))",
           "legendFormat": "{{namespace}}/{{pvc}}",
-          "refId": "K"
+          "refId": "L"
         }
       ],
       "fieldConfig": {
@@ -1166,7 +1212,7 @@
       "type": "timeseries",
       "title": "Operator-owned snapshots per volume",
       "description": "BackupSnapshotsAccumulating fires above 1 for 30 minutes.",
-      "id": 40,
+      "id": 41,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1179,7 +1225,7 @@
           },
           "expr": "backup_operator_owned_snapshots{k8s_cluster=~\"$cluster\", namespace=~\"$namespace\"}",
           "legendFormat": "{{namespace}}/{{pvc}}",
-          "refId": "M"
+          "refId": "N"
         }
       ],
       "fieldConfig": {
@@ -1222,7 +1268,7 @@
       "type": "timeseries",
       "title": "All VolumeSnapshots per namespace",
       "description": "Independent of operator labels; BackupClusterSnapshotsGrowing fires at +20 per hour.",
-      "id": 42,
+      "id": 43,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1235,7 +1281,7 @@
           },
           "expr": "sum by (namespace) (backup_operator_cluster_volume_snapshots{k8s_cluster=~\"$cluster\"})",
           "legendFormat": "{{namespace}}",
-          "refId": "O"
+          "refId": "P"
         }
       ],
       "fieldConfig": {
@@ -1278,7 +1324,7 @@
       "type": "timeseries",
       "title": "Snapshot deletion pending for",
       "description": "A snapshot the CSI driver can't delete. BackupSnapshotDeletionStuck fires after 30 minutes.",
-      "id": 44,
+      "id": 45,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1291,7 +1337,7 @@
           },
           "expr": "time() - backup_operator_snapshot_deleting_since_timestamp_seconds{k8s_cluster=~\"$cluster\"}",
           "legendFormat": "{{namespace}}/{{pvc}}",
-          "refId": "Q"
+          "refId": "R"
         }
       ],
       "fieldConfig": {
@@ -1334,7 +1380,7 @@
       "type": "timeseries",
       "title": "BackupRequests by phase",
       "description": "",
-      "id": 46,
+      "id": 47,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1347,7 +1393,7 @@
           },
           "expr": "sum by (phase) (backup_operator_requests{k8s_cluster=~\"$cluster\"})",
           "legendFormat": "{{phase}}",
-          "refId": "S"
+          "refId": "T"
         }
       ],
       "fieldConfig": {
@@ -1390,7 +1436,7 @@
       "type": "timeseries",
       "title": "Kubernetes API errors per second",
       "description": "",
-      "id": 49,
+      "id": 50,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1403,7 +1449,7 @@
           },
           "expr": "sum by (code) (rate(backup_operator_api_errors_total{k8s_cluster=~\"$cluster\"}[5m]))",
           "legendFormat": "{{code}}",
-          "refId": "U"
+          "refId": "V"
         },
         {
           "datasource": {
@@ -1412,7 +1458,7 @@
           },
           "expr": "sum(rate(backup_operator_api_calls_total{k8s_cluster=~\"$cluster\"}[5m]))",
           "legendFormat": "all calls",
-          "refId": "V"
+          "refId": "W"
         }
       ],
       "fieldConfig": {
@@ -1455,7 +1501,7 @@
       "type": "timeseries",
       "title": "Operator restarts (kube-state-metrics)",
       "description": "",
-      "id": 51,
+      "id": 52,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1468,7 +1514,7 @@
           },
           "expr": "sum(increase(kube_pod_container_status_restarts_total{k8s_cluster=~\"$cluster\", container=\"controller\", pod=~\"backup-operator-.*\"}[1h]))",
           "legendFormat": "restarts/h",
-          "refId": "X"
+          "refId": "Y"
         }
       ],
       "fieldConfig": {
@@ -1511,7 +1557,7 @@
       "type": "timeseries",
       "title": "Operator memory (cAdvisor)",
       "description": "",
-      "id": 53,
+      "id": 54,
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1524,7 +1570,7 @@
           },
           "expr": "max by (pod) (container_memory_working_set_bytes{k8s_cluster=~\"$cluster\", container=\"controller\", pod=~\"backup-operator-.*\"})",
           "legendFormat": "{{pod}}",
-          "refId": "@"
+          "refId": "A"
         }
       ],
       "fieldConfig": {

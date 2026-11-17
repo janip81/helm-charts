@@ -44,6 +44,13 @@ spec:
                 minimum: 60
                 description: A tick later than this (e.g. after operator downtime) is skipped, not run late. Only the latest
                   missed tick is ever considered.
+              whenSourceUnused:
+                type: string
+                enum: [Run, Skip]
+                default: Run
+                description: Skip pauses the schedule (no runs, phase Paused) while no pod uses the source PVC, e.g.
+                  an app scaled to 0. Run backs up at every tick.
+
               concurrencyPolicy:
                 type: string
                 enum:
@@ -188,6 +195,8 @@ spec:
                 enum:
                 - Active
                 - Suspended
+                - Paused
+
               lastScheduleTime:
                 type: string
                 format: date-time
