@@ -99,6 +99,36 @@ entries:
           url: https://github.com/janip81/backup-operator/blob/main/docs/operations.md
     apiVersion: v2
     appVersion: 0.4.0
+    created: "2026-11-17T11:34:14.186032696Z"
+    description: Kubernetes operator that backs up PersistentVolume data as versioned,
+      encrypted restic snapshots, with plugins that choose what to keep
+    digest: ba299f7601fff7823d2c9b06502b6a4ebfec3038da27152d7628e8be28a79fd4
+    home: https://github.com/janip81/helm-charts/tree/main/charts/backup-operator
+    keywords:
+    - backup
+    - restic
+    - volumesnapshot
+    - operator
+    - kopf
+    maintainers:
+    - name: janip81
+      url: https://github.com/janip81
+    name: backup-operator
+    sources:
+    - https://github.com/janip81/helm-charts/tree/main/charts/backup-operator/
+    - https://github.com/janip81/backup-operator
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/backup-operator-0.4.1/backup-operator-0.4.1.tgz
+    version: 0.4.1
+  - annotations:
+      artifacthub.io/links: |
+        - name: Chart source
+          url: https://github.com/janip81/helm-charts/tree/main/charts/backup-operator/
+        - name: Operations guide
+          url: https://github.com/janip81/backup-operator/blob/main/docs/operations.md
+    apiVersion: v2
+    appVersion: 0.4.0
     created: "2026-11-17T08:44:44.866241148Z"
     description: Kubernetes operator that backs up PersistentVolume data as versioned,
       encrypted restic snapshots, with plugins that choose what to keep
@@ -5947,4 +5977,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-17T08:44:44.86645002Z"
+generated: "2026-11-17T11:34:14.186378111Z"
