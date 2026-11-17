@@ -1,0 +1,17 @@
+{{- /*
+CRDs are rendered from templates (not crds/) so they are applied and upgraded by `helm upgrade` and by
+Argo CD's Helm plugins, which run `helm template` without --include-crds. crds.keep stops an uninstall
+from deleting them, which would delete every Backup record and schedule.
+*/}}
+{{- if .Values.crds.enabled }}
+{{- range $path, $_ := .Files.Glob "files/crds/*.yaml" }}
+{{- $crd := $.Files.Get $path | fromYaml }}
+{{- $ann := $crd.metadata.annotations | default dict }}
+{{- if $.Values.crds.keep }}
+{{- $_ := set $ann "helm.sh/resource-policy" "keep" }}
+{{- end }}
+{{- $_ := set $crd.metadata "annotations" $ann }}
+---
+{{ toYaml $crd }}
+{{- end }}
+{{- end }}
