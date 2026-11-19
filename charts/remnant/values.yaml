@@ -118,6 +118,10 @@ ollama:
   model: "qwen2.5:7b"
   # -- Embedding model (must be pulled in Ollama)
   embedModel: "nomic-embed-text"
+  # -- Optional separate Ollama for embeddings (writes and search), e.g. an always-on CPU
+  # instance while baseUrl (the LLM) is a GPU host that may sleep. Empty = baseUrl.
+  # It must serve the same embedModel. Needs a Remnant image with OLLAMA_EMBED_BASE_URL support.
+  embedBaseUrl: ""
 
 mem0:
   # -- User ID namespace for stored memories

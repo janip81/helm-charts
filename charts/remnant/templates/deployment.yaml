@@ -59,6 +59,10 @@ spec:
               value: {{ .Values.ollama.model | quote }}
             - name: OLLAMA_EMBED_MODEL
               value: {{ .Values.ollama.embedModel | quote }}
+            {{- with .Values.ollama.embedBaseUrl }}
+            - name: OLLAMA_EMBED_BASE_URL
+              value: {{ . | quote }}
+            {{- end }}
             - name: MEM0_USER_ID
               value: {{ .Values.mem0.userId | quote }}
             - name: MEM0_AGENT_ID
