@@ -1,6 +1,6 @@
 # remnant
 
-![Version: 0.2.9](https://img.shields.io/badge/Version-0.2.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.2.10](https://img.shields.io/badge/Version-0.2.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 Remnant — a shared local memory layer for stateless AI agents
 
@@ -133,6 +133,7 @@ The `s3CredentialsSecret` must contain keys: `access-key-id`, `secret-access-key
 | mem0.infer | string | `"true"` | Enable LLM extraction and deduplication on add_memory calls |
 | mem0.userId | string | `"default"` | User ID namespace for stored memories |
 | ollama.baseUrl | string | `"http://ollama:11434"` | Ollama server URL |
+| ollama.embedBaseUrl | string | `""` | Optional separate Ollama for embeddings (writes and search), e.g. an always-on CPU instance while baseUrl (the LLM) is a GPU host that may sleep. Empty = baseUrl. It must serve the same embedModel. Needs a Remnant image with OLLAMA_EMBED_BASE_URL support. |
 | ollama.embedModel | string | `"nomic-embed-text"` | Embedding model (must be pulled in Ollama) |
 | ollama.model | string | `"qwen2.5:7b"` | Chat model for LLM operations |
 | redis.db | int | `0` | Redis database number |
