@@ -1,6 +1,6 @@
 # worklog
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 Worklog salary tracker — Go API + React frontend
 
@@ -41,6 +41,7 @@ helm install worklog janip81/worklog -f your-values.yaml
 | api.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | api.image.repo | string | `"ghcr.io/janip81/worklog-api"` | API container image repository |
 | api.image.tag | string | `"latest"` | API image tag |
+| api.replicas | int | `1` | Number of pods (0 pauses the component; the database is unaffected) |
 | api.resources.limits.cpu | string | `"200m"` | CPU limit for the API container |
 | api.resources.limits.memory | string | `"128Mi"` | Memory limit for the API container |
 | api.resources.requests.cpu | string | `"50m"` | CPU request for the API container |
@@ -50,6 +51,7 @@ helm install worklog janip81/worklog -f your-values.yaml
 | frontend.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | frontend.image.repo | string | `"ghcr.io/janip81/worklog-frontend"` | Frontend container image repository |
 | frontend.image.tag | string | `"latest"` | Frontend image tag |
+| frontend.replicas | int | `1` | Number of pods (0 pauses the component; the database is unaffected) |
 | frontend.resources.limits.cpu | string | `"100m"` | CPU limit for the frontend container |
 | frontend.resources.limits.memory | string | `"64Mi"` | Memory limit for the frontend container |
 | frontend.resources.requests.cpu | string | `"20m"` | CPU request for the frontend container |
