@@ -1,4 +1,6 @@
 api:
+  # Number of pods (0 pauses the component; the database is unaffected)
+  replicas: 1
   image:
     # -- API container image repository
     repo: ghcr.io/janip81/worklog-api
@@ -27,6 +29,8 @@ api:
     port: 8081
 
 frontend:
+  # Number of pods (0 pauses the component; the database is unaffected)
+  replicas: 1
   image:
     # -- Frontend container image repository
     repo: ghcr.io/janip81/worklog-frontend
