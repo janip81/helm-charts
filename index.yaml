@@ -5219,6 +5219,20 @@ entries:
   worklog:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-11-20T13:22:02.973164065Z"
+    description: Worklog salary tracker — Go API + React frontend
+    digest: 922381037f12f393e327778f62019c8353c15f9a4f27a96d40b831dbc24a87d9
+    maintainers:
+    - email: jani@techmonkeys.se
+      name: janip81
+      url: https://github.com/janip81
+    name: worklog
+    type: application
+    urls:
+    - https://github.com/janip81/helm-charts/releases/download/worklog-0.1.3/worklog-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-10-12T13:26:25.920069817Z"
     description: Worklog salary tracker — Go API + React frontend
     digest: 17db782feae63be812110180013bea417890737f2ed96c52699ab0f55ffadcd4
@@ -6037,4 +6051,4 @@ entries:
     urls:
     - https://github.com/janip81/helm-charts/releases/download/zomboid-server-0.1.0/zomboid-server-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-19T09:41:25.230102251Z"
+generated: "2026-11-20T13:22:02.973376983Z"
