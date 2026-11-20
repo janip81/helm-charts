@@ -7,7 +7,7 @@ metadata:
     {{- include "worklog.labels" . | nindent 4 }}
     {{- include "worklog.frontend.selectorLabels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.frontend.replicas }}
   selector:
     matchLabels:
       {{- include "worklog.frontend.selectorLabels" . | nindent 6 }}
