@@ -87,9 +87,9 @@ gatewayApi:
       namespace: kube-system
 
 mcp:
-  # -- DNS rebinding protection for /mcp: sets MCP_ALLOWED_HOSTS (needs remnant image c5d1012 or newer).
-  # Off keeps the previous behaviour.
-  dnsRebindingProtection: false
+  # -- DNS rebinding protection for /mcp: sets MCP_ALLOWED_HOSTS. false sets
+  # MCP_DNS_REBINDING_PROTECTION=false, the explicit opt-out (images from 2026-11 protect /mcp by default).
+  dnsRebindingProtection: true
   # -- Allowed Host headers for /mcp ("host" or "host:*"). Empty = the in-cluster service
   # (<fullname>:<service.port>, used by the UI and the dedup job) plus gatewayApi.host when enabled.
   # Loopback is always allowed by the server.

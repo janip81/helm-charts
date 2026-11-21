@@ -72,6 +72,9 @@ spec:
             {{- if .Values.mcp.dnsRebindingProtection }}
             - name: MCP_ALLOWED_HOSTS
               value: {{ include "remnant.mcpAllowedHosts" . | quote }}
+            {{- else }}
+            - name: MCP_DNS_REBINDING_PROTECTION
+              value: "false"
             {{- end }}
             {{- if .Values.redis.enabled }}
             - name: REDIS_PASSWORD
